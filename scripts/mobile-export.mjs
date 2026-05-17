@@ -9,6 +9,7 @@ const mobileDir = resolve(repoRoot, "apps/mobile");
 const appDir = resolve(mobileDir, "app");
 const mobileNodeModules = resolve(mobileDir, "node_modules");
 const repoNodeModules = resolve(repoRoot, "node_modules");
+const mobileDistDir = resolve(mobileDir, "dist");
 const requireFromMobile = createRequire(resolve(mobileDir, "package.json"));
 
 mkdirSync(expoHome, { recursive: true });
@@ -29,6 +30,26 @@ const routerContextFiles = [
 ];
 
 const backups = [];
+
+const writeStaticHostFiles = () => {
+  const indexHtmlPath = resolve(mobileDistDir, "index.html");
+  const notFoundHtmlPath = resolve(mobileDistDir, "+not-found.html");
+  const fallbackHtml = readFileSync(indexHtmlPath, "utf8");
+  const notFoundHtml = (() => {
+    try {
+      return readFileSync(notFoundHtmlPath, "utf8");
+    } catch {
+      return fallbackHtml;
+    }
+  })();
+
+  writeFileSync(resolve(mobileDistDir, "_redirects"), "/* /index.html 200\n");
+  writeFileSync(
+    resolve(mobileDistDir, "_headers"),
+    ["/_expo/static/*", "  Cache-Control: public, max-age=31536000, immutable", ""].join("\n"),
+  );
+  writeFileSync(resolve(mobileDistDir, "404.html"), notFoundHtml);
+};
 
 try {
   for (const file of routerContextFiles) {
@@ -58,6 +79,10 @@ try {
   });
 
   if (typeof result.status === "number") {
+    if (result.status === 0) {
+      writeStaticHostFiles();
+    }
+
     process.exit(result.status);
   }
 
