@@ -9,6 +9,7 @@ dist/
 coverage/
 .turbo/
 .expo/
+.expo-home/
 *.tsbuildinfo
 .env
 .env.local
