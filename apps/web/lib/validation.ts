@@ -1,0 +1,85 @@
+import { z } from "zod";
+
+export const registerSchema = z.object({
+  email: z.string().trim().email().max(255),
+  username: z.string().trim().min(3).max(50),
+  password: z.string().min(6).max(100),
+});
+
+export const loginSchema = z.object({
+  email: z.string().trim().email().max(255),
+  password: z.string().min(6).max(100),
+});
+
+export const favoriteMutationSchema = z.object({
+  buildSlug: z.string().trim().min(1).max(180),
+});
+
+const buildStepSchema = z.object({
+  stepNumber: z.number().int().min(1),
+  supply: z.number().int().min(0),
+  timing: z.string().trim().min(1).max(20),
+  instruction: z.string().trim().min(1).max(1000),
+});
+
+export const adminBuildSchema = z.object({
+  raceSlug: z.string().trim().min(1).max(120),
+  matchupSlug: z.string().trim().max(160).optional().nullable(),
+  title: z.string().trim().min(1).max(180),
+  slug: z.string().trim().min(1).max(180),
+  summary: z.string().trim().min(1).max(2000),
+  difficulty: z.string().trim().min(1).max(50),
+  strategyType: z.string().trim().min(1).max(80),
+  body: z.string().trim().min(1).max(10000),
+  isPublished: z.boolean(),
+  steps: z.array(buildStepSchema).max(40),
+});
+
+export const adminMatchupSchema = z.object({
+  raceASlug: z.string().trim().min(1).max(120),
+  raceBSlug: z.string().trim().min(1).max(120),
+  title: z.string().trim().min(1).max(160),
+  slug: z.string().trim().min(1).max(160),
+  summary: z.string().trim().min(1).max(2000),
+  difficulty: z.string().trim().min(1).max(50),
+  earlyGamePlan: z.string().trim().min(1).max(4000),
+  midGamePlan: z.string().trim().min(1).max(4000),
+  lateGamePlan: z.string().trim().min(1).max(4000),
+  commonMistakes: z.array(z.string().trim().min(1).max(500)).max(20),
+});
+
+export const adminHeroSchema = z.object({
+  raceSlug: z.string().trim().min(1).max(120),
+  name: z.string().trim().min(1).max(120),
+  slug: z.string().trim().min(1).max(120),
+  description: z.string().trim().min(1).max(2000),
+  primaryAttribute: z.string().trim().min(1).max(40),
+  role: z.string().trim().min(1).max(80),
+  highlights: z.array(z.string().trim().min(1).max(500)).max(20),
+});
+
+export const adminUnitSchema = z.object({
+  raceSlug: z.string().trim().min(1).max(120),
+  name: z.string().trim().min(1).max(120),
+  slug: z.string().trim().min(1).max(120),
+  description: z.string().trim().min(1).max(2000),
+  unitType: z.string().trim().min(1).max(80),
+  strengths: z.array(z.string().trim().min(1).max(500)).max(20),
+  weaknesses: z.array(z.string().trim().min(1).max(500)).max(20),
+});
+
+export const adminMapSchema = z.object({
+  name: z.string().trim().min(1).max(120),
+  slug: z.string().trim().min(1).max(120),
+  description: z.string().trim().min(1).max(2000),
+  creepNotes: z.string().trim().min(1).max(4000),
+  expansionNotes: z.string().trim().min(1).max(4000),
+});
+
+export const adminRaceSchema = z.object({
+  name: z.string().trim().min(1).max(100),
+  slug: z.string().trim().min(1).max(120),
+  description: z.string().trim().min(1).max(2000),
+  identity: z.string().trim().min(1).max(2000),
+  ladderFocus: z.string().trim().min(1).max(4000),
+});
