@@ -1,0 +1,11 @@
+{
+  "name": "@warcraft3-guide-hub/db",
+  "private": true,
+  "version": "0.1.0",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "typecheck": "tsc --project tsconfig.json --noEmit",
+    "seed": "tsx src/seed.ts"
+  }
+}

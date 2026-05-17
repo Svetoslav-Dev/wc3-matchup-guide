@@ -1,0 +1,20 @@
+{
+  "expo": {
+    "name": "Warcraft 3 Strategy Hub",
+    "slug": "warcraft3-strategy-hub-mobile",
+    "scheme": "wc3strategyhub",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+    "experiments": {
+      "typedRoutes": true
+    },
+    "plugins": [
+      "expo-router"
+    ],
+    "web": {
+      "bundler": "metro"
+    }
+  }
+}
+
