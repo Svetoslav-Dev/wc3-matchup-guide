@@ -2,6 +2,19 @@
 
 Run these after the app is deployed and the database is migrated and seeded.
 
+Automated path:
+
+```bash
+npm run deploy:smoke
+```
+
+Required env for the automated runner:
+
+- `SMOKE_BASE_URL`
+- optional `SMOKE_API_URL`
+- optional `SMOKE_ADMIN_EMAIL`
+- optional `SMOKE_ADMIN_PASSWORD`
+
 ## Public browsing
 
 1. Open home page
@@ -101,4 +114,3 @@ Expected:
 
 - Errors are surfaced cleanly
 - Protected flows do not silently succeed
-
