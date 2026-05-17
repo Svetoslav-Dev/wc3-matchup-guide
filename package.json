@@ -9,11 +9,15 @@
   "scripts": {
     "dev": "npm run dev --workspace web",
     "mobile:dev": "npm run dev --workspace mobile",
+    "mobile:web": "npm run web --workspace mobile",
+    "mobile:export": "npm run export:web --workspace mobile",
     "mobile:typecheck": "npm run typecheck --workspace mobile",
+    "test": "node --import tsx --test tests/*.test.ts",
     "build": "npm run build --workspace web",
     "lint": "npm run lint --workspace web",
     "typecheck": "npm run typecheck --workspace web && npm run typecheck --workspace @warcraft3-guide-hub/db",
     "deploy:check": "node scripts/preflight.mjs",
+    "deploy:smoke": "node scripts/smoke-test.mjs",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:seed": "npm run seed --workspace @warcraft3-guide-hub/db"
