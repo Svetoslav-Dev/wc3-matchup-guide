@@ -96,6 +96,11 @@ Notes:
 
 ## Local setup
 
+Expected runtime:
+
+- Node.js `20.x`
+- `.nvmrc` is included for local version alignment
+
 1. Install dependencies
 
 ```bash
@@ -177,6 +182,7 @@ Continuous validation:
 
 Operational docs:
 
+- [Deployment Guide](/home/thinkpadl14/Projects/warcraft3-guide-hub/docs/DEPLOYMENT.md)
 - [Release Checklist](/home/thinkpadl14/Projects/warcraft3-guide-hub/docs/RELEASE_CHECKLIST.md)
 - [Smoke Tests](/home/thinkpadl14/Projects/warcraft3-guide-hub/docs/SMOKE_TESTS.md)
 - [Submission Template](/home/thinkpadl14/Projects/warcraft3-guide-hub/docs/SUBMISSION_TEMPLATE.md)
@@ -189,6 +195,8 @@ Recommended target: Vercel
 
 - Framework preset: `Next.js`
 - Root directory: repo root or `apps/web` depending on your Vercel setup preference
+- Repo host config:
+  - [vercel.json](/home/thinkpadl14/Projects/warcraft3-guide-hub/vercel.json)
 - Build command:
 
 ```bash
@@ -253,6 +261,14 @@ apps/mobile/dist
 
 - Required public env:
   - `EXPO_PUBLIC_API_URL`
+- Export helper files generated automatically:
+  - `_redirects` for static host deep-link fallback
+  - `_headers` for Expo asset caching
+  - `404.html` for static not-found handling
+- Repo host configs:
+  - web app: [vercel.json](/home/thinkpadl14/Projects/warcraft3-guide-hub/vercel.json)
+  - [apps/mobile/vercel.json](/home/thinkpadl14/Projects/warcraft3-guide-hub/apps/mobile/vercel.json)
+  - [apps/mobile/netlify.toml](/home/thinkpadl14/Projects/warcraft3-guide-hub/apps/mobile/netlify.toml)
 
 ## Final submission record
 

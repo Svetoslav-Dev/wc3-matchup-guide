@@ -2,6 +2,10 @@
 
 Use this before deploying Warcraft 3 Strategy Hub to Neon/Vercel.
 
+Reference setup guide:
+
+- [DEPLOYMENT.md](/home/thinkpadl14/Projects/warcraft3-guide-hub/docs/DEPLOYMENT.md)
+
 ## 1. Local validation
 
 - Run `npm install`
@@ -46,6 +50,7 @@ Checks:
 
 ## 4. Web deployment readiness
 
+- If using Vercel for the web app, confirm the repo config in `vercel.json`
 - Confirm Vercel project env vars are set
 - Confirm build command is `npm run build`
 - Confirm install command is `npm install`
@@ -55,7 +60,9 @@ Checks:
 
 - Run `npm run mobile:export`
 - Confirm the export completed into `apps/mobile/dist`
+- Confirm `apps/mobile/dist/_redirects`, `_headers`, and `404.html` were generated
 - Confirm `EXPO_PUBLIC_API_URL` is set for the export environment
+- If using Vercel or Netlify for the Expo web build, confirm the repo config in `apps/mobile/vercel.json` or `apps/mobile/netlify.toml` matches the chosen host
 - Deploy the exported bundle to the chosen static host
 - Confirm the mobile web build points at the deployed REST API
 
