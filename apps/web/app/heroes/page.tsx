@@ -33,8 +33,7 @@ export default async function HeroesPage() {
       {heroGroups.map((group) => (
         <section key={group.category} className="page-stack">
           <div className="section-head">
-            <p className="section-label">{group.category}</p>
-            <h2>{group.category} Heroes</h2>
+            <h2>{group.category} Heroes:</h2>
             <p className="page-intro">{categoryDescriptions[group.category]}</p>
           </div>
           <div className="card-grid">
