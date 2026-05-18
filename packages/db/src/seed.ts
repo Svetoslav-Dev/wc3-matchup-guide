@@ -101,7 +101,8 @@ const seedUnits = async (raceMap: Map<string, number>) => {
 };
 
 const seedMaps = async () => {
-  await db.insert(maps).values(mapSeeds).onConflictDoNothing();
+  await db.delete(maps);
+  await db.insert(maps).values(mapSeeds);
 };
 
 const seedMatchups = async (raceMap: Map<string, number>) => {
