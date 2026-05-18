@@ -96,16 +96,22 @@ textarea {
   gap: 0.65rem;
 }
 
-.nav a {
+.nav__link {
   padding: 0.65rem 0.9rem;
   border-radius: 999px;
   color: var(--muted);
   transition: 160ms ease;
 }
 
-.nav a:hover {
+.nav__link:hover {
   background: rgba(255, 255, 255, 0.04);
   color: var(--text);
+}
+
+.nav__link--active {
+  background: var(--gold-soft);
+  color: var(--gold);
+  border: 1px solid rgba(201, 163, 91, 0.28);
 }
 
 .hero {

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { SiteAuth } from "../components/site-auth";
+import { SiteNav } from "../components/site-nav";
 import { getSessionUser } from "../lib/auth";
 import "./globals.css";
 
@@ -36,13 +37,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
               <span className="brand__eyebrow">Warcraft III Matchup Platform</span>
               <span className="brand__name">WC3 Matchup Guide</span>
             </Link>
-            <nav className="nav" aria-label="Main">
-              {navigationItems.map((item) => (
-                <Link key={item.href} href={item.href}>
-                  {item.label}
-                </Link>
-              ))}
-            </nav>
+            <SiteNav items={navigationItems} />
             <SiteAuth />
           </div>
         </header>
