@@ -10,6 +10,13 @@ const unitCategories = {
   neutral: "Neutral",
 } as const;
 
+const tierRank: Record<string, number> = {
+  "Tier 1": 1,
+  "Tier 2": 2,
+  "Tier 3": 3,
+  Neutral: 4,
+};
+
 type Props = {
   params: Promise<{ slug: string }>;
 };
@@ -20,7 +27,16 @@ export default async function UnitDetailPage({ params }: Props) {
 
   if (categoryName) {
     const units = await listUnits(1, 200);
-    const categoryUnits = units.data.filter((unit) => unit.raceName === categoryName);
+    const categoryUnits = units.data
+      .filter((unit) => unit.raceName === categoryName)
+      .sort(
+        (left, right) =>
+          (tierRank[left.tier] ?? 99) - (tierRank[right.tier] ?? 99) ||
+          left.gold - right.gold ||
+          left.lumber - right.lumber ||
+          left.food - right.food ||
+          left.name.localeCompare(right.name),
+      );
     const heroes = categoryName === "Neutral" ? [] : (await listHeroes(1, 50)).data.filter((hero) => hero.raceName === categoryName);
 
     return (
@@ -34,15 +50,19 @@ export default async function UnitDetailPage({ params }: Props) {
         </div>
         <div className="card-grid">
           {categoryUnits.map((unit) => (
-            <article key={unit.slug} className="card">
-              <p className="pill">{unit.raceName}</p>
-              <h2>{unit.name}</h2>
-              <p>{unit.description}</p>
-              <div className="list-meta">
-                <span>{unit.unitType}</span>
-              </div>
-              <Link href={`/units/${unit.slug}`} className="button button--ghost">
-                View Unit Guide
+              <article key={unit.slug} className="card">
+                <p className="pill">{unit.raceName}</p>
+                <h2>{unit.name}</h2>
+                <p>{unit.description}</p>
+                <div className="list-meta">
+                  <span>{unit.tier}</span>
+                  <span>{unit.unitType}</span>
+                  <span>{unit.food} Food</span>
+                  <span>{unit.gold} Gold</span>
+                  <span>{unit.lumber} Lumber</span>
+                </div>
+                <Link href={`/units/${unit.slug}`} className="button button--ghost">
+                  View Unit Guide
               </Link>
             </article>
           ))}
@@ -91,6 +111,9 @@ export default async function UnitDetailPage({ params }: Props) {
         <article className="detail-panel">
           <h2>Role</h2>
           <p>{unit.unitType}</p>
+          <p className="muted">
+            {unit.tier} · {unit.food} Food · {unit.gold} Gold · {unit.lumber} Lumber
+          </p>
         </article>
         <article className="detail-panel">
           <h2>Strengths</h2>

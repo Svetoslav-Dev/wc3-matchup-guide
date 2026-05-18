@@ -86,6 +86,10 @@ const enrichUnit = (record: typeof units.$inferSelect, raceName: string): Unit =
     raceName,
     description: record.description,
     unitType: record.unitType,
+    tier: shared?.tier ?? "Tier 1",
+    food: shared?.food ?? 0,
+    gold: shared?.gold ?? 0,
+    lumber: shared?.lumber ?? 0,
     strengths: shared?.strengths ?? record.strengths.split(",").map((value) => value.trim()),
     weaknesses: shared?.weaknesses ?? record.weaknesses.split(",").map((value) => value.trim()),
   };

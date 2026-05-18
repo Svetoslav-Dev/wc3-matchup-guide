@@ -25,6 +25,10 @@ export type Unit = {
   raceName: string;
   description: string;
   unitType: string;
+  tier: string;
+  food: number;
+  gold: number;
+  lumber: number;
   strengths: string[];
   weaknesses: string[];
 };
