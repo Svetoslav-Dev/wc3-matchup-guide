@@ -51,13 +51,6 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
                 build orders, and admin workflows in one Warcraft-themed web app.
               </p>
             </div>
-            <div>
-              <p className="section-label">Next Step</p>
-              <p>
-                Wire this UI to Next.js route handlers, Drizzle models, authentication, and the Expo
-                client described in <span className="accent">AGENTS.md</span>.
-              </p>
-            </div>
           </div>
           <div className="page-shell">
             <p className="footer-note">

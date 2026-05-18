@@ -4,9 +4,23 @@ import { listMatchups, listRaces, getHomeStats } from "../lib/content";
 export default async function HomePage() {
   const [stats, raceResult, matchupResult] = await Promise.all([
     getHomeStats(),
-    listRaces(1, 4),
+    listRaces(1, 20),
     listMatchups(1, 4),
   ]);
+  const featuredRaceOrder = ["human", "orc", "undead", "night-elf"];
+  const featuredRaces = featuredRaceOrder
+    .map((slug) => raceResult.data.find((race) => race.slug === slug))
+    .filter((race): race is NonNullable<typeof race> => Boolean(race));
+  const worstMatchupReasons: Record<string, string> = {
+    "orc-vs-human":
+      "Human is difficult for Orc because militia creeping, safe expansions, and breaker-caster scaling punish Orc if the early pressure does not land cleanly.",
+    "human-vs-undead":
+      "Undead is difficult for Human because coil-nova pressure, statue sustain, and sharp tier-two timing attacks heavily punish loose positioning and greedy expansions.",
+    "night-elf-vs-undead":
+      "Undead is difficult for Night Elf because fiend-statue control, destroyer timing, and hero nuke threat punish fragile Elf armies when map control slips.",
+    "undead-vs-orc":
+      "Orc is difficult for Undead because Blademaster scouting, raider pressure, and hex catches make every fiend loss and statue misstep much more expensive.",
+  };
 
   return (
     <div className="page-shell">
@@ -62,7 +76,7 @@ export default async function HomePage() {
           <h2>Four identities, four different win conditions.</h2>
         </div>
         <div className="card-grid">
-          {raceResult.data.map((race) => (
+          {featuredRaces.map((race) => (
             <article key={race.slug} className="card">
               <p className="pill">{race.badge}</p>
               <h3>{race.name}</h3>
@@ -82,17 +96,17 @@ export default async function HomePage() {
 
       <section className="section">
         <div className="section-head">
-          <p className="section-label">Featured Matchups</p>
-          <h2>Know which window actually matters.</h2>
+          <p className="section-label">Worst Matchups</p>
+          <h2>Races worst matchups</h2>
         </div>
         <div className="list-grid">
           {matchupResult.data.map((matchup) => (
             <article key={matchup.slug} className="card">
               <p className="pill">{matchup.difficulty}</p>
               <h3>{matchup.title}</h3>
-              <p>{matchup.summary}</p>
+              <p>{worstMatchupReasons[matchup.slug] ?? matchup.summary}</p>
               <div className="list-meta">
-                <span>Early: {matchup.earlyGamePlan}</span>
+                <span>Why it is hard: {matchup.commonMistakes[0]}</span>
               </div>
               <Link href={`/matchups/${matchup.slug}`} className="button button--ghost">
                 Open Matchup
