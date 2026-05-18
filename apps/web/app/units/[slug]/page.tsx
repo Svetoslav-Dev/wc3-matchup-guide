@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { getUnitBySlug, listUnits } from "../../../lib/content";
+import { getUnitBySlug, listHeroes, listUnits } from "../../../lib/content";
 
 const unitCategories = {
   human: "Human",
@@ -21,6 +21,7 @@ export default async function UnitDetailPage({ params }: Props) {
   if (categoryName) {
     const units = await listUnits(1, 200);
     const categoryUnits = units.data.filter((unit) => unit.raceName === categoryName);
+    const heroes = categoryName === "Neutral" ? [] : (await listHeroes(1, 50)).data.filter((hero) => hero.raceName === categoryName);
 
     return (
       <div className="page-shell page-stack">
@@ -46,6 +47,29 @@ export default async function UnitDetailPage({ params }: Props) {
             </article>
           ))}
         </div>
+        {heroes.length > 0 ? (
+          <section className="page-stack">
+            <div className="section-head">
+              <p className="section-label">{categoryName} Heroes</p>
+              <h2>{categoryName} Hero Roster</h2>
+            </div>
+            <div className="card-grid">
+              {heroes.map((hero) => (
+                <article key={hero.slug} className="card">
+                  <p className="pill">{hero.primaryAttribute}</p>
+                  <h3>{hero.name}</h3>
+                  <p>{hero.description}</p>
+                  <div className="list-meta">
+                    <span>{hero.role}</span>
+                  </div>
+                  <Link href={`/heroes/${hero.slug}`} className="button button--ghost">
+                    View Hero Guide
+                  </Link>
+                </article>
+              ))}
+            </div>
+          </section>
+        ) : null}
       </div>
     );
   }
