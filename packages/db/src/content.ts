@@ -549,7 +549,7 @@ export const createBuild = async (input: AdminBuildInput & { createdByUserId: nu
     );
   }
 
-  return findBuildBySlug(build.slug);
+  return getAdminBuildBySlug(build.slug);
 };
 
 export const updateBuild = async (
@@ -598,7 +598,7 @@ export const updateBuild = async (
     );
   }
 
-  return findBuildBySlug(input.slug);
+  return getAdminBuildBySlug(input.slug);
 };
 
 export const deleteBuild = async (id: number) => {
@@ -628,7 +628,7 @@ export const createMatchup = async (input: AdminMatchupInput) => {
     })
     .returning();
 
-  return findMatchupBySlug(matchup.slug);
+  return getAdminMatchupBySlug(matchup.slug);
 };
 
 export const updateMatchup = async (
@@ -664,7 +664,7 @@ export const updateMatchup = async (
     })
     .where(eq(matchups.id, id));
 
-  return findMatchupBySlug(input.slug);
+  return getAdminMatchupBySlug(input.slug);
 };
 
 export const deleteMatchup = async (id: number) => {
