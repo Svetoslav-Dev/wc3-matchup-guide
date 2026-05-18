@@ -1,5 +1,5 @@
-import Link from "next/link";
 import { hasDatabaseUrl } from "@warcraft3-guide-hub/db";
+import { AuthModalLauncher } from "./auth-modal-launcher";
 import { getSessionUser } from "../lib/auth";
 import { logoutAction } from "../app/auth-actions";
 
@@ -11,16 +11,7 @@ export async function SiteAuth() {
   }
 
   if (!user) {
-    return (
-      <div className="inline-actions">
-        <Link href="/login" className="button button--ghost">
-          Log In
-        </Link>
-        <Link href="/register" className="button">
-          Register
-        </Link>
-      </div>
-    );
+    return <AuthModalLauncher />;
   }
 
   return (
@@ -36,4 +27,3 @@ export async function SiteAuth() {
     </div>
   );
 }
-

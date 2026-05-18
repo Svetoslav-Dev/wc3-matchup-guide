@@ -1,8 +1,28 @@
 import Link from "next/link";
 import { listMatchups } from "../../lib/content";
 
-export default async function MatchupsPage() {
+type Props = {
+  searchParams?: Promise<{
+    race?: string;
+  }>;
+};
+
+const raceFilters = [
+  { slug: "human", label: "Human" },
+  { slug: "orc", label: "Orc" },
+  { slug: "undead", label: "Undead" },
+  { slug: "night-elf", label: "Night Elf" },
+];
+
+const getPerspectiveRace = (title: string) => title.split(" vs ")[0]?.trim() ?? "";
+
+export default async function MatchupsPage({ searchParams }: Props) {
+  const params = (await searchParams) ?? {};
   const result = await listMatchups(1, 20);
+  const activeRace = raceFilters.find((race) => race.slug === params.race);
+  const filteredMatchups = activeRace
+    ? result.data.filter((matchup) => getPerspectiveRace(matchup.title) === activeRace.label)
+    : result.data;
 
   return (
     <div className="page-shell page-stack">
@@ -14,13 +34,34 @@ export default async function MatchupsPage() {
           lose otherwise playable games.
         </p>
       </div>
+      <div className="chip-row">
+        <Link
+          href="/matchups"
+          className={`button button--ghost${!activeRace ? " button--active" : ""}`}
+        >
+          All
+        </Link>
+        {raceFilters.map((race) => (
+          <Link
+            key={race.slug}
+            href={`/matchups?race=${race.slug}`}
+            className={`button button--ghost${activeRace?.slug === race.slug ? " button--active" : ""}`}
+          >
+            {race.label}
+          </Link>
+        ))}
+      </div>
       <div className="list-grid">
-        {result.data.map((matchup) => (
+        {filteredMatchups.map((matchup) => (
           <article key={matchup.slug} className="card">
-            <p className="pill">{matchup.difficulty}</p>
+            <div className="list-meta">
+              <p className="pill pill--race">{getPerspectiveRace(matchup.title)}</p>
+              <p className="pill">{matchup.difficulty}</p>
+            </div>
             <h2>{matchup.title}</h2>
             <p>{matchup.summary}</p>
             <div className="list-meta">
+              <span>Difficulty for {getPerspectiveRace(matchup.title)}: {matchup.difficulty}</span>
               <span>Hero focus: {matchup.heroChoices.join(", ")}</span>
             </div>
             <Link href={`/matchups/${matchup.slug}`} className="button button--ghost">
@@ -29,6 +70,7 @@ export default async function MatchupsPage() {
           </article>
         ))}
       </div>
+      <p className="muted">Showing {filteredMatchups.length} of {result.total} matchups.</p>
     </div>
   );
 }

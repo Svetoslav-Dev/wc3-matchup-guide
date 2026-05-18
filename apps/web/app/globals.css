@@ -318,12 +318,21 @@ textarea {
 .title-row {
   display: flex;
   align-items: baseline;
-  justify-content: space-between;
   gap: 1rem;
 }
 
+.title-stack {
+  display: grid;
+  gap: 0.2rem;
+  flex: 1;
+}
+
+.title-stack h3 {
+  margin: 0;
+}
+
 .title-row .list-meta {
-  justify-content: flex-end;
+  justify-content: flex-start;
 }
 
 .cost-chip {
@@ -436,6 +445,19 @@ textarea {
   box-shadow: 0 28px 90px rgba(0, 0, 0, 0.42);
 }
 
+.auth-modal--overlay {
+  position: relative;
+  z-index: 31;
+}
+
+.auth-modal__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
 .auth-modal__head {
   margin-bottom: 0.5rem;
 }
@@ -449,6 +471,22 @@ textarea {
 .auth-note {
   width: min(520px, 100%);
   text-align: center;
+}
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  display: grid;
+  place-items: center;
+  padding: 1.5rem;
+}
+
+.modal-backdrop__scrim {
+  position: absolute;
+  inset: 0;
+  background: rgba(4, 7, 12, 0.78);
+  backdrop-filter: blur(12px);
 }
 
 .site-header__inner > .inline-actions {

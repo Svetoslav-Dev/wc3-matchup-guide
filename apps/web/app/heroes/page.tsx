@@ -41,9 +41,11 @@ export default async function HeroesPage() {
               <article key={hero.slug} className="card">
                 <div className="title-row">
                   <p className="pill pill--race">{hero.raceName}</p>
-                  <h3>{hero.name}</h3>
-                  <div className="list-meta">
-                    <span>{hero.role}</span>
+                  <div className="title-stack">
+                    <h3>{hero.name}</h3>
+                    <div className="list-meta">
+                      <span>{hero.role}</span>
+                    </div>
                   </div>
                 </div>
                 <p>{hero.description}</p>
