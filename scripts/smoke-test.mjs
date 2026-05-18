@@ -1,4 +1,17 @@
-import "dotenv/config";
+import { existsSync } from "node:fs";
+import { resolve } from "node:path";
+import dotenv from "dotenv";
+
+const repoRoot = resolve(import.meta.dirname, "..");
+const envFiles = [".env.local", ".env"];
+
+for (const envFile of envFiles) {
+  const envPath = resolve(repoRoot, envFile);
+
+  if (existsSync(envPath)) {
+    dotenv.config({ path: envPath, override: false });
+  }
+}
 
 const baseUrl = (process.env.SMOKE_BASE_URL ?? process.env.NEXT_PUBLIC_APP_URL ?? "").replace(/\/$/, "");
 const apiUrl = (process.env.SMOKE_API_URL ?? (baseUrl ? `${baseUrl}/api` : "")).replace(/\/$/, "");
@@ -334,7 +347,7 @@ const main = async () => {
     process.exit(1);
   }
 
-  console.log("\nWarcraft 3 Strategy Hub smoke test\n");
+  console.log("\nWC3 Matchup Guide smoke test\n");
   console.log(`Base URL: ${baseUrl}`);
   console.log(`API URL: ${apiUrl}\n`);
 

@@ -1,6 +1,9 @@
 # Ais
 .codex
 .agents
+.claude
+.neon
+skills-lock.json
 
 # Other stuff
 node_modules/
@@ -15,5 +18,6 @@ coverage/
 .env.local
 .env.production
 .vercel/
+docs/CONTENT_EXPANSION_GUIDE.md
 .DS_Store
 *.log
