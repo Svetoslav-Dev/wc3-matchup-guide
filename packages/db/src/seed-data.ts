@@ -4,6 +4,7 @@ import {
   heroes as sharedHeroes,
   matchups as sharedMatchups,
   races as sharedRaces,
+  units as sharedUnits,
 } from "@warcraft3-guide-hub/shared";
 
 export const raceSeeds = sharedRaces;
@@ -17,44 +18,23 @@ export const heroRaceSlugMap: Record<string, string> = {
   Undead: "undead",
 };
 
-export const unitSeeds = [
-  {
-    raceSlug: "human",
-    name: "Rifleman",
-    slug: "rifleman",
-    description: "Reliable ranged backbone for Human midgame armies.",
-    unitType: "Ranged",
-    strengths: "Strong sustained damage, simple control requirements.",
-    weaknesses: "Vulnerable to heavy melee surrounds and piercing-resistant fronts.",
-  },
-  {
-    raceSlug: "orc",
-    name: "Raider",
-    slug: "raider",
-    description: "A utility cavalry unit built around ensnare and structural pressure.",
-    unitType: "Melee Utility",
-    strengths: "Excellent at catches, surrounds, and expansion punishes.",
-    weaknesses: "Falls off in raw combat value without support.",
-  },
-  {
-    raceSlug: "night-elf",
-    name: "Druid of the Claw",
-    slug: "druid-of-the-claw",
-    description: "The bear form frontline that anchors many Night Elf timing pushes.",
-    unitType: "Melee Caster",
-    strengths: "Sustain, roar scaling, durable frontline presence.",
-    weaknesses: "Expensive and timing-sensitive before master training.",
-  },
-  {
-    raceSlug: "undead",
-    name: "Crypt Fiend",
-    slug: "crypt-fiend",
-    description: "The staple ranged control unit for many Undead core compositions.",
-    unitType: "Ranged",
-    strengths: "High single-target damage, web utility, strong orb timings.",
-    weaknesses: "Fragile when isolated before statue sustain.",
-  },
-];
+const unitRaceSlugMap: Record<string, string> = {
+  Human: "human",
+  Orc: "orc",
+  Undead: "undead",
+  "Night Elf": "night-elf",
+  Neutral: "neutral",
+};
+
+export const unitSeeds = sharedUnits.map((unit) => ({
+  raceSlug: unitRaceSlugMap[unit.raceName],
+  name: unit.name,
+  slug: unit.slug,
+  description: unit.description,
+  unitType: unit.unitType,
+  strengths: unit.strengths.join(", "),
+  weaknesses: unit.weaknesses.join(", "),
+}));
 
 export const mapSeeds = [
   {
@@ -107,4 +87,3 @@ export const createGeneratedBuilds = (): Build[] =>
       steps: [],
     };
   });
-
