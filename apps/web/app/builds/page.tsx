@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { BuildFilterBar } from "../../components/build-filter-bar";
+import { getSessionUser } from "../../lib/auth";
 import { listBuilds } from "../../lib/content";
 
 type Props = {
@@ -14,13 +15,16 @@ type Props = {
 export default async function BuildsPage({ searchParams }: Props) {
   const params = (await searchParams) ?? {};
   const page = params.page ? Number.parseInt(params.page, 10) : 1;
-  const result = await listBuilds({
-    race: params.race,
-    matchup: params.matchup,
-    search: params.search,
-    page,
-    pageSize: 20,
-  });
+  const [result, sessionUser] = await Promise.all([
+    listBuilds({
+      race: params.race,
+      matchup: params.matchup,
+      search: params.search,
+      page,
+      pageSize: 20,
+    }),
+    getSessionUser(),
+  ]);
 
   return (
     <div className="page-shell page-stack">
@@ -32,6 +36,21 @@ export default async function BuildsPage({ searchParams }: Props) {
           read like plans instead of raw lists.
         </p>
       </div>
+      {sessionUser ? (
+        <div className="panel panel--padded">
+          <div className="section-head">
+            <p className="section-label">Your Build Ideas</p>
+            <h2>Submit a build for your race and manage it later.</h2>
+            <p className="page-intro">
+              Logged-in users can submit their own builds as drafts and remove their own submissions
+              from the submission page.
+            </p>
+          </div>
+          <div className="hero-actions">
+            <Link href="/builds/submit" className="button">Submit a Build</Link>
+          </div>
+        </div>
+      ) : null}
       <BuildFilterBar activeRace={params.race} activeMatchup={params.matchup} />
       <div className="list-grid">
         {result.data.map((build) => (

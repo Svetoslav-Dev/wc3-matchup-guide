@@ -1,4 +1,4 @@
-import { and, asc, count, eq, ilike, inArray, or } from "drizzle-orm";
+import { and, asc, count, desc, eq, ilike, inArray, or } from "drizzle-orm";
 import type {
   AdminBuildInput,
   AdminBuildListItem,
@@ -28,6 +28,7 @@ import type {
   ListResponse,
   Matchup,
   Race,
+  UserBuildSubmission,
   Unit,
 } from "@warcraft3-guide-hub/shared";
 import {
@@ -331,6 +332,7 @@ export const listBuilds = async (filters: BuildFilters = {}): Promise<ListRespon
   }
 
   const conditions = [
+    eq(builds.isPublished, true),
     filters.race && raceIds ? inArray(builds.raceId, raceIds) : undefined,
     filters.matchup && matchupIds ? inArray(builds.matchupId, matchupIds) : undefined,
     search ? buildSearchCondition(search) : undefined,
@@ -362,7 +364,7 @@ export const listBuilds = async (filters: BuildFilters = {}): Promise<ListRespon
 export const findBuildBySlug = async (slug: string) => {
   const db = getDb();
   const build = await db.query.builds.findFirst({
-    where: eq(builds.slug, slug),
+    where: and(eq(builds.slug, slug), eq(builds.isPublished, true)),
     with: {
       race: true,
       steps: {
@@ -608,6 +610,39 @@ export const updateBuild = async (
 export const deleteBuild = async (id: number) => {
   const db = getDb();
   const [removed] = await db.delete(builds).where(eq(builds.id, id)).returning();
+  return removed ?? null;
+};
+
+export const listBuildSubmissionsForUser = async (userId: number): Promise<UserBuildSubmission[]> => {
+  const db = getDb();
+  const records = await db.query.builds.findMany({
+    where: eq(builds.createdByUserId, userId),
+    with: {
+      race: true,
+    },
+    orderBy: desc(builds.createdAt),
+  });
+
+  return records.map((build) => ({
+    id: build.id,
+    slug: build.slug,
+    title: build.title,
+    raceSlug: build.race.slug,
+    raceName: build.race.name,
+    summary: build.summary,
+    difficulty: build.difficulty,
+    strategyType: build.strategyType,
+    isPublished: build.isPublished,
+  }));
+};
+
+export const deleteBuildForUser = async (userId: number, buildId: number) => {
+  const db = getDb();
+  const [removed] = await db
+    .delete(builds)
+    .where(and(eq(builds.id, buildId), eq(builds.createdByUserId, userId)))
+    .returning();
+
   return removed ?? null;
 };
 

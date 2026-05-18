@@ -105,6 +105,18 @@ export type FavoriteBuild = {
   build: Build;
 };
 
+export type UserBuildSubmission = {
+  id: number;
+  slug: string;
+  title: string;
+  raceSlug: string;
+  raceName: string;
+  summary: string;
+  difficulty: string;
+  strategyType: string;
+  isPublished: boolean;
+};
+
 export type AdminBuildInput = {
   raceSlug: string;
   matchupSlug?: string | null;

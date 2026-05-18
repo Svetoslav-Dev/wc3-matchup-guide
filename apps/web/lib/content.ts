@@ -21,6 +21,7 @@ import {
   listAdminMatchups as listDatabaseAdminMatchups,
   listAdminRaces as listDatabaseAdminRaces,
   listAdminUnits as listDatabaseAdminUnits,
+  listBuildSubmissionsForUser as listDatabaseBuildSubmissionsForUser,
   listFavoriteBuildsForUser as listDatabaseFavoriteBuildsForUser,
   listBuilds as listDatabaseBuilds,
   listHeroes as listDatabaseHeroes,
@@ -29,6 +30,7 @@ import {
   listRaces as listDatabaseRaces,
   listUnits as listDatabaseUnits,
   removeFavoriteBuildForUser as removeDatabaseFavoriteBuildForUser,
+  deleteBuildForUser as deleteDatabaseBuildForUser,
 } from "@warcraft3-guide-hub/db";
 import {
   favoriteBuilds as mockFavoriteBuilds,
@@ -129,6 +131,9 @@ export const listFavoriteBuildsForUser = async (userId: number) =>
     ? listDatabaseFavoriteBuildsForUser(userId)
     : mockFavoriteBuilds.map((build, index) => ({ id: index + 1, build }));
 
+export const listBuildSubmissionsForUser = async (userId: number) =>
+  hasDatabaseUrl() ? listDatabaseBuildSubmissionsForUser(userId) : [];
+
 export const findFavoriteForUserByBuildSlug = async (userId: number, buildSlug: string) =>
   hasDatabaseUrl()
     ? findDatabaseFavoriteForUserByBuildSlug(userId, buildSlug)
@@ -141,6 +146,9 @@ export const addFavoriteBuildForUser = async (userId: number, buildSlug: string)
 
 export const removeFavoriteBuildForUser = async (userId: number, favoriteId: number) =>
   hasDatabaseUrl() ? removeDatabaseFavoriteBuildForUser(userId, favoriteId) : null;
+
+export const deleteBuildForUser = async (userId: number, buildId: number) =>
+  hasDatabaseUrl() ? deleteDatabaseBuildForUser(userId, buildId) : null;
 
 export const getHomeStats = async () =>
   hasDatabaseUrl()
