@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   description: "A dark fantasy Warcraft III strategy database for races, heroes, matchups, and build orders.",
 };
 
-const navigation = [
+const publicNavigation = [
   { href: "/", label: "Home" },
   { href: "/races", label: "Races" },
   { href: "/units", label: "Units" },
@@ -17,12 +17,15 @@ const navigation = [
   { href: "/matchups", label: "Matchups" },
   { href: "/builds", label: "Builds" },
   { href: "/heroes", label: "Heroes" },
-  { href: "/favorites", label: "Favorites" },
 ];
 
 export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   const user = await getSessionUser();
-  const navigationItems = user?.role === "admin" ? [...navigation, { href: "/admin", label: "Admin" }] : navigation;
+  const navigationItems = [
+    ...publicNavigation,
+    ...(user ? [{ href: "/favorites", label: "Favorites" }] : []),
+    ...(user?.role === "admin" ? [{ href: "/admin", label: "Admin" }] : []),
+  ];
 
   return (
     <html lang="en">
