@@ -62,12 +62,16 @@ export default async function MapsPage({ searchParams }: Props) {
               <p className="pill">{categories.join(" · ")}</p>
               <h2>{map.name}</h2>
               <p>{map.description}</p>
-              <div className="list-meta">
-                <span>{map.creepNotes}</span>
+              <div className="card__footer">
+                <div className="list-meta">
+                  <span>{map.creepNotes}</span>
+                </div>
+                <div className="card__footer-action card__footer-action--center">
+                  <Link href={`/maps/${map.slug}`} className="button button--ghost">
+                    View Map Guide
+                  </Link>
+                </div>
               </div>
-              <Link href={`/maps/${map.slug}`} className="button button--ghost">
-                View Map Guide
-              </Link>
             </article>
           );
         })}
