@@ -1,15 +1,19 @@
 import Link from "next/link";
-import { listUnits } from "../../lib/content";
+import { listRaces } from "../../lib/content";
 
 export default async function UnitsPage() {
-  const result = await listUnits(1, 200);
-  const categoryOrder = ["Human", "Orc", "Undead", "Night Elf", "Neutral"];
-  const groupedUnits = categoryOrder
-    .map((category) => ({
-      category,
-      units: result.data.filter((unit) => unit.raceName === category),
-    }))
-    .filter((group) => group.units.length > 0);
+  const races = await listRaces(1, 20);
+  const categoryOrder = ["human", "orc", "undead", "night-elf", "neutral"];
+  const categoryDescriptions: Record<string, string> = {
+    human: "Militia timings, sturdy frontlines, and layered spell support from the Human arsenal.",
+    orc: "Aggressive melee, ensnare catches, and tempo-driven warbands from the Orc roster.",
+    undead: "Fiend pressure, statue sustain, and devastating spell timing tools from Undead armies.",
+    "night-elf": "Mobile skirmishers, bear frontlines, and anti-magic control from Night Elf tech paths.",
+    neutral: "Mercenary camp hireables and neutral support options available to any race on the map.",
+  };
+  const categories = categoryOrder
+    .map((slug) => races.data.find((race) => race.slug === slug))
+    .filter((race): race is NonNullable<typeof race> => Boolean(race));
 
   return (
     <div className="page-shell page-stack">
@@ -17,33 +21,25 @@ export default async function UnitsPage() {
         <p className="section-label">Unit Library</p>
         <h1 className="page-title">Core units define timing, control, and counters.</h1>
         <p className="page-intro">
-          Unit notes focus on battlefield role, strengths, and the liabilities players need to
-          account for when choosing a composition.
+          Choose a faction to browse its full unit roster. Neutral covers mercenary camp hireables
+          and other shared pickups available on specific maps.
         </p>
       </div>
-      {groupedUnits.map((group) => (
-        <section key={group.category} className="page-stack">
-          <div className="section-head">
-            <p className="section-label">{group.category}</p>
-            <h2>{group.category} Units</h2>
-          </div>
-          <div className="card-grid">
-            {group.units.map((unit) => (
-              <article key={unit.slug} className="card">
-                <p className="pill">{unit.raceName}</p>
-                <h3>{unit.name}</h3>
-                <p>{unit.description}</p>
-                <div className="list-meta">
-                  <span>{unit.unitType}</span>
-                </div>
-                <Link href={`/units/${unit.slug}`} className="button button--ghost">
-                  View Unit Guide
-                </Link>
-              </article>
-            ))}
-          </div>
-        </section>
-      ))}
+      <div className="card-grid">
+        {categories.map((category) => (
+          <article key={category.slug} className="card">
+            <p className="pill">{category.badge}</p>
+            <h2>{category.name}</h2>
+            <p>{categoryDescriptions[category.slug] ?? category.description}</p>
+            <div className="list-meta">
+              <span>{category.identity}</span>
+            </div>
+            <Link href={`/units/${category.slug}`} className="button button--ghost">
+              View {category.name} Units
+            </Link>
+          </article>
+        ))}
+      </div>
     </div>
   );
 }
