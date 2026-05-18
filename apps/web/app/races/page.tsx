@@ -3,6 +3,7 @@ import { listRaces } from "../../lib/content";
 
 export default async function RacesPage() {
   const result = await listRaces(1, 20);
+  const playableRaces = result.data.filter((race) => race.slug !== "neutral");
 
   return (
     <div className="page-shell page-stack">
@@ -15,7 +16,7 @@ export default async function RacesPage() {
         </p>
       </div>
       <div className="card-grid">
-        {result.data.map((race) => (
+        {playableRaces.map((race) => (
           <article key={race.slug} className="card">
             <p className="pill">{race.badge}</p>
             <h2>{race.name}</h2>
