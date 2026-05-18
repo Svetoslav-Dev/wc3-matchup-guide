@@ -1,4 +1,4 @@
-import "dotenv/config";
+import "./env";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
@@ -39,4 +39,3 @@ export const getDb = () => {
 
   return connectionCache.__wc3Db;
 };
-
