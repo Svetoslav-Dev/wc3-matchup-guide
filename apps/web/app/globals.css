@@ -221,6 +221,11 @@ textarea {
   color: var(--gold);
 }
 
+.pill--race {
+  background: rgba(124, 164, 255, 0.16);
+  color: var(--blue);
+}
+
 .stat-grid {
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   margin: 2rem 0 3rem;
@@ -278,6 +283,11 @@ textarea {
   gap: 0.75rem;
 }
 
+.card__footer-action {
+  display: flex;
+  justify-content: flex-end;
+}
+
 .section-head {
   margin-bottom: 1.25rem;
 }
@@ -301,6 +311,18 @@ textarea {
   font-size: 0.95rem;
 }
 
+.cost-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  white-space: nowrap;
+}
+
+.cost-chip__icon {
+  font-size: 0.95em;
+  line-height: 1;
+}
+
 .timeline-step strong {
   color: var(--gold);
 }
@@ -318,6 +340,7 @@ textarea {
   border-top: 1px solid var(--line);
   padding: 2rem 0 3rem;
   color: var(--muted);
+  text-align: center;
 }
 
 .footer-note {

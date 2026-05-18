@@ -21,12 +21,16 @@ export default async function RacesPage() {
             <p className="pill">{race.badge}</p>
             <h2>{race.name}</h2>
             <p>{race.identity}</p>
-            <div className="list-meta">
-              <span>Strengths: {race.strengths.join(", ")}</span>
+            <div className="card__footer">
+              <div className="list-meta">
+                <span>Strengths: {race.strengths.join(", ")}</span>
+              </div>
+              <div className="card__footer-action">
+                <Link href={`/races/${race.slug}`} className="button button--ghost">
+                  Read Guide
+                </Link>
+              </div>
             </div>
-            <Link href={`/races/${race.slug}`} className="button button--ghost">
-              Read Guide
-            </Link>
           </article>
         ))}
       </div>

@@ -57,9 +57,18 @@ export default async function UnitDetailPage({ params }: Props) {
                 <div className="list-meta">
                   <span>{unit.tier}</span>
                   <span>{unit.unitType}</span>
-                  <span>{unit.food} Food</span>
-                  <span>{unit.gold} Gold</span>
-                  <span>{unit.lumber} Lumber</span>
+                  <span className="cost-chip" aria-label={`${unit.food} food`}>
+                    <span className="cost-chip__icon" aria-hidden="true">🍖</span>
+                    <span>{unit.food}</span>
+                  </span>
+                  <span className="cost-chip" aria-label={`${unit.gold} gold`}>
+                    <span className="cost-chip__icon" aria-hidden="true">🪙</span>
+                    <span>{unit.gold}</span>
+                  </span>
+                  <span className="cost-chip" aria-label={`${unit.lumber} lumber`}>
+                    <span className="cost-chip__icon" aria-hidden="true">🪵</span>
+                    <span>{unit.lumber}</span>
+                  </span>
                 </div>
                 <Link href={`/units/${unit.slug}`} className="button button--ghost">
                   View Unit Guide
@@ -111,9 +120,21 @@ export default async function UnitDetailPage({ params }: Props) {
         <article className="detail-panel">
           <h2>Role</h2>
           <p>{unit.unitType}</p>
-          <p className="muted">
-            {unit.tier} · {unit.food} Food · {unit.gold} Gold · {unit.lumber} Lumber
-          </p>
+          <div className="list-meta">
+            <span>{unit.tier}</span>
+            <span className="cost-chip" aria-label={`${unit.food} food`}>
+              <span className="cost-chip__icon" aria-hidden="true">🍖</span>
+              <span>{unit.food}</span>
+            </span>
+            <span className="cost-chip" aria-label={`${unit.gold} gold`}>
+              <span className="cost-chip__icon" aria-hidden="true">🪙</span>
+              <span>{unit.gold}</span>
+            </span>
+            <span className="cost-chip" aria-label={`${unit.lumber} lumber`}>
+              <span className="cost-chip__icon" aria-hidden="true">🪵</span>
+              <span>{unit.lumber}</span>
+            </span>
+          </div>
         </article>
         <article className="detail-panel">
           <h2>Strengths</h2>

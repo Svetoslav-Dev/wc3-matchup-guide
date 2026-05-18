@@ -152,9 +152,12 @@ export const deleteBuildForUser = async (userId: number, buildId: number) =>
 
 export const getHomeStats = async () =>
   hasDatabaseUrl()
-    ? getDatabaseContentStats()
+    ? (() => getDatabaseContentStats().then((stats) => ({
+        ...stats,
+        raceTotal: Math.max(0, stats.raceTotal - 1),
+      })))()
     : {
-        raceTotal: mockRaces.length,
+        raceTotal: mockRaces.filter((race) => race.slug !== "neutral").length,
         heroTotal: mockHeroes.length,
         matchupTotal: mockMatchups.length,
         buildTotal: queryBuilds().total,
