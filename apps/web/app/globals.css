@@ -181,6 +181,12 @@ textarea {
   color: var(--text);
 }
 
+.button--active {
+  background: var(--gold-soft);
+  border-color: rgba(201, 163, 91, 0.28);
+  color: var(--gold);
+}
+
 .panel {
   background: var(--panel);
   border: 1px solid var(--line);
