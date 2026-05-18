@@ -45,12 +45,22 @@ type MatchupSeed = Matchup & {
   raceBSlug: string;
 };
 
-export const matchupSeeds: MatchupSeed[] = [
-  { ...sharedMatchups[0], raceASlug: "orc", raceBSlug: "human" },
-  { ...sharedMatchups[1], raceASlug: "human", raceBSlug: "undead" },
-  { ...sharedMatchups[2], raceASlug: "night-elf", raceBSlug: "undead" },
-  { ...sharedMatchups[3], raceASlug: "undead", raceBSlug: "orc" },
-];
+const raceNameToSlug: Record<string, string> = {
+  Human: "human",
+  Orc: "orc",
+  Undead: "undead",
+  "Night Elf": "night-elf",
+};
+
+export const matchupSeeds: MatchupSeed[] = sharedMatchups.map((matchup) => {
+  const [raceAName, raceBName] = matchup.title.split(" vs ").map((value) => value.trim());
+
+  return {
+    ...matchup,
+    raceASlug: raceNameToSlug[raceAName],
+    raceBSlug: raceNameToSlug[raceBName],
+  };
+});
 
 export const generatedBuildCount = 10_000;
 
