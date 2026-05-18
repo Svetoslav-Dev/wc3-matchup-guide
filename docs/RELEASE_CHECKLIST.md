@@ -1,10 +1,10 @@
 # Release Checklist
 
-Use this before deploying Warcraft 3 Strategy Hub to Neon/Vercel.
+Use this before deploying WC3 Matchup Guide to Neon/Vercel.
 
 Reference setup guide:
 
-- [DEPLOYMENT.md](/home/thinkpadl14/Projects/warcraft3-guide-hub/docs/DEPLOYMENT.md)
+- [DEPLOYMENT.md](/home/thinkpadl14/Projects/wc3-matchup-guide/docs/DEPLOYMENT.md)
 
 ## 1. Local validation
 
@@ -74,7 +74,7 @@ Checks:
 - Confirm `readiness.databaseReachable` is `true`
 - Confirm `readiness.authConfigured` is `true`
 - Run `npm run deploy:smoke`
-- Use [SMOKE_TESTS.md](/home/thinkpadl14/Projects/warcraft3-guide-hub/docs/SMOKE_TESTS.md) for any additional manual checks
+- Use [SMOKE_TESTS.md](/home/thinkpadl14/Projects/wc3-matchup-guide/docs/SMOKE_TESTS.md) for any additional manual checks
 
 ## 7. Final capstone submission checks
 
@@ -86,4 +86,4 @@ Checks:
 - Admin CRUD works across races, heroes, units, maps, builds, and matchups
 - README is up to date
 - Screenshots are captured if needed for submission
-- [SUBMISSION_TEMPLATE.md](/home/thinkpadl14/Projects/warcraft3-guide-hub/docs/SUBMISSION_TEMPLATE.md) is filled out with final URLs and verification notes
+- [SUBMISSION_TEMPLATE.md](/home/thinkpadl14/Projects/wc3-matchup-guide/docs/SUBMISSION_TEMPLATE.md) is filled out with final URLs and verification notes

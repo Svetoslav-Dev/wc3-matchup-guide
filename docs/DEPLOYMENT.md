@@ -1,6 +1,6 @@
 # Deployment Guide
 
-This guide covers the intended production setup for Warcraft 3 Strategy Hub.
+This guide covers the intended production setup for WC3 Matchup Guide.
 
 ## Architecture
 
@@ -19,7 +19,7 @@ Use Node.js `20.x` for:
 
 Repo hints:
 
-- [.nvmrc](/home/thinkpadl14/Projects/warcraft3-guide-hub/.nvmrc)
+- [.nvmrc](/home/thinkpadl14/Projects/wc3-matchup-guide/.nvmrc)
 - `package.json` `engines.node`
 
 ## 1. Neon
@@ -43,7 +43,7 @@ Use the repo root as the project root.
 
 Repo config:
 
-- [vercel.json](/home/thinkpadl14/Projects/warcraft3-guide-hub/vercel.json)
+- [vercel.json](/home/thinkpadl14/Projects/wc3-matchup-guide/vercel.json)
 
 Expected commands:
 
@@ -93,7 +93,7 @@ Generated helper files:
 
 Use the mobile-specific config:
 
-- [apps/mobile/vercel.json](/home/thinkpadl14/Projects/warcraft3-guide-hub/apps/mobile/vercel.json)
+- [apps/mobile/vercel.json](/home/thinkpadl14/Projects/wc3-matchup-guide/apps/mobile/vercel.json)
 
 Expected commands:
 
@@ -105,7 +105,7 @@ Expected commands:
 
 Use:
 
-- [apps/mobile/netlify.toml](/home/thinkpadl14/Projects/warcraft3-guide-hub/apps/mobile/netlify.toml)
+- [apps/mobile/netlify.toml](/home/thinkpadl14/Projects/wc3-matchup-guide/apps/mobile/netlify.toml)
 
 Expected commands:
 
@@ -138,6 +138,6 @@ npm run deploy:smoke
 
 After deployment:
 
-- fill in [SUBMISSION_TEMPLATE.md](/home/thinkpadl14/Projects/warcraft3-guide-hub/docs/SUBMISSION_TEMPLATE.md)
+- fill in [SUBMISSION_TEMPLATE.md](/home/thinkpadl14/Projects/wc3-matchup-guide/docs/SUBMISSION_TEMPLATE.md)
 - capture screenshots
 - add live URLs to `README.md`

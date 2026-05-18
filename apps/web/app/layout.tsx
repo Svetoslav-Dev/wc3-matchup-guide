@@ -4,7 +4,7 @@ import { SiteAuth } from "../components/site-auth";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Warcraft 3 Strategy Hub",
+  title: "WC3 Matchup Guide",
   description: "A dark fantasy Warcraft III strategy database for races, heroes, matchups, and build orders.",
 };
 
@@ -27,8 +27,8 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
         <header className="site-header">
           <div className="page-shell site-header__inner">
             <Link href="/" className="brand">
-              <span className="brand__eyebrow">Warcraft III Guide Platform</span>
-              <span className="brand__name">Warcraft 3 Strategy Hub</span>
+              <span className="brand__eyebrow">Warcraft III Matchup Platform</span>
+              <span className="brand__name">WC3 Matchup Guide</span>
             </Link>
             <nav className="nav" aria-label="Main">
               {navigation.map((item) => (
@@ -57,6 +57,12 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
                 client described in <span className="accent">AGENTS.md</span>.
               </p>
             </div>
+          </div>
+          <div className="page-shell">
+            <p className="footer-note">
+              Unofficial fan project for educational purposes. Warcraft is a trademark of Blizzard
+              Entertainment.
+            </p>
           </div>
         </footer>
       </body>

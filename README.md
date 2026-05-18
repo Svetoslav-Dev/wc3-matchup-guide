@@ -1,6 +1,6 @@
-# Warcraft 3 Strategy Hub
+# WC3 Matchup Guide
 
-Warcraft 3 Strategy Hub is a production-style capstone project for a Warcraft III strategy database with a Next.js web app, PostgreSQL/Neon, Drizzle ORM, JWT auth, protected favorites, and admin content management.
+WC3 Matchup Guide is a production-style capstone project for a Warcraft III strategy database with a Next.js web app, PostgreSQL/Neon, Drizzle ORM, JWT auth, protected favorites, and admin content management.
 
 ## Current status
 
@@ -35,7 +35,7 @@ Still missing for full capstone completion:
 ## Project structure
 
 ```txt
-warcraft3-guide-hub/
+wc3-matchup-guide/
 ├── apps/
 │   ├── mobile/
 │   └── web/
@@ -173,19 +173,19 @@ npm run deploy:check
 npm run deploy:smoke
 ```
 
-`npm run deploy:check` verifies required env vars and attempts a real database connection when `DATABASE_URL` is set.
+`npm run deploy:check` verifies required web and Expo env vars and attempts a real database connection when `DATABASE_URL` is set.
 `npm run deploy:smoke` runs a deployed end-to-end smoke test using `SMOKE_BASE_URL` and the demo admin credentials.
 
 Continuous validation:
 
-- GitHub Actions runs `test`, `lint`, `build`, `typecheck`, `mobile:typecheck`, and `mobile:export` on pushes and pull requests through [.github/workflows/ci.yml](/home/thinkpadl14/Projects/warcraft3-guide-hub/.github/workflows/ci.yml)
+- GitHub Actions runs `test`, `lint`, `build`, `typecheck`, `mobile:typecheck`, and `mobile:export` on pushes and pull requests through [.github/workflows/ci.yml](/home/thinkpadl14/Projects/wc3-matchup-guide/.github/workflows/ci.yml)
 
 Operational docs:
 
-- [Deployment Guide](/home/thinkpadl14/Projects/warcraft3-guide-hub/docs/DEPLOYMENT.md)
-- [Release Checklist](/home/thinkpadl14/Projects/warcraft3-guide-hub/docs/RELEASE_CHECKLIST.md)
-- [Smoke Tests](/home/thinkpadl14/Projects/warcraft3-guide-hub/docs/SMOKE_TESTS.md)
-- [Submission Template](/home/thinkpadl14/Projects/warcraft3-guide-hub/docs/SUBMISSION_TEMPLATE.md)
+- [Deployment Guide](/home/thinkpadl14/Projects/wc3-matchup-guide/docs/DEPLOYMENT.md)
+- [Release Checklist](/home/thinkpadl14/Projects/wc3-matchup-guide/docs/RELEASE_CHECKLIST.md)
+- [Smoke Tests](/home/thinkpadl14/Projects/wc3-matchup-guide/docs/SMOKE_TESTS.md)
+- [Submission Template](/home/thinkpadl14/Projects/wc3-matchup-guide/docs/SUBMISSION_TEMPLATE.md)
 
 ## Deployment notes
 
@@ -196,7 +196,7 @@ Recommended target: Vercel
 - Framework preset: `Next.js`
 - Root directory: repo root or `apps/web` depending on your Vercel setup preference
 - Repo host config:
-  - [vercel.json](/home/thinkpadl14/Projects/warcraft3-guide-hub/vercel.json)
+  - [vercel.json](/home/thinkpadl14/Projects/wc3-matchup-guide/vercel.json)
 - Build command:
 
 ```bash
@@ -266,9 +266,9 @@ apps/mobile/dist
   - `_headers` for Expo asset caching
   - `404.html` for static not-found handling
 - Repo host configs:
-  - web app: [vercel.json](/home/thinkpadl14/Projects/warcraft3-guide-hub/vercel.json)
-  - [apps/mobile/vercel.json](/home/thinkpadl14/Projects/warcraft3-guide-hub/apps/mobile/vercel.json)
-  - [apps/mobile/netlify.toml](/home/thinkpadl14/Projects/warcraft3-guide-hub/apps/mobile/netlify.toml)
+  - web app: [vercel.json](/home/thinkpadl14/Projects/wc3-matchup-guide/vercel.json)
+  - [apps/mobile/vercel.json](/home/thinkpadl14/Projects/wc3-matchup-guide/apps/mobile/vercel.json)
+  - [apps/mobile/netlify.toml](/home/thinkpadl14/Projects/wc3-matchup-guide/apps/mobile/netlify.toml)
 
 ## Final submission record
 
@@ -284,7 +284,7 @@ Before submission:
 - run `npm run deploy:smoke`
 - confirm `/api/health` reports healthy readiness flags
 - capture screenshots for the main web and Expo flows
-- copy final URLs into [docs/SUBMISSION_TEMPLATE.md](/home/thinkpadl14/Projects/warcraft3-guide-hub/docs/SUBMISSION_TEMPLATE.md)
+- copy final URLs into [docs/SUBMISSION_TEMPLATE.md](/home/thinkpadl14/Projects/wc3-matchup-guide/docs/SUBMISSION_TEMPLATE.md)
 
 ## Important routes
 

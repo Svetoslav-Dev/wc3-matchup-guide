@@ -1,6 +1,6 @@
 # Database Package
 
-This package owns the PostgreSQL schema, Drizzle configuration targets, and seed logic for Warcraft 3 Strategy Hub.
+This package owns the PostgreSQL schema, Drizzle configuration targets, and seed logic for WC3 Matchup Guide.
 
 ## Included
 
@@ -17,4 +17,3 @@ npm run db:generate
 npm run db:migrate
 npm run db:seed
 ```
-

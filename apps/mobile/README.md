@@ -1,6 +1,6 @@
 # Mobile App
 
-This Expo workspace now contains the first mobile client pass for Warcraft 3 Strategy Hub.
+This Expo workspace now contains the first mobile client pass for WC3 Matchup Guide.
 
 ## Included screens
 
@@ -22,4 +22,3 @@ From the repo root:
 npm run mobile:dev
 npm run mobile:typecheck
 ```
-

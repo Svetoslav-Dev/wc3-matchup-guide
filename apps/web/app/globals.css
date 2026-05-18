@@ -308,6 +308,13 @@ textarea {
   color: var(--muted);
 }
 
+.footer-note {
+  margin: 1.25rem 0 0;
+  font-size: 0.9rem;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
 .field {
   display: grid;
   gap: 0.45rem;

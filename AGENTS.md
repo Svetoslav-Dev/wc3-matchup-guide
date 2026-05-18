@@ -1,8 +1,8 @@
-# AGENTS.md — Warcraft 3 Strategy Hub
+# AGENTS.md — WC3 Matchup Guide
 
 ## Project Context
 
-You are working on **Warcraft 3 Strategy Hub**, a capstone project for the “Full Stack Apps with AI” course.
+You are working on **WC3 Matchup Guide**, a capstone project for the “Full Stack Apps with AI” course.
 
 The app is a multi-platform full-stack guide platform for Warcraft III players. It helps users browse race guides, matchup guides, build orders, heroes, units, maps, and strategy tips. The project must satisfy the course requirements for a Next.js + PostgreSQL + Expo full-stack application.
 
@@ -31,7 +31,7 @@ Build and deploy a full-stack multi-platform app with:
 
 ## Product Description
 
-Warcraft 3 Strategy Hub allows users to:
+WC3 Matchup Guide allows users to:
 
 - Browse strategy guides by race
 - View matchup guides such as Orc vs Human or Night Elf vs Undead
@@ -64,7 +64,7 @@ Use the following technologies unless the user explicitly changes the stack:
 Use a Node.js monorepo structure:
 
 ```txt
-warcraft3-strategy-hub/
+wc3-matchup-guide/
 ├── apps/
 │   ├── web/       # Next.js app: backend + web client
 │   └── mobile/    # Expo React Native app
@@ -721,7 +721,7 @@ When uncertain, choose the simplest implementation that satisfies the capstone r
 Preferred name:
 
 ```txt
-Warcraft 3 Strategy Hub
+WC3 Matchup Guide
 ```
 
 Alternative names:
@@ -733,7 +733,7 @@ Azeroth Strategy Codex
 War3 Tactics Hub
 ```
 
-Use **Warcraft 3 Strategy Hub** unless the user chooses another name.
+Use **WC3 Matchup Guide** unless the user chooses another name.
 
 ---
 

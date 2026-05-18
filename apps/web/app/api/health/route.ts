@@ -17,7 +17,7 @@ export async function GET() {
 
   return NextResponse.json({
     status: !databaseConfigured || databaseReachable ? "ok" : "degraded",
-    service: "warcraft3-strategy-hub",
+    service: "wc3-matchup-guide",
     readiness: {
       databaseConfigured,
       databaseReachable,

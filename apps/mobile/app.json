@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "Warcraft 3 Strategy Hub",
-    "slug": "warcraft3-strategy-hub-mobile",
-    "scheme": "wc3strategyhub",
+    "name": "WC3 Matchup Guide",
+    "slug": "wc3-matchup-guide-mobile",
+    "scheme": "wc3matchupguide",
     "version": "0.1.0",
     "orientation": "portrait",
     "userInterfaceStyle": "dark",
