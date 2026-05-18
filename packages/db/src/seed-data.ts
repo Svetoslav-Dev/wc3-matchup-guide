@@ -2,6 +2,7 @@ import type { Build, Matchup } from "@warcraft3-guide-hub/shared";
 import {
   builds as sharedBuilds,
   heroes as sharedHeroes,
+  maps as sharedMaps,
   matchups as sharedMatchups,
   races as sharedRaces,
   units as sharedUnits,
@@ -37,29 +38,7 @@ export const unitSeeds = sharedUnits.map((unit) => ({
   weaknesses: unit.weaknesses.join(", "),
 }));
 
-export const mapSeeds = [
-  {
-    name: "Echo Isles",
-    slug: "echo-isles",
-    description: "A compact map with fast skirmish timings and contestable merchant play.",
-    creepNotes: "Small camp routes accelerate first-hero tempo for all races.",
-    expansionNotes: "Natural expansions can be pressured quickly if scouting is weak.",
-  },
-  {
-    name: "Northern Isles",
-    slug: "northern-isles",
-    description: "A standard ladder map with balanced creep access and multiple attack lanes.",
-    creepNotes: "Green into orange camp routing is flexible and easy to contest.",
-    expansionNotes: "Expansions are practical but require vision against timing attacks.",
-  },
-  {
-    name: "Concealed Hill",
-    slug: "concealed-hill",
-    description: "A larger map that rewards map control and disciplined expansion timing.",
-    creepNotes: "Wide creep spread favors scouting and mobility.",
-    expansionNotes: "Strong expansion potential for players who control central movement.",
-  },
-];
+export const mapSeeds = sharedMaps;
 
 type MatchupSeed = Matchup & {
   raceASlug: string;
