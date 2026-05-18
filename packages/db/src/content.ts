@@ -69,7 +69,7 @@ const enrichHero = (record: typeof heroes.$inferSelect, raceName: string): Hero 
   return {
     slug: record.slug,
     name: record.name,
-    raceName,
+    raceName: shared?.raceName ?? raceName,
     description: record.description,
     primaryAttribute: record.primaryAttribute,
     role: record.role,
