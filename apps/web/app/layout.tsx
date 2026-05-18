@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { SiteAuth } from "../components/site-auth";
+import { getSessionUser } from "../lib/auth";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -17,10 +18,12 @@ const navigation = [
   { href: "/builds", label: "Builds" },
   { href: "/heroes", label: "Heroes" },
   { href: "/favorites", label: "Favorites" },
-  { href: "/admin", label: "Admin" },
 ];
 
 export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  const user = await getSessionUser();
+  const navigationItems = user?.role === "admin" ? [...navigation, { href: "/admin", label: "Admin" }] : navigation;
+
   return (
     <html lang="en">
       <body>
@@ -31,7 +34,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
               <span className="brand__name">WC3 Matchup Guide</span>
             </Link>
             <nav className="nav" aria-label="Main">
-              {navigation.map((item) => (
+              {navigationItems.map((item) => (
                 <Link key={item.href} href={item.href}>
                   {item.label}
                 </Link>
