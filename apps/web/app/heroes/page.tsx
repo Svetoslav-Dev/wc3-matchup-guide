@@ -42,13 +42,15 @@ export default async function HeroesPage() {
                 <p className="pill">{hero.primaryAttribute}</p>
                 <h3>{hero.name}</h3>
                 <p>{hero.description}</p>
-                <div className="list-meta">
-                  <span>{hero.raceName}</span>
-                  <span>{hero.role}</span>
+                <div className="card__footer">
+                  <div className="list-meta">
+                    <span>{hero.raceName}</span>
+                    <span>{hero.role}</span>
+                  </div>
+                  <Link href={`/heroes/${hero.slug}`} className="button button--ghost">
+                    View Hero Guide
+                  </Link>
                 </div>
-                <Link href={`/heroes/${hero.slug}`} className="button button--ghost">
-                  View Hero Guide
-                </Link>
               </article>
             ))}
           </div>
