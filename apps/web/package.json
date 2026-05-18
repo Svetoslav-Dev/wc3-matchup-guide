@@ -2,6 +2,9 @@
   "name": "web",
   "private": true,
   "version": "0.1.0",
+  "engines": {
+    "node": "20.x"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -12,9 +15,12 @@
   "dependencies": {
     "@warcraft3-guide-hub/db": "*",
     "@warcraft3-guide-hub/shared": "*",
+    "bcryptjs": "^3.0.3",
+    "jose": "^6.2.3",
     "next": "15.3.2",
     "react": "19.1.0",
-    "react-dom": "19.1.0"
+    "react-dom": "19.1.0",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@types/node": "22.15.18",
