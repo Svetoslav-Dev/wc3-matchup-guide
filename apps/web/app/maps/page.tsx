@@ -1,29 +1,85 @@
 import Link from "next/link";
-import { mapCategories } from "./categories";
+import { listMaps } from "../../lib/content";
+import { mapCategories, mapCategoryNameBySlug, mapSlugsByCategory } from "./categories";
 
-export default async function MapsPage() {
+type Props = {
+  searchParams?: Promise<{ mode?: string }>;
+};
+
+const buildMapHref = (mode?: string) => (mode ? `/maps?mode=${mode}` : "/maps");
+
+export default async function MapsPage({ searchParams }: Props) {
+  const params = (await searchParams) ?? {};
+  const activeMode = params.mode;
+  const allMaps = (await listMaps(1, 200)).data;
+  const visibleMaps = activeMode
+    ? allMaps.filter((map) => (mapSlugsByCategory[activeMode] ?? []).includes(map.slug))
+    : allMaps;
+
   return (
     <div className="page-shell page-stack">
       <div className="section-head">
         <p className="section-label">Map Library</p>
         <h1 className="page-title">Map shape changes every timing window.</h1>
         <p className="page-intro">
-          Choose a format to browse the maps inside it. Each category separates solo, team, and
-          free-for-all pools so the guide stays easier to scan.
+          Toggle between classic solo, team, and free-for-all pools from one page. Each map still
+          opens its own guide with creep and expansion notes.
         </p>
       </div>
-      <div className="card-grid">
-        {mapCategories.map((category) => (
-          <article key={category.slug} className="card">
-            <p className="pill">Map Category</p>
-            <h2>{category.name}</h2>
-            <p>{category.description}</p>
-            <Link href={`/maps/${category.slug}`} className="button button--ghost">
-              View {category.name} Maps
+      <section className="panel panel--padded">
+        <div className="section-head">
+          <p className="section-label">Map Filters</p>
+          <h2>Browse maps by classic game mode.</h2>
+        </div>
+        <div className="chip-row">
+          <Link
+            className={`button button--ghost${!activeMode ? " button--active" : ""}`}
+            href="/maps"
+            aria-current={!activeMode ? "page" : undefined}
+          >
+            All
+          </Link>
+          {mapCategories.map((category) => (
+            <Link
+              key={category.slug}
+              className={`button button--ghost${activeMode === category.slug ? " button--active" : ""}`}
+              href={buildMapHref(category.slug)}
+              aria-current={activeMode === category.slug ? "page" : undefined}
+            >
+              {category.name}
             </Link>
-          </article>
-        ))}
+          ))}
+        </div>
+      </section>
+      <div className="card-grid">
+        {visibleMaps.map((map) => {
+          const categories = mapCategories
+            .filter((category) => (mapSlugsByCategory[category.slug] ?? []).includes(map.slug))
+            .map((category) => mapCategoryNameBySlug[category.slug]);
+
+          return (
+            <article key={map.slug} className="card">
+              <p className="pill">{categories.join(" · ")}</p>
+              <h2>{map.name}</h2>
+              <p>{map.description}</p>
+              <div className="list-meta">
+                <span>{map.creepNotes}</span>
+              </div>
+              <Link href={`/maps/${map.slug}`} className="button button--ghost">
+                View Map Guide
+              </Link>
+            </article>
+          );
+        })}
       </div>
+      {visibleMaps.length === 0 ? (
+        <article className="detail-panel">
+          <h2>No maps found</h2>
+          <p>
+            There are no maps assigned to this category yet.
+          </p>
+        </article>
+      ) : null}
     </div>
   );
 }
