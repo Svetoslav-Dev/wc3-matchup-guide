@@ -16,6 +16,7 @@ export const heroRaceSlugMap: Record<string, string> = {
   Orc: "orc",
   "Night Elf": "night-elf",
   Undead: "undead",
+  Tavern: "neutral",
 };
 
 const unitRaceSlugMap: Record<string, string> = {
