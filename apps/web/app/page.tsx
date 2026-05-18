@@ -105,12 +105,16 @@ export default async function HomePage() {
               <p className="pill">{matchup.difficulty}</p>
               <h3>{matchup.title}</h3>
               <p>{worstMatchupReasons[matchup.slug] ?? matchup.summary}</p>
-              <div className="list-meta">
-                <span>Why it is hard: {matchup.commonMistakes[0]}</span>
+              <div className="card__footer">
+                <div className="list-meta">
+                  <span>Why it is hard: {matchup.commonMistakes[0]}</span>
+                </div>
+                <div className="card__footer-action card__footer-action--center">
+                  <Link href={`/matchups/${matchup.slug}`} className="button button--ghost">
+                    Open Matchup
+                  </Link>
+                </div>
               </div>
-              <Link href={`/matchups/${matchup.slug}`} className="button button--ghost">
-                Open Matchup
-              </Link>
             </article>
           ))}
         </div>

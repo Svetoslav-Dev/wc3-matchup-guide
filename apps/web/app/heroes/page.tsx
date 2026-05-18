@@ -39,13 +39,17 @@ export default async function HeroesPage() {
           <div className="card-grid">
             {group.heroes.map((hero) => (
               <article key={hero.slug} className="card">
-                <p className="pill">{hero.primaryAttribute}</p>
-                <h3>{hero.name}</h3>
+                <div className="title-row">
+                  <p className="pill pill--race">{hero.raceName}</p>
+                  <h3>{hero.name}</h3>
+                  <div className="list-meta">
+                    <span>{hero.role}</span>
+                  </div>
+                </div>
                 <p>{hero.description}</p>
                 <div className="card__footer">
                   <div className="list-meta">
-                    <span>{hero.raceName}</span>
-                    <span>{hero.role}</span>
+                    <span>{hero.primaryAttribute}</span>
                   </div>
                   <Link href={`/heroes/${hero.slug}`} className="button button--ghost">
                     View Hero Guide

@@ -23,39 +23,33 @@ export default async function LoginPage({ searchParams }: Props) {
   const statusMessage = params?.status ? statusMessages[params.status] : undefined;
 
   return (
-    <div className="page-shell page-stack">
-      <div className="section-head">
-        <p className="section-label">Authentication</p>
-        <h1 className="page-title">Log in to save builds and manage content.</h1>
-        <p className="page-intro">
-          The login form now submits through a server action and writes the session cookie directly on success.
-        </p>
-      </div>
-      {statusMessage ? <p className="status-banner">{statusMessage}</p> : null}
-      {errorMessage ? <p className="status-banner">{errorMessage}</p> : null}
-      <div className="form-grid">
-        <section className="form-panel">
-          <h2>Login</h2>
-          {user ? <p className="muted">Current session: {user.email} ({user.role})</p> : null}
-          <form action={loginAction} className="page-stack">
-            <div className="field">
-              <label htmlFor="email">Email</label>
-              <input id="email" name="email" type="email" placeholder="blademastermain@azeroth.gg" />
-            </div>
-            <div className="field">
-              <label htmlFor="password">Password</label>
-              <input id="password" name="password" type="password" placeholder="GruntTaxAgain" />
-            </div>
-            <button className="button" type="submit" disabled={!hasDatabaseUrl() || !process.env.JWT_SECRET}>
-              Log In
-            </button>
-          </form>
-        </section>
-        <section className="form-panel">
-          <h2>Live Flow</h2>
-          <p>Successful login now sets the same JWT-backed HTTP-only cookie used by favorites and admin protections.</p>
-          <p>Demo accounts work once migrations and seed data are applied to a real PostgreSQL database.</p>
-        </section>
+    <div className="page-shell auth-shell">
+      <section className="form-panel auth-modal">
+        <div className="section-head auth-modal__head">
+          <p className="section-label">Authentication</p>
+          <h1>Login</h1>
+          <p className="page-intro">Log in to save builds and manage content.</p>
+        </div>
+        {statusMessage ? <p className="status-banner">{statusMessage}</p> : null}
+        {errorMessage ? <p className="status-banner">{errorMessage}</p> : null}
+        {user ? <p className="muted">Current session: {user.email} ({user.role})</p> : null}
+        <form action={loginAction} className="page-stack">
+          <div className="field">
+            <label htmlFor="email">Email</label>
+            <input id="email" name="email" type="email" placeholder="blademastermain@azeroth.gg" />
+          </div>
+          <div className="field">
+            <label htmlFor="password">Password</label>
+            <input id="password" name="password" type="password" placeholder="GruntTaxAgain" />
+          </div>
+          <button className="button" type="submit" disabled={!hasDatabaseUrl() || !process.env.JWT_SECRET}>
+            Log In
+          </button>
+        </form>
+      </section>
+      <div className="auth-note">
+        <p>Successful login sets the same JWT-backed HTTP-only cookie used by favorites and admin protections.</p>
+        <p>Demo accounts work once migrations and seed data are applied to a real PostgreSQL database.</p>
       </div>
     </div>
   );

@@ -31,12 +31,16 @@ export default async function UnitsPage() {
             <p className="pill">{category.badge}</p>
             <h2>{category.name}</h2>
             <p>{categoryDescriptions[category.slug] ?? category.description}</p>
-            <div className="list-meta">
-              <span>{category.identity}</span>
+            <div className="card__footer">
+              <div className="list-meta">
+                <span>{category.identity}</span>
+              </div>
+              <div className="card__footer-action card__footer-action--center">
+                <Link href={`/units/${category.slug}`} className="button button--ghost">
+                  View {category.name} Units
+                </Link>
+              </div>
             </div>
-            <Link href={`/units/${category.slug}`} className="button button--ghost">
-              View {category.name} Units
-            </Link>
           </article>
         ))}
       </div>

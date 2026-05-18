@@ -52,11 +52,16 @@ export default async function UnitDetailPage({ params }: Props) {
           {categoryUnits.map((unit) => (
               <article key={unit.slug} className="card">
                 <p className="pill">{unit.raceName}</p>
-                <h2>{unit.name}</h2>
+                <div className="title-row">
+                  <h2>{unit.name}</h2>
+                  <div className="list-meta">
+                    <span>{unit.tier}</span>
+                    <span>{unit.unitType}</span>
+                  </div>
+                </div>
                 <p>{unit.description}</p>
-                <div className="list-meta">
-                  <span>{unit.tier}</span>
-                  <span>{unit.unitType}</span>
+                <div className="card__footer">
+                  <div className="list-meta">
                   <span className="cost-chip" aria-label={`${unit.food} food`}>
                     <span className="cost-chip__icon" aria-hidden="true">🍖</span>
                     <span>{unit.food}</span>
@@ -69,10 +74,13 @@ export default async function UnitDetailPage({ params }: Props) {
                     <span className="cost-chip__icon" aria-hidden="true">🪵</span>
                     <span>{unit.lumber}</span>
                   </span>
+                  </div>
+                  <div className="card__footer-action card__footer-action--center">
+                    <Link href={`/units/${unit.slug}`} className="button button--ghost">
+                      View Unit Guide
+                    </Link>
+                  </div>
                 </div>
-                <Link href={`/units/${unit.slug}`} className="button button--ghost">
-                  View Unit Guide
-              </Link>
             </article>
           ))}
         </div>
@@ -86,14 +94,20 @@ export default async function UnitDetailPage({ params }: Props) {
               {heroes.map((hero) => (
                 <article key={hero.slug} className="card">
                   <p className="pill">{hero.primaryAttribute}</p>
-                  <h3>{hero.name}</h3>
-                  <p>{hero.description}</p>
-                  <div className="list-meta">
-                    <span>{hero.role}</span>
+                  <div className="title-row">
+                    <h3>{hero.name}</h3>
+                    <div className="list-meta">
+                      <span>{hero.role}</span>
+                    </div>
                   </div>
-                  <Link href={`/heroes/${hero.slug}`} className="button button--ghost">
-                    View Hero Guide
-                  </Link>
+                  <p>{hero.description}</p>
+                  <div className="card__footer">
+                    <div className="card__footer-action card__footer-action--center">
+                      <Link href={`/heroes/${hero.slug}`} className="button button--ghost">
+                        View Hero Guide
+                      </Link>
+                    </div>
+                  </div>
                 </article>
               ))}
             </div>
