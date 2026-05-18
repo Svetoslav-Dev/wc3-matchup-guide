@@ -38,7 +38,6 @@ export default async function RegisterPage({ searchParams }: Props) {
         <section className="form-panel">
           <h2>Create Account</h2>
           {user ? <p className="muted">Current session: {user.email} ({user.role})</p> : null}
-          <p className="muted">API endpoint: <code>POST /api/auth/register</code></p>
           <form action={registerAction} className="page-stack">
             <div className="field">
               <label htmlFor="username">Username</label>
@@ -46,11 +45,11 @@ export default async function RegisterPage({ searchParams }: Props) {
             </div>
             <div className="field">
               <label htmlFor="register-email">Email</label>
-              <input id="register-email" name="email" type="email" placeholder="you@example.com" />
+              <input id="register-email" name="email" type="email" placeholder="moonwellmanager@azeroth.gg" />
             </div>
             <div className="field">
               <label htmlFor="register-password">Password</label>
-              <input id="register-password" name="password" type="password" placeholder="Choose a password" />
+              <input id="register-password" name="password" type="password" placeholder="NoMoreMilitiaCalls" />
             </div>
             <button className="button" type="submit" disabled={!hasDatabaseUrl() || !process.env.JWT_SECRET}>
               Create Account

@@ -36,16 +36,15 @@ export default async function LoginPage({ searchParams }: Props) {
       <div className="form-grid">
         <section className="form-panel">
           <h2>Login</h2>
-          <p className="muted">API endpoint: <code>POST /api/auth/login</code></p>
           {user ? <p className="muted">Current session: {user.email} ({user.role})</p> : null}
           <form action={loginAction} className="page-stack">
             <div className="field">
               <label htmlFor="email">Email</label>
-              <input id="email" name="email" type="email" placeholder="user@example.com" />
+              <input id="email" name="email" type="email" placeholder="blademastermain@azeroth.gg" />
             </div>
             <div className="field">
               <label htmlFor="password">Password</label>
-              <input id="password" name="password" type="password" placeholder="demo123" />
+              <input id="password" name="password" type="password" placeholder="GruntTaxAgain" />
             </div>
             <button className="button" type="submit" disabled={!hasDatabaseUrl() || !process.env.JWT_SECRET}>
               Log In

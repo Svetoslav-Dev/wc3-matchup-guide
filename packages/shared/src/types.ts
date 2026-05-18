@@ -69,6 +69,7 @@ export type Build = {
   difficulty: string;
   strategyType: string;
   matchupSlug?: string;
+  bestAgainst?: string;
   steps: BuildStep[];
 };
 

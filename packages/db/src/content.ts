@@ -132,9 +132,31 @@ const enrichBuild = (
   record: typeof builds.$inferSelect,
   raceName: string,
   raceSlug: string,
+  matchupTitle?: string | null,
   steps: BuildStep[] = [],
 ): Build => {
   const shared = getSharedBuildBySlug(record.slug);
+  const inferredBestAgainst = (() => {
+    if (shared?.bestAgainst) {
+      return shared.bestAgainst;
+    }
+
+    if (!matchupTitle) {
+      return undefined;
+    }
+
+    const [leftRace, rightRace] = matchupTitle.split(" vs ").map((value) => value.trim());
+
+    if (leftRace === raceName) {
+      return rightRace;
+    }
+
+    if (rightRace === raceName) {
+      return leftRace;
+    }
+
+    return undefined;
+  })();
 
   return {
     slug: record.slug,
@@ -145,6 +167,7 @@ const enrichBuild = (
     difficulty: record.difficulty,
     strategyType: record.strategyType,
     matchupSlug: shared?.matchupSlug,
+    bestAgainst: inferredBestAgainst,
     steps,
   };
 };
@@ -349,6 +372,7 @@ export const listBuilds = async (filters: BuildFilters = {}): Promise<ListRespon
     where,
     with: {
       race: true,
+      matchup: true,
     },
     orderBy: asc(builds.title),
     limit: pageSize,
@@ -356,7 +380,7 @@ export const listBuilds = async (filters: BuildFilters = {}): Promise<ListRespon
   });
 
   return {
-    data: data.map((build) => enrichBuild(build, build.race.name, build.race.slug)),
+    data: data.map((build) => enrichBuild(build, build.race.name, build.race.slug, build.matchup?.title)),
     ...toPaginationMeta(page, pageSize, total),
   };
 };
@@ -367,6 +391,7 @@ export const findBuildBySlug = async (slug: string) => {
     where: and(eq(builds.slug, slug), eq(builds.isPublished, true)),
     with: {
       race: true,
+      matchup: true,
       steps: {
         orderBy: asc(buildSteps.stepNumber),
       },
@@ -381,6 +406,7 @@ export const findBuildBySlug = async (slug: string) => {
     build,
     build.race.name,
     build.race.slug,
+    build.matchup?.title,
     build.steps.map((step) => ({
       stepNumber: step.stepNumber,
       supply: step.supply,
@@ -420,6 +446,7 @@ export const listFavoriteBuildsForUser = async (userId: number): Promise<Favorit
       build: {
         with: {
           race: true,
+          matchup: true,
         },
       },
     },
@@ -428,7 +455,12 @@ export const listFavoriteBuildsForUser = async (userId: number): Promise<Favorit
 
   return records.map((favorite) => ({
     id: favorite.id,
-    build: enrichBuild(favorite.build, favorite.build.race.name, favorite.build.race.slug),
+    build: enrichBuild(
+      favorite.build,
+      favorite.build.race.name,
+      favorite.build.race.slug,
+      favorite.build.matchup?.title,
+    ),
   }));
 };
 

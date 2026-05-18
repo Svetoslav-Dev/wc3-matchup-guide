@@ -55,12 +55,15 @@ export default async function BuildsPage({ searchParams }: Props) {
       <div className="list-grid">
         {result.data.map((build) => (
           <article key={build.slug} className="card">
-            <p className="pill">{build.strategyType}</p>
+            <div className="list-meta">
+              <p className="pill pill--race">{build.raceName}</p>
+              <p className="pill">{build.strategyType}</p>
+            </div>
             <h2>{build.title}</h2>
             <p>{build.summary}</p>
             <div className="list-meta">
               <span>Difficulty: {build.difficulty}</span>
-              <span>Race: {build.raceName}</span>
+              {build.bestAgainst ? <span>Best against: {build.bestAgainst}</span> : null}
             </div>
             <Link href={`/builds/${build.slug}`} className="button button--ghost">
               Open Build
@@ -68,11 +71,7 @@ export default async function BuildsPage({ searchParams }: Props) {
           </article>
         ))}
       </div>
-      <p className="muted">
-        Showing {result.data.length} of {result.total} builds. API equivalent:
-        {" "}
-        <code>/api/builds?page={result.page}&pageSize={result.pageSize}</code>
-      </p>
+      <p className="muted">Showing {result.data.length} of {result.total} builds.</p>
     </div>
   );
 }

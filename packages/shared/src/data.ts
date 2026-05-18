@@ -1219,6 +1219,7 @@ export const builds: Build[] = [
     difficulty: "Intermediate",
     strategyType: "Tempo Midgame",
     matchupSlug: "orc-vs-human",
+    bestAgainst: "Human",
     steps: [
       { stepNumber: 1, supply: 6, timing: "0:00", instruction: "Queue peons, altar, burrow, and start scouting for expansion greed." },
       { stepNumber: 2, supply: 18, timing: "1:40", instruction: "Creep efficiently with Blademaster while preserving grunt hit points for the first skirmish." },
@@ -1235,6 +1236,7 @@ export const builds: Build[] = [
     difficulty: "Intermediate",
     strategyType: "Economic Control",
     matchupSlug: "human-vs-undead",
+    bestAgainst: "Undead",
     steps: [
       { stepNumber: 1, supply: 6, timing: "0:00", instruction: "Open altar and farm, then route peasants for a minimal-loss first creep." },
       { stepNumber: 2, supply: 20, timing: "2:00", instruction: "Commit to expansion timing only if scouting confirms manageable pressure." },
@@ -1251,6 +1253,7 @@ export const builds: Build[] = [
     difficulty: "Advanced",
     strategyType: "Sustain Timing",
     matchupSlug: "night-elf-vs-undead",
+    bestAgainst: "Undead",
     steps: [
       { stepNumber: 1, supply: 5, timing: "0:00", instruction: "Open with a demon hunter and optimize moonwell usage for early map control." },
       { stepNumber: 2, supply: 20, timing: "2:10", instruction: "Creep safely while contesting the opponent's easiest experience routes." },
@@ -1267,6 +1270,7 @@ export const builds: Build[] = [
     difficulty: "Intermediate",
     strategyType: "Timing Push",
     matchupSlug: "undead-vs-orc",
+    bestAgainst: "Orc",
     steps: [
       { stepNumber: 1, supply: 5, timing: "0:00", instruction: "Open crypt and altar with a safe acolyte pattern that minimizes early disruption risk." },
       { stepNumber: 2, supply: 20, timing: "2:00", instruction: "Creep efficiently with Death Knight and avoid exposing fiends to unnecessary focus." },
