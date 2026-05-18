@@ -5,11 +5,11 @@ Use this after the live deployment is complete.
 ## Deployment links
 
 - Web app:
-  - `https://...`
+  - `https://wc3-matchup-guide-web.vercel.app`
 - Expo web export:
-  - `https://...`
+  - `pending`
 - GitHub repository:
-  - `https://github.com/...`
+  - `https://github.com/CookieTheDestroyerOfWorlds/wc3-matchup-guide`
 
 ## Production verification
 
@@ -45,4 +45,4 @@ Use this after the live deployment is complete.
 
 - Mention any known limitations briefly
 - Confirm Neon is the active production database
-- Confirm both web and Expo web builds point at the same deployed API
+- Confirm both web and Expo web builds point at the same deployed API once the Expo export is published

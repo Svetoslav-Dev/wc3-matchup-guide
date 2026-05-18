@@ -16,8 +16,7 @@ The web application is now beyond scaffold stage.
 
 Still missing for full capstone completion:
 
-- deployment to live services
-- final production smoke testing
+- Expo web export deployment to a live static host
 - broader automated test coverage
 
 ## Features implemented
@@ -175,6 +174,19 @@ npm run deploy:smoke
 
 `npm run deploy:check` verifies required web and Expo env vars and attempts a real database connection when `DATABASE_URL` is set.
 `npm run deploy:smoke` runs a deployed end-to-end smoke test using `SMOKE_BASE_URL` and the demo admin credentials.
+
+## Live deployment
+
+- Web app: `https://wc3-matchup-guide-web.vercel.app`
+- Web API health: `https://wc3-matchup-guide-web.vercel.app/api/health`
+- GitHub repository: `https://github.com/CookieTheDestroyerOfWorlds/wc3-matchup-guide`
+
+Current production verification status:
+
+- Neon-backed database connection is live
+- Auth readiness is live
+- `npm run deploy:smoke` passed against the deployed web app
+- Expo web export builds successfully and is ready to publish from `apps/mobile/dist`
 
 Continuous validation:
 
