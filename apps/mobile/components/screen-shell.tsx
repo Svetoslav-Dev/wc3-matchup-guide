@@ -12,7 +12,7 @@ export function ScreenShell({ children }: Props) {
   return (
     <SafeAreaView style={styles.safeArea}>
       <MobileNav />
-      <ScrollView contentContainerStyle={styles.content}>
+      <ScrollView style={styles.scrollView} contentContainerStyle={styles.content}>
         <View style={styles.inner}>{children}</View>
       </ScrollView>
     </SafeAreaView>
@@ -23,6 +23,9 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: colors.bg,
+  },
+  scrollView: {
+    flex: 1,
   },
   content: {
     flexGrow: 1,
