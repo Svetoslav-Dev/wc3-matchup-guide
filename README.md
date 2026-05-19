@@ -2,24 +2,22 @@
 
 WC3 Matchup Guide is a production-style capstone project for a Warcraft III strategy database with a Next.js web app, PostgreSQL/Neon, Drizzle ORM, JWT auth, protected favorites, and admin content management.
 
-## Current status
+## Tech stack
 
-The web application is now beyond scaffold stage.
+| Layer | Technology |
+|---|---|
+| Web framework | Next.js (App Router) |
+| Web UI | React, TypeScript, Tailwind CSS |
+| Mobile app | Expo, React Native, TypeScript |
+| Database | PostgreSQL via Neon |
+| ORM | Drizzle ORM + Drizzle migrations |
+| Auth | JWT (cookie-based), bcrypt password hashing |
+| Validation | Zod |
+| Monorepo | Node.js workspaces |
+| CI | GitHub Actions |
+| Deployment | Vercel (web), Neon (database) |
 
-- Public browsing pages are implemented
-- REST API routes are implemented
-- Drizzle schema, generated migration, and seed script are implemented
-- JWT cookie auth is implemented
-- Protected favorites are implemented
-- Admin-only build and matchup CRUD APIs are implemented
-- Admin create/edit web forms are implemented
-
-Still missing for full capstone completion:
-
-- Expo web export deployment to a live static host
-- broader automated test coverage
-
-## Features implemented
+## Features
 
 - Home, race, hero, unit, map, matchup, and build pages
 - Build detail pages with save/remove favorite actions
@@ -190,14 +188,14 @@ Current production verification status:
 
 Continuous validation:
 
-- GitHub Actions runs `test`, `lint`, `build`, `typecheck`, `mobile:typecheck`, and `mobile:export` on pushes and pull requests through [.github/workflows/ci.yml](/home/thinkpadl14/Projects/wc3-matchup-guide/.github/workflows/ci.yml)
+- GitHub Actions runs `test`, `lint`, `build`, `typecheck`, `mobile:typecheck`, and `mobile:export` on pushes and pull requests through [.github/workflows/ci.yml](.github/workflows/ci.yml)
 
 Operational docs:
 
-- [Deployment Guide](/home/thinkpadl14/Projects/wc3-matchup-guide/docs/DEPLOYMENT.md)
-- [Release Checklist](/home/thinkpadl14/Projects/wc3-matchup-guide/docs/RELEASE_CHECKLIST.md)
-- [Smoke Tests](/home/thinkpadl14/Projects/wc3-matchup-guide/docs/SMOKE_TESTS.md)
-- [Submission Template](/home/thinkpadl14/Projects/wc3-matchup-guide/docs/SUBMISSION_TEMPLATE.md)
+- [Deployment Guide](docs/DEPLOYMENT.md)
+- [Release Checklist](docs/RELEASE_CHECKLIST.md)
+- [Smoke Tests](docs/SMOKE_TESTS.md)
+- [Submission Template](docs/SUBMISSION_TEMPLATE.md)
 
 ## Deployment notes
 
@@ -208,7 +206,7 @@ Recommended target: Vercel
 - Framework preset: `Next.js`
 - Root directory: repo root or `apps/web` depending on your Vercel setup preference
 - Repo host config:
-  - [vercel.json](/home/thinkpadl14/Projects/wc3-matchup-guide/vercel.json)
+  - [vercel.json](vercel.json)
 - Build command:
 
 ```bash
@@ -278,9 +276,9 @@ apps/mobile/dist
   - `_headers` for Expo asset caching
   - `404.html` for static not-found handling
 - Repo host configs:
-  - web app: [vercel.json](/home/thinkpadl14/Projects/wc3-matchup-guide/vercel.json)
-  - [apps/mobile/vercel.json](/home/thinkpadl14/Projects/wc3-matchup-guide/apps/mobile/vercel.json)
-  - [apps/mobile/netlify.toml](/home/thinkpadl14/Projects/wc3-matchup-guide/apps/mobile/netlify.toml)
+  - web app: [vercel.json](vercel.json)
+  - [apps/mobile/vercel.json](apps/mobile/vercel.json)
+  - [apps/mobile/netlify.toml](apps/mobile/netlify.toml)
 
 ## Final submission record
 
@@ -296,7 +294,7 @@ Before submission:
 - run `npm run deploy:smoke`
 - confirm `/api/health` reports healthy readiness flags
 - capture screenshots for the main web and Expo flows
-- copy final URLs into [docs/SUBMISSION_TEMPLATE.md](/home/thinkpadl14/Projects/wc3-matchup-guide/docs/SUBMISSION_TEMPLATE.md)
+- copy final URLs into [docs/SUBMISSION_TEMPLATE.md](docs/SUBMISSION_TEMPLATE.md)
 
 ## Important routes
 
@@ -361,10 +359,3 @@ The seed script creates:
 - favorites
 - 10,000 generated build rows for pagination and performance testing
 
-## Remaining major work
-
-1. Perform live Neon + Vercel deployment and verification
-2. Export and deploy the Expo web build against the live API
-3. Add broader automated tests for auth, APIs, and content services
-4. Add screenshots and final capstone submission polish
-5. Capture real deployment links in the README
