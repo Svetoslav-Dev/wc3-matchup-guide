@@ -58,13 +58,6 @@ export default function FavoritesScreen() {
       <PageIntro>
         Favorites now read from the protected API when mobile auth is configured. Fallback data still keeps the screen useful in local UI-only mode.
       </PageIntro>
-      {!apiReady ? (
-        <View style={styles.panel}>
-          <GhostBadge>API offline</GhostBadge>
-          <Text style={styles.heading}>Showing fallback favorites.</Text>
-          <Text style={styles.copy}>Set `EXPO_PUBLIC_API_URL` to load the authenticated favorites list.</Text>
-        </View>
-      ) : null}
       {apiReady && !user ? (
         <View style={styles.panel}>
           <GhostBadge>Sign in required</GhostBadge>

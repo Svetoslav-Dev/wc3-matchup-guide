@@ -7,7 +7,7 @@ import { colors } from "../../lib/theme";
 
 export default function HeroDetailScreen() {
   const { slug } = useLocalSearchParams<{ slug: string }>();
-  const { data: hero, error, loading, live } = useHeroContent(slug);
+  const { data: hero, loading } = useHeroContent(slug);
 
   if (!hero) {
     return (
@@ -23,8 +23,6 @@ export default function HeroDetailScreen() {
       <PageTitle>{hero.name}</PageTitle>
       <PageIntro>{hero.description}</PageIntro>
       {loading ? <Text style={{ color: colors.muted }}>Refreshing hero guide…</Text> : null}
-      {error ? <Text style={{ color: colors.muted }}>API unavailable. Showing fallback hero guide.</Text> : null}
-      <Text style={{ color: colors.muted }}>{live ? "Live API content" : "Shared fallback content"}</Text>
       <View
         style={{
           backgroundColor: colors.panel,

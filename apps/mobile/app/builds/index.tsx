@@ -9,7 +9,7 @@ import { colors } from "../../lib/theme";
 export default function BuildsScreen() {
   const [search, setSearch] = useState("");
   const [raceFilter, setRaceFilter] = useState<string>("all");
-  const { data: builds, error, live, loading } = useBuildsContent();
+  const { data: builds, loading } = useBuildsContent();
   const normalizedSearch = search.trim().toLowerCase();
   const filteredBuilds = builds.filter((build) => {
     const matchesRace = raceFilter === "all" || build.raceSlug === raceFilter;
@@ -34,8 +34,6 @@ export default function BuildsScreen() {
         The mobile build list is intentionally compact so players can check key routes before or between ladder games.
       </PageIntro>
       {loading ? <Text style={{ color: colors.muted }}>Loading build orders…</Text> : null}
-      {error ? <Text style={{ color: colors.muted }}>API unavailable. Showing fallback build orders.</Text> : null}
-      <Text style={{ color: colors.muted }}>{live ? "Live API content" : "Shared fallback content"}</Text>
       <View style={styles.filterPanel}>
         <Text style={styles.filterLabel}>Search builds</Text>
         <TextInput

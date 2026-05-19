@@ -8,7 +8,7 @@ import { colors } from "../../lib/theme";
 export default function MatchupsScreen() {
   const [search, setSearch] = useState("");
   const [difficultyFilter, setDifficultyFilter] = useState<string>("all");
-  const { data: matchups, error, live, loading } = useMatchupsContent();
+  const { data: matchups, loading } = useMatchupsContent();
   const normalizedSearch = search.trim().toLowerCase();
   const difficultyOptions = ["all", ...Array.from(new Set(matchups.map((matchup) => matchup.difficulty)))];
   const filteredMatchups = matchups.filter((matchup) => {
@@ -30,8 +30,6 @@ export default function MatchupsScreen() {
         Matchup pages focus on fast strategic recall for early, mid, and late game priorities.
       </PageIntro>
       {loading ? <Text style={{ color: colors.muted }}>Loading matchup guides…</Text> : null}
-      {error ? <Text style={{ color: colors.muted }}>API unavailable. Showing fallback guides.</Text> : null}
-      <Text style={{ color: colors.muted }}>{live ? "Live API content" : "Shared fallback content"}</Text>
       <View style={styles.filterPanel}>
         <Text style={styles.filterLabel}>Search matchups</Text>
         <TextInput

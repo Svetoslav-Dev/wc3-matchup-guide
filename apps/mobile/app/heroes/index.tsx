@@ -8,7 +8,7 @@ import { colors } from "../../lib/theme";
 export default function HeroesScreen() {
   const [search, setSearch] = useState("");
   const [raceFilter, setRaceFilter] = useState<string>("all");
-  const { data: heroes, error, live, loading } = useHeroesContent();
+  const { data: heroes, loading } = useHeroesContent();
   const normalizedSearch = search.trim().toLowerCase();
   const raceOptions = ["all", ...Array.from(new Set(heroes.map((hero) => hero.raceName)))];
   const filteredHeroes = heroes.filter((hero) => {
@@ -31,8 +31,6 @@ export default function HeroesScreen() {
         Hero pages focus on role clarity, primary attribute, and the tools that define each race’s strongest openings and transitions.
       </PageIntro>
       {loading ? <Text style={{ color: colors.muted }}>Loading hero guides…</Text> : null}
-      {error ? <Text style={{ color: colors.muted }}>API unavailable. Showing fallback heroes.</Text> : null}
-      <Text style={{ color: colors.muted }}>{live ? "Live API content" : "Shared fallback content"}</Text>
       <View style={styles.filterPanel}>
         <Text style={styles.filterLabel}>Search heroes</Text>
         <TextInput

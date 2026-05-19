@@ -11,7 +11,7 @@ import { colors } from "../../lib/theme";
 export default function BuildDetailScreen() {
   const { slug } = useLocalSearchParams<{ slug: string }>();
   const { apiReady, token, user } = useAuth();
-  const { data: build, error, loading, live } = useBuildContent(slug);
+  const { data: build, loading } = useBuildContent(slug);
   const [favoriteId, setFavoriteId] = useState<number | null>(null);
   const [favoriteLoading, setFavoriteLoading] = useState(false);
   const [favoriteError, setFavoriteError] = useState<string | null>(null);
@@ -72,8 +72,6 @@ export default function BuildDetailScreen() {
       <PageTitle>{build.title}</PageTitle>
       <PageIntro>{build.summary}</PageIntro>
       {loading ? <Text style={{ color: colors.muted }}>Refreshing build order…</Text> : null}
-      {error ? <Text style={{ color: colors.muted }}>API unavailable. Showing fallback build order.</Text> : null}
-      <Text style={{ color: colors.muted }}>{live ? "Live API content" : "Shared fallback content"}</Text>
       {apiReady && user ? (
         <View style={styles.actionPanel}>
           <GhostBadge>Favorites</GhostBadge>

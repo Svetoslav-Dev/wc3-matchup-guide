@@ -7,7 +7,7 @@ import { colors } from "../../lib/theme";
 
 export default function MatchupDetailScreen() {
   const { slug } = useLocalSearchParams<{ slug: string }>();
-  const { data: matchup, error, loading, live } = useMatchupContent(slug);
+  const { data: matchup, loading } = useMatchupContent(slug);
 
   if (!matchup) {
     return (
@@ -23,8 +23,6 @@ export default function MatchupDetailScreen() {
       <PageTitle>{matchup.title}</PageTitle>
       <PageIntro>{matchup.summary}</PageIntro>
       {loading ? <Text style={{ color: colors.muted }}>Refreshing matchup notes…</Text> : null}
-      {error ? <Text style={{ color: colors.muted }}>API unavailable. Showing fallback matchup notes.</Text> : null}
-      <Text style={{ color: colors.muted }}>{live ? "Live API content" : "Shared fallback content"}</Text>
       <View style={{ gap: 14 }}>
         <GhostBadge>Early Game</GhostBadge>
         <Text style={{ color: "#a7b4cd", lineHeight: 22 }}>{matchup.earlyGamePlan}</Text>

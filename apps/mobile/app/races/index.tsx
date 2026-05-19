@@ -8,7 +8,7 @@ import { colors } from "../../lib/theme";
 export default function RacesScreen() {
   const [search, setSearch] = useState("");
   const [focusFilter, setFocusFilter] = useState<string>("all");
-  const { data: races, error, live, loading } = useRacesContent();
+  const { data: races, loading } = useRacesContent();
   const normalizedSearch = search.trim().toLowerCase();
   const focusOptions = [
     { id: "all", label: "All Styles" },
@@ -45,8 +45,6 @@ export default function RacesScreen() {
         The mobile client emphasizes quick recognition: race identity, ladder focus, and signature heroes.
       </PageIntro>
       {loading ? <Text style={{ color: colors.muted }}>Loading race guides…</Text> : null}
-      {error ? <Text style={{ color: colors.muted }}>API unavailable. Showing fallback guides.</Text> : null}
-      <Text style={{ color: colors.muted }}>{live ? "Live API content" : "Shared fallback content"}</Text>
       <View style={styles.filterPanel}>
         <Text style={styles.filterLabel}>Search races</Text>
         <TextInput
