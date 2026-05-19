@@ -1,41 +1,23 @@
 import Link from "next/link";
-import { matchups, races } from "@warcraft3-guide-hub/shared";
 
 type Props = {
   activeRace?: string;
   activeMatchup?: string;
 };
 
-const buildHref = (race?: string, matchup?: string) => {
-  const params = new URLSearchParams();
-
-  if (race) {
-    params.set("race", race);
-  }
-
-  if (matchup) {
-    params.set("matchup", matchup);
-  }
-
-  const query = params.toString();
-  return query ? `/builds?${query}` : "/builds";
-};
+const raceFilters = [
+  { slug: "human", name: "Human" },
+  { slug: "orc", name: "Orc" },
+  { slug: "undead", name: "Undead" },
+  { slug: "night-elf", name: "Night Elf" },
+];
 
 export function BuildFilterBar({ activeRace, activeMatchup }: Props) {
-  const visibleRaces = races.filter((race) => race.slug !== "neutral");
-  const hiddenMatchupSlugs = new Set([
-    "orc-vs-human",
-    "human-vs-undead",
-    "night-elf-vs-undead",
-    "undead-vs-orc",
-  ]);
-  const visibleMatchups = matchups.filter((matchup) => !hiddenMatchupSlugs.has(matchup.slug));
-
   return (
     <section className="panel panel--padded">
       <div className="section-head">
         <p className="section-label">Quick Filters</p>
-        <h2>Browse openings by race or matchup.</h2>
+        <h2>Browse openings by race.</h2>
       </div>
       <div className="chip-row">
         <Link
@@ -45,31 +27,17 @@ export function BuildFilterBar({ activeRace, activeMatchup }: Props) {
         >
           All Builds
         </Link>
-        {visibleRaces.map((race) => (
+        {raceFilters.map((race) => (
           <Link
             key={race.slug}
             className={`button button--ghost${activeRace === race.slug ? " button--active" : ""}`}
-            href={buildHref(race.slug, activeMatchup)}
+            href={`/builds?race=${race.slug}`}
             aria-current={activeRace === race.slug ? "page" : undefined}
           >
             {race.name}
           </Link>
         ))}
       </div>
-      {visibleMatchups.length > 0 ? (
-        <div className="chip-row">
-          {visibleMatchups.map((matchup) => (
-            <Link
-              key={matchup.slug}
-              className={`button button--ghost${activeMatchup === matchup.slug ? " button--active" : ""}`}
-              href={buildHref(activeRace, matchup.slug)}
-              aria-current={activeMatchup === matchup.slug ? "page" : undefined}
-            >
-              {matchup.title}
-            </Link>
-          ))}
-        </div>
-      ) : null}
     </section>
   );
 }
