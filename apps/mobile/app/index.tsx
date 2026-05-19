@@ -1,4 +1,4 @@
-import { Link } from "expo-router";
+import { Link, Stack } from "expo-router";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { ScreenShell } from "../components/screen-shell";
 import { GhostBadge, ListCard, PageIntro, PageTitle, SectionLabel, StatRow } from "../components/mobile-ui";
@@ -6,10 +6,11 @@ import { useHomeContent } from "../lib/live-content";
 import { colors } from "../lib/theme";
 
 export default function HomeScreen() {
-  const { builds, error, live, loading, matchups, stats } = useHomeContent();
+  const { builds, matchups, stats } = useHomeContent();
 
   return (
     <ScreenShell>
+      <Stack.Screen options={{ title: "Warcraft III Guide" }} />
       <SectionLabel>Mobile Companion</SectionLabel>
       <PageTitle>Warcraft III study in your pocket.</PageTitle>
       <PageIntro>
@@ -41,9 +42,7 @@ export default function HomeScreen() {
         <StatRow label="Heroes" value={stats.heroes} />
       </View>
 
-      {loading ? <Text style={styles.metaText}>Refreshing mobile content…</Text> : null}
-      {error ? <Text style={styles.metaText}>API unavailable. Showing fallback content.</Text> : null}
-      <GhostBadge>{live ? "Live Matchups" : "Featured Matchups"}</GhostBadge>
+      <GhostBadge>Featured Matchups</GhostBadge>
       {matchups.slice(0, 3).map((matchup) => (
         <ListCard
           key={matchup.slug}
@@ -53,7 +52,7 @@ export default function HomeScreen() {
           href={`/matchups/${matchup.slug}`}
         />
       ))}
-      <GhostBadge>{live ? "Live Build Routes" : "Fallback Build Routes"}</GhostBadge>
+      <GhostBadge>Build Routes</GhostBadge>
       {builds.slice(0, 2).map((build) => (
         <ListCard
           key={build.slug}
@@ -96,9 +95,5 @@ const styles = StyleSheet.create({
   },
   grid: {
     gap: 12,
-  },
-  metaText: {
-    color: colors.muted,
-    lineHeight: 20,
   },
 });
