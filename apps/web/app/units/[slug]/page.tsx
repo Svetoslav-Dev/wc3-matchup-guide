@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getUnitBySlug, listHeroes, listUnits } from "../../../lib/content";
+import { GameImage } from "../../../components/game-image";
 
 const unitCategories = {
   human: "Human",
@@ -131,6 +132,12 @@ export default async function UnitDetailPage({ params }: Props) {
         <p className="page-intro">{unit.description}</p>
       </div>
       <div className="detail-grid">
+        <div className="image-panel">
+          <GameImage
+            src={unit.imageUrl ?? `/images/units/${unit.slug}.jpg`}
+            alt={unit.name}
+          />
+        </div>
         <article className="detail-panel">
           <h2>Role</h2>
           <p>{unit.unitType}</p>

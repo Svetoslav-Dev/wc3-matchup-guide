@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { getMapBySlug } from "../../../lib/content";
+import { GameImage } from "../../../components/game-image";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -19,6 +20,12 @@ export default async function MapDetailPage({ params }: Props) {
         <p className="section-label">Map Guide</p>
         <h1 className="page-title">{map.name}</h1>
         <p className="page-intro">{map.description}</p>
+      </div>
+      <div className="image-panel image-panel--wide">
+        <GameImage
+          src={map.imageUrl ?? `/images/maps/${map.slug}.jpg`}
+          alt={map.name}
+        />
       </div>
       <div className="detail-grid">
         <article className="detail-panel">

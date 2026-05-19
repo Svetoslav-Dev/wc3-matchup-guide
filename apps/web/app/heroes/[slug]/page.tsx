@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { getHeroBySlug } from "../../../lib/content";
+import { GameImage } from "../../../components/game-image";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -21,6 +22,12 @@ export default async function HeroDetailPage({ params }: Props) {
         <p className="page-intro">{hero.description}</p>
       </div>
       <div className="detail-grid">
+        <div className="image-panel">
+          <GameImage
+            src={hero.imageUrl ?? `/images/heroes/${hero.slug}.jpg`}
+            alt={hero.name}
+          />
+        </div>
         <article className="detail-panel">
           <h2>Role</h2>
           <p>{hero.role}</p>

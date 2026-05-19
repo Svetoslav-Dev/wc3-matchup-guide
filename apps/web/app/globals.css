@@ -513,6 +513,38 @@ textarea {
   color: var(--gold);
 }
 
+.game-image {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: var(--panel);
+  object-fit: cover;
+}
+
+.game-image--icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 8px;
+  object-fit: cover;
+  border: 1px solid var(--line);
+  background: var(--panel);
+  flex-shrink: 0;
+}
+
+.image-panel {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  overflow: hidden;
+  aspect-ratio: 1 / 1;
+}
+
+.image-panel--wide {
+  aspect-ratio: 16 / 9;
+}
+
 @media (max-width: 900px) {
   .hero--split,
   .list-grid,

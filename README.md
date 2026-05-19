@@ -2,6 +2,22 @@
 
 WC3 Matchup Guide is a production-style capstone project for a Warcraft III strategy database with a Next.js web app, PostgreSQL/Neon, Drizzle ORM, JWT auth, protected favorites, and admin content management.
 
+## Disclaimer
+
+This project was built as a capstone submission for the "Full Stack Apps with AI" course. It is a fan-made educational project and is not affiliated with or endorsed by Blizzard Entertainment. Warcraft III and all related names, characters, and assets are the intellectual property of Blizzard Entertainment. No ownership of those rights is claimed.
+
+## Image credits
+
+Community artwork for hero portraits, unit icons, and map previews is sourced from [Hiveworkshop](https://www.hiveworkshop.com) — the Warcraft III modding community. Only classic (non-Reforged) style assets are used.
+
+Images are stored locally and excluded from the repository. The `imageUrl` column on heroes, units, and maps can be populated with hosted URLs for production deployments.
+
+Individual asset credits should be listed here as images are added:
+
+| Asset | Author | Source |
+|---|---|---|
+| *(add entries as you download assets)* | | |
+
 ## Tech stack
 
 | Layer | Technology |

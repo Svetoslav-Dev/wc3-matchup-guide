@@ -21,3 +21,10 @@ coverage/
 docs/CONTENT_EXPANSION_GUIDE.md
 .DS_Store
 *.log
+
+# Game asset images — local only, not committed to the repo
+# Drop files here as {slug}.jpg to display them in development
+# See README for Hiveworkshop image credits
+apps/web/public/images/heroes/
+apps/web/public/images/units/
+apps/web/public/images/maps/

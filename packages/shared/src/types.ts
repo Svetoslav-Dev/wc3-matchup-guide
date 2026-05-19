@@ -17,6 +17,7 @@ export type Hero = {
   primaryAttribute: string;
   role: string;
   highlights: string[];
+  imageUrl?: string | null;
 };
 
 export type Unit = {
@@ -31,6 +32,7 @@ export type Unit = {
   lumber: number;
   strengths: string[];
   weaknesses: string[];
+  imageUrl?: string | null;
 };
 
 export type MapGuide = {
@@ -39,6 +41,7 @@ export type MapGuide = {
   description: string;
   creepNotes: string;
   expansionNotes: string;
+  imageUrl?: string | null;
 };
 
 export type Matchup = {
