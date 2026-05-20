@@ -6,6 +6,8 @@ import { colors } from "../lib/theme";
 const navItems = [
   { href: "/", label: "Home" },
   { href: "/races", label: "Races" },
+  { href: "/units", label: "Units" },
+  { href: "/maps", label: "Maps" },
   { href: "/matchups", label: "Matchups" },
   { href: "/builds", label: "Builds" },
   { href: "/heroes", label: "Heroes" },

@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
-import type { Build, Hero, Matchup, Race } from "@warcraft3-guide-hub/shared";
+import type { Build, Hero, MapGuide, Matchup, Race, Unit } from "@warcraft3-guide-hub/shared";
 import { mobileApi } from "./api";
 import {
   getMobileBuild,
   getMobileHero,
+  getMobileMap,
   getMobileMatchup,
   getMobileRace,
+  getMobileUnit,
   mobileData,
   mobileStats,
 } from "./mobile-data";
@@ -169,13 +171,44 @@ export function useHeroContent(slug?: string) {
   const fallbackHero = slug ? getMobileHero(slug) ?? null : null;
 
   return useRemoteValue(`hero:${slug ?? "missing"}`, async () => {
-    if (!slug) {
-      return null;
-    }
-
+    if (!slug) return null;
     const response = await mobileApi.getHero(slug);
     return response.data;
   }, fallbackHero);
 }
 
-export type { Build, Hero, Matchup, Race };
+export function useUnitsContent() {
+  return useRemoteValue("units", async () => {
+    const response = await mobileApi.getUnits(1, 200);
+    return response.data;
+  }, mobileData.units);
+}
+
+export function useUnitContent(slug?: string) {
+  const fallbackUnit = slug ? getMobileUnit(slug) ?? null : null;
+
+  return useRemoteValue(`unit:${slug ?? "missing"}`, async () => {
+    if (!slug) return null;
+    const response = await mobileApi.getUnit(slug);
+    return response.data;
+  }, fallbackUnit);
+}
+
+export function useMapsContent() {
+  return useRemoteValue("maps", async () => {
+    const response = await mobileApi.getMaps(1, 50);
+    return response.data;
+  }, mobileData.maps);
+}
+
+export function useMapContent(slug?: string) {
+  const fallbackMap = slug ? getMobileMap(slug) ?? null : null;
+
+  return useRemoteValue(`map:${slug ?? "missing"}`, async () => {
+    if (!slug) return null;
+    const response = await mobileApi.getMap(slug);
+    return response.data;
+  }, fallbackMap);
+}
+
+export type { Build, Hero, MapGuide, Matchup, Race, Unit };

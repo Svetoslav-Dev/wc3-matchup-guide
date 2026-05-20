@@ -33,6 +33,16 @@ export default function HomeScreen() {
             <Text style={styles.secondaryActionText}>Hero Guides</Text>
           </Pressable>
         </Link>
+        <Link href="/units" asChild>
+          <Pressable style={styles.secondaryAction}>
+            <Text style={styles.secondaryActionText}>Units</Text>
+          </Pressable>
+        </Link>
+        <Link href="/maps" asChild>
+          <Pressable style={styles.secondaryAction}>
+            <Text style={styles.secondaryActionText}>Maps</Text>
+          </Pressable>
+        </Link>
       </View>
 
       <View style={styles.grid}>
@@ -42,16 +52,38 @@ export default function HomeScreen() {
         <StatRow label="Heroes" value={stats.heroes} />
       </View>
 
-      <GhostBadge>Featured Matchups</GhostBadge>
-      {matchups.slice(0, 3).map((matchup) => (
+      <GhostBadge>Worst Matchups</GhostBadge>
+      {[
+        matchups.find((m) => m.slug === "human-vs-undead"),
+        matchups.find((m) => m.slug === "orc-vs-human"),
+        matchups.find((m) => m.slug === "undead-vs-orc"),
+        matchups.find((m) => m.slug === "night-elf-vs-undead"),
+      ].filter(Boolean).map((matchup) => (
         <ListCard
-          key={matchup.slug}
-          eyebrow={matchup.difficulty}
-          title={matchup.title}
-          description={matchup.summary}
-          href={`/matchups/${matchup.slug}`}
+          key={matchup!.slug}
+          eyebrow={matchup!.difficulty}
+          title={matchup!.title}
+          description={matchup!.summary}
+          href={`/matchups/${matchup!.slug}`}
         />
       ))}
+
+      <GhostBadge>Best Matchups</GhostBadge>
+      {[
+        matchups.find((m) => m.slug === "human-vs-orc"),
+        matchups.find((m) => m.slug === "orc-vs-undead"),
+        matchups.find((m) => m.slug === "undead-vs-night-elf"),
+        matchups.find((m) => m.slug === "night-elf-vs-human"),
+      ].filter(Boolean).map((matchup) => (
+        <ListCard
+          key={matchup!.slug}
+          eyebrow={matchup!.difficulty}
+          title={matchup!.title}
+          description={matchup!.summary}
+          href={`/matchups/${matchup!.slug}`}
+        />
+      ))}
+
       <GhostBadge>Build Routes</GhostBadge>
       {builds.slice(0, 2).map((build) => (
         <ListCard

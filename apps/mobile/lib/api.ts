@@ -4,8 +4,10 @@ import type {
   FavoriteBuild,
   Hero,
   ListResponse,
+  MapGuide,
   Matchup,
   Race,
+  Unit,
 } from "@warcraft3-guide-hub/shared";
 
 type ApiErrorPayload = {
@@ -141,4 +143,12 @@ export const mobileApi = {
   },
   getBuild: (slug: string) =>
     apiRequest<{ data: Build }>(`/builds/${slug}`),
+  getUnits: (page = 1, pageSize = 200) =>
+    apiRequest<ListResponse<Unit>>(`/units?page=${page}&pageSize=${pageSize}`),
+  getUnit: (slug: string) =>
+    apiRequest<{ data: Unit }>(`/units/${slug}`),
+  getMaps: (page = 1, pageSize = 50) =>
+    apiRequest<ListResponse<MapGuide>>(`/maps?page=${page}&pageSize=${pageSize}`),
+  getMap: (slug: string) =>
+    apiRequest<{ data: MapGuide }>(`/maps/${slug}`),
 };
