@@ -27,6 +27,7 @@
     "@types/node": "22.15.18",
     "@types/react": "19.1.5",
     "@types/react-dom": "19.1.5",
+    "drizzle-kit": "^0.31.10",
     "eslint": "^9.39.4",
     "eslint-config-next": "15.3.8",
     "typescript": "5.8.3"
