@@ -56,6 +56,7 @@ export const adminHeroSchema = z.object({
   primaryAttribute: z.string().trim().min(1).max(40),
   role: z.string().trim().min(1).max(80),
   highlights: z.array(z.string().trim().min(1).max(500)).max(20),
+  imageUrl: z.string().trim().max(500).optional().nullable(),
 });
 
 export const adminUnitSchema = z.object({
@@ -66,6 +67,7 @@ export const adminUnitSchema = z.object({
   unitType: z.string().trim().min(1).max(80),
   strengths: z.array(z.string().trim().min(1).max(500)).max(20),
   weaknesses: z.array(z.string().trim().min(1).max(500)).max(20),
+  imageUrl: z.string().trim().max(500).optional().nullable(),
 });
 
 export const adminMapSchema = z.object({
@@ -74,6 +76,7 @@ export const adminMapSchema = z.object({
   description: z.string().trim().min(1).max(2000),
   creepNotes: z.string().trim().min(1).max(4000),
   expansionNotes: z.string().trim().min(1).max(4000),
+  imageUrl: z.string().trim().max(500).optional().nullable(),
 });
 
 export const adminRaceSchema = z.object({
@@ -82,4 +85,20 @@ export const adminRaceSchema = z.object({
   description: z.string().trim().min(1).max(2000),
   identity: z.string().trim().min(1).max(2000),
   ladderFocus: z.string().trim().min(1).max(4000),
+  imageUrl: z.string().trim().max(500).optional().nullable(),
+});
+
+export const adminBuildingSchema = z.object({
+  name: z.string().trim().min(1).max(120),
+  race: z.string().trim().min(1).max(50),
+  description: z.string().trim().min(1).max(2000),
+  imageFile: z.string().trim().max(120),
+});
+
+export const adminItemSchema = z.object({
+  name: z.string().trim().min(1).max(120),
+  category: z.string().trim().min(1).max(20),
+  shops: z.array(z.string().trim()).max(10),
+  description: z.string().trim().min(1).max(2000),
+  imageFile: z.string().trim().max(120),
 });

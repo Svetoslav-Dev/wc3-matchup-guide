@@ -2,7 +2,9 @@ import {
   addFavoriteBuildForUser as addDatabaseFavoriteBuildForUser,
   findFavoriteForUserByBuildSlug as findDatabaseFavoriteForUserByBuildSlug,
   getAdminBuildBySlug as getDatabaseAdminBuildBySlug,
+  getAdminBuildingById as getDatabaseAdminBuildingById,
   getAdminHeroBySlug as getDatabaseAdminHeroBySlug,
+  getAdminItemById as getDatabaseAdminItemById,
   getAdminMapBySlug as getDatabaseAdminMapBySlug,
   getAdminMatchupBySlug as getDatabaseAdminMatchupBySlug,
   getAdminRaceBySlug as getDatabaseAdminRaceBySlug,
@@ -15,8 +17,10 @@ import {
   findUnitBySlug as findDatabaseUnitBySlug,
   getContentStats as getDatabaseContentStats,
   hasDatabaseUrl,
+  listAdminBuildings as listDatabaseAdminBuildings,
   listAdminBuilds as listDatabaseAdminBuilds,
   listAdminHeroes as listDatabaseAdminHeroes,
+  listAdminItems as listDatabaseAdminItems,
   listAdminMaps as listDatabaseAdminMaps,
   listAdminMatchups as listDatabaseAdminMatchups,
   listAdminRaces as listDatabaseAdminRaces,
@@ -90,41 +94,53 @@ export const listBuilds = async (filters: BuildFilters = {}) =>
 export const getBuildBySlug = async (slug: string) =>
   hasDatabaseUrl() ? findDatabaseBuildBySlug(slug) : getMockBuildBySlug(slug);
 
-export const listAdminBuilds = async (limit = 12) =>
-  hasDatabaseUrl() ? listDatabaseAdminBuilds(limit) : [];
+export const listAdminBuilds = async (limit = 12, search?: string) =>
+  hasDatabaseUrl() ? listDatabaseAdminBuilds(limit, search) : [];
 
 export const getAdminBuildBySlug = async (slug: string) =>
   hasDatabaseUrl() ? getDatabaseAdminBuildBySlug(slug) : null;
 
-export const listAdminHeroes = async (limit = 12) =>
-  hasDatabaseUrl() ? listDatabaseAdminHeroes(limit) : [];
+export const listAdminHeroes = async (limit = 12, search?: string) =>
+  hasDatabaseUrl() ? listDatabaseAdminHeroes(limit, search) : [];
 
 export const getAdminHeroBySlug = async (slug: string) =>
   hasDatabaseUrl() ? getDatabaseAdminHeroBySlug(slug) : null;
 
-export const listAdminUnits = async (limit = 12) =>
-  hasDatabaseUrl() ? listDatabaseAdminUnits(limit) : [];
+export const listAdminUnits = async (limit = 12, search?: string) =>
+  hasDatabaseUrl() ? listDatabaseAdminUnits(limit, search) : [];
 
 export const getAdminUnitBySlug = async (slug: string) =>
   hasDatabaseUrl() ? getDatabaseAdminUnitBySlug(slug) : null;
 
-export const listAdminMaps = async (limit = 12) =>
-  hasDatabaseUrl() ? listDatabaseAdminMaps(limit) : [];
+export const listAdminMaps = async (limit = 12, search?: string) =>
+  hasDatabaseUrl() ? listDatabaseAdminMaps(limit, search) : [];
 
 export const getAdminMapBySlug = async (slug: string) =>
   hasDatabaseUrl() ? getDatabaseAdminMapBySlug(slug) : null;
 
-export const listAdminRaces = async (limit = 12) =>
-  hasDatabaseUrl() ? listDatabaseAdminRaces(limit) : [];
+export const listAdminRaces = async (limit = 12, search?: string) =>
+  hasDatabaseUrl() ? listDatabaseAdminRaces(limit, search) : [];
 
 export const getAdminRaceBySlug = async (slug: string) =>
   hasDatabaseUrl() ? getDatabaseAdminRaceBySlug(slug) : null;
 
-export const listAdminMatchups = async (limit = 12) =>
-  hasDatabaseUrl() ? listDatabaseAdminMatchups(limit) : [];
+export const listAdminMatchups = async (limit = 12, search?: string) =>
+  hasDatabaseUrl() ? listDatabaseAdminMatchups(limit, search) : [];
 
 export const getAdminMatchupBySlug = async (slug: string) =>
   hasDatabaseUrl() ? getDatabaseAdminMatchupBySlug(slug) : null;
+
+export const listAdminBuildings = async (limit = 12, search?: string) =>
+  hasDatabaseUrl() ? listDatabaseAdminBuildings(limit, search) : [];
+
+export const getAdminBuildingById = async (id: number) =>
+  hasDatabaseUrl() ? getDatabaseAdminBuildingById(id) : null;
+
+export const listAdminItems = async (limit = 12, search?: string) =>
+  hasDatabaseUrl() ? listDatabaseAdminItems(limit, search) : [];
+
+export const getAdminItemById = async (id: number) =>
+  hasDatabaseUrl() ? getDatabaseAdminItemById(id) : null;
 
 export const listFavoriteBuildsForUser = async (userId: number) =>
   hasDatabaseUrl()
@@ -163,4 +179,6 @@ export const getHomeStats = async () =>
         buildTotal: queryBuilds().total,
         unitTotal: mockUnits.length,
         mapTotal: mockMaps.length,
+        buildingTotal: 0,
+        itemTotal: 0,
       };

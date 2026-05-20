@@ -1,20 +1,36 @@
 import { notFound } from "next/navigation";
 import { hasDatabaseUrl } from "@warcraft3-guide-hub/db";
 import { getSessionUser } from "../../../lib/auth";
-import { getBuildBySlug } from "../../../lib/content";
-import { findFavoriteForUserByBuildSlug } from "../../../lib/content";
+import { getBuildBySlug, findFavoriteForUserByBuildSlug } from "../../../lib/content";
 import { removeFavoriteAction, saveFavoriteAction } from "./favorite-actions";
 
 type Props = {
   params: Promise<{ slug: string }>;
 };
 
+const HeartSvg = ({ filled }: { filled: boolean }) => (
+  <svg width="22" height="22" viewBox="0 0 24 24" fill={filled ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+  </svg>
+);
+
 export default async function BuildDetailPage({ params }: Props) {
   const { slug } = await params;
+
   const [build, sessionUser] = await Promise.all([getBuildBySlug(slug), getSessionUser()]);
 
   if (!build) {
     notFound();
+  }
+
+  // Variant builds have no steps — fall back to base build steps
+  let steps = build.steps;
+  if (steps.length === 0) {
+    const baseSlug = slug.replace(/-variant-\d+$/, "");
+    if (baseSlug !== slug) {
+      const baseBuild = await getBuildBySlug(baseSlug);
+      steps = baseBuild?.steps ?? [];
+    }
   }
 
   const favoriteId =
@@ -22,25 +38,27 @@ export default async function BuildDetailPage({ params }: Props) {
       ? await findFavoriteForUserByBuildSlug(sessionUser.id, slug)
       : null;
 
+  const heartAction = favoriteId ? removeFavoriteAction : saveFavoriteAction;
+
   return (
     <div className="page-shell page-stack">
       <div className="section-head">
         <p className="section-label">{build.strategyType}</p>
         <h1 className="page-title">{build.title}</h1>
         <p className="page-intro">{build.summary}</p>
-        {sessionUser ? (
-          <form action={favoriteId ? removeFavoriteAction : saveFavoriteAction}>
-            <input type="hidden" name="buildSlug" value={build.slug} />
-            <button className="button" type="submit">
-              {favoriteId ? "Remove Favorite" : "Save to Favorites"}
-            </button>
-          </form>
-        ) : (
-          <p className="muted">Log in to save this build to your favorites.</p>
-        )}
+        <form action={heartAction} style={{ display: "contents" }}>
+          <input type="hidden" name="buildSlug" value={build.slug} />
+          <button
+            className={`heart-btn heart-btn--detail${favoriteId ? " heart-btn--filled" : ""}`}
+            type="submit"
+            aria-label={favoriteId ? "Remove from favorites" : "Save to favorites"}
+          >
+            <HeartSvg filled={Boolean(favoriteId)} />
+          </button>
+        </form>
       </div>
       <div className="timeline">
-        {build.steps.map((step) => (
+        {steps.map((step) => (
           <article key={step.stepNumber} className="timeline-step">
             <strong>
               Step {step.stepNumber} · {step.supply} supply · {step.timing}

@@ -93,6 +93,7 @@ export const formDataToAdminHeroInput = (formData: FormData): AdminHeroInput => 
   primaryAttribute: String(formData.get("primaryAttribute") ?? ""),
   role: String(formData.get("role") ?? ""),
   highlights: parseCommonMistakesInput(String(formData.get("highlightsInput") ?? "")),
+  imageUrl: String(formData.get("imageUrl") ?? "").trim() || null,
 });
 
 export const formDataToAdminUnitInput = (formData: FormData): AdminUnitInput => ({
@@ -103,6 +104,7 @@ export const formDataToAdminUnitInput = (formData: FormData): AdminUnitInput => 
   unitType: String(formData.get("unitType") ?? ""),
   strengths: parseCommonMistakesInput(String(formData.get("strengthsInput") ?? "")),
   weaknesses: parseCommonMistakesInput(String(formData.get("weaknessesInput") ?? "")),
+  imageUrl: String(formData.get("imageUrl") ?? "").trim() || null,
 });
 
 export const formDataToAdminMapInput = (formData: FormData): AdminMapInput => ({
@@ -111,6 +113,7 @@ export const formDataToAdminMapInput = (formData: FormData): AdminMapInput => ({
   description: String(formData.get("description") ?? ""),
   creepNotes: String(formData.get("creepNotes") ?? ""),
   expansionNotes: String(formData.get("expansionNotes") ?? ""),
+  imageUrl: String(formData.get("imageUrl") ?? "").trim() || null,
 });
 
 export const formDataToAdminRaceInput = (formData: FormData): AdminRaceInput => ({
@@ -119,4 +122,20 @@ export const formDataToAdminRaceInput = (formData: FormData): AdminRaceInput => 
   description: String(formData.get("description") ?? ""),
   identity: String(formData.get("identity") ?? ""),
   ladderFocus: String(formData.get("ladderFocus") ?? ""),
+  imageUrl: String(formData.get("imageUrl") ?? "").trim() || null,
+});
+
+export const formDataToAdminBuildingInput = (formData: FormData) => ({
+  name: String(formData.get("name") ?? ""),
+  race: String(formData.get("race") ?? ""),
+  description: String(formData.get("description") ?? ""),
+  imageFile: String(formData.get("imageFile") ?? "").trim(),
+});
+
+export const formDataToAdminItemInput = (formData: FormData) => ({
+  name: String(formData.get("name") ?? ""),
+  category: String(formData.get("category") ?? ""),
+  shops: String(formData.get("shopsInput") ?? "").split(",").map((s) => s.trim()).filter(Boolean),
+  description: String(formData.get("description") ?? ""),
+  imageFile: String(formData.get("imageFile") ?? "").trim(),
 });

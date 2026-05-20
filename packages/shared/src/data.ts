@@ -12,6 +12,7 @@ export const races: Race[] = [
     signatureHeroes: ["Archmage", "Mountain King", "Paladin"],
     ladderFocus: "Secure creeping routes, preserve peasants, and expand on favorable map flow.",
     imageUrl: "/images/Races/Humans_Icon.png",
+    playDifficulty: "Medium",
   },
   {
     slug: "orc",
@@ -24,6 +25,7 @@ export const races: Race[] = [
     signatureHeroes: ["Blademaster", "Far Seer", "Shadow Hunter"],
     ladderFocus: "Force reactions, scout constantly, and punish greedy tech or expansion patterns.",
     imageUrl: "/images/Races/Orcs_Icon.png",
+    playDifficulty: "Easy",
   },
   {
     slug: "night-elf",
@@ -36,6 +38,7 @@ export const races: Race[] = [
     signatureHeroes: ["Demon Hunter", "Keeper of the Grove", "Warden"],
     ladderFocus: "Creep efficiently, deny safe expansions, and convert mobility into resource advantages.",
     imageUrl: "/images/Races/Night_Elves_Icon.png",
+    playDifficulty: "Hard",
   },
   {
     slug: "undead",
@@ -48,6 +51,7 @@ export const races: Race[] = [
     signatureHeroes: ["Death Knight", "Lich", "Crypt Lord"],
     ladderFocus: "Keep experience flowing, protect fiend numbers, and decide when to all-in versus expand.",
     imageUrl: "/images/Races/Undead_Icon.png",
+    playDifficulty: "Hard",
   },
   {
     slug: "neutral",
@@ -59,6 +63,7 @@ export const races: Race[] = [
     strengths: ["Flexible utility", "Cross-race tactical value", "Powerful niche timing tools"],
     signatureHeroes: ["N/A"],
     ladderFocus: "Use neutral pickups to patch weaknesses, spike timings, and punish opponents who scout too late.",
+    imageUrl: "/images/Races/Neutral.png",
   },
 ];
 
@@ -1232,7 +1237,7 @@ export const units: Unit[] = [
   },
 ];
 
-export const maps: MapGuide[] = [
+const baseMaps: Omit<MapGuide, "shops">[] = [
   {
     slug: "echo-isles",
     name: "Echo Isles",
@@ -1312,6 +1317,7 @@ export const maps: MapGuide[] = [
     creepNotes: "Open team routes make shared creeping and partner support much more valuable than isolated farming.",
     expansionNotes: "Forward expansions pay off when teams can collapse together, but isolated mines are easy to punish.",
     availableItems: ["Boots of Speed", "Claws of Attack +6", "Periapt of Vitality", "Ancient Janggo of Endurance", "Staff of Sanctuary", "Scroll of Town Portal", "Healing Salve", "Clarity Potion", "Dust of Appearance", "Potion of Healing", "Potion of Mana"],
+    imageUrl: "/images/Maps/Wc3LostTempleRoC.png",
   },
   {
     slug: "tranquil-paths",
@@ -1419,6 +1425,7 @@ export const maps: MapGuide[] = [
     creepNotes: "Large camp clusters reward organized team paths and punish players who wander without support.",
     expansionNotes: "So many mines are available that the map naturally stretches into multi-base games if teams stabilize.",
     availableItems: ["Boots of Speed", "Claws of Attack +6", "Periapt of Vitality", "Ancient Janggo of Endurance", "Staff of Sanctuary", "Scroll of Town Portal", "Healing Salve", "Clarity Potion", "Dust of Appearance", "Goblin Zeppelin", "Orb of Lightning", "Orb of Frost", "Orb of Corruption", "Mask of Death", "Helm of Valor", "Robe of the Magi", "Khadgar's Gem of Health"],
+    imageUrl: "/images/Maps/Wc3LostTempleRoC.png",
   },
   {
     slug: "dragon-falls",
@@ -1439,6 +1446,37 @@ export const maps: MapGuide[] = [
     imageUrl: "/images/Maps/Wc3_IceCrown.png",
   },
 ];
+
+const mapShopsBySlug: Record<string, string[]> = {
+  "echo-isles": ["Goblin Merchant", "Tavern"],
+  "terenas-stand": ["Goblin Merchant"],
+  "turtle-rock": ["Goblin Merchant", "Goblin Laboratory", "Mercenary Camp"],
+  "twisted-meadows": ["Goblin Merchant", "Goblin Laboratory", "Mercenary Camp"],
+  "the-two-rivers": ["Goblin Merchant"],
+  "floodplains-1v1": ["Goblin Merchant"],
+  "secret-valley": ["Goblin Merchant", "Goblin Laboratory"],
+  "lost-temple": ["Goblin Merchant", "Goblin Laboratory", "Mercenary Camp", "Tavern"],
+  "traversing-the-ruins": ["Goblin Merchant", "Mercenary Camp"],
+  "tranquil-paths": ["Goblin Merchant", "Mercenary Camp", "Tavern"],
+  avalanche: ["Goblin Merchant", "Tavern", "Goblin Laboratory"],
+  "the-crucible": ["Goblin Merchant", "Tavern", "Goblin Laboratory"],
+  "gnoll-wood": ["Goblin Merchant", "Tavern"],
+  monsoon: ["Goblin Merchant", "Mercenary Camp"],
+  typhoon: ["Goblin Merchant", "Tavern"],
+  deadlands: ["Goblin Merchant", "Tavern"],
+  "gold-rush": ["Goblin Merchant", "Goblin Laboratory", "Mercenary Camp"],
+  "market-square": ["Goblin Merchant", "Tavern"],
+  battleground: ["Goblin Merchant", "Goblin Laboratory"],
+  "murgul-oasis": ["Goblin Merchant", "Mercenary Camp"],
+  "dustwallow-keys": ["Goblin Merchant", "Goblin Laboratory", "Mercenary Camp"],
+  "dragon-falls": ["Goblin Merchant", "Goblin Laboratory"],
+  "ice-crown": ["Goblin Merchant", "Goblin Laboratory", "Tavern"],
+};
+
+export const maps: MapGuide[] = baseMaps.map((map) => ({
+  ...map,
+  shops: mapShopsBySlug[map.slug] ?? [],
+}));
 
 export const matchups: Matchup[] = [
   {
@@ -1690,7 +1728,7 @@ export const builds: Build[] = [
     raceName: "Human",
     raceSlug: "human",
     summary: "A macro-first Human mirror build built around clean militia creeping, faster economy, and breaker-caster control.",
-    difficulty: "Advanced",
+    difficulty: "Hard",
     strategyType: "Mirror Macro",
     bestAgainst: "Human",
     steps: [
@@ -1706,7 +1744,7 @@ export const builds: Build[] = [
     raceName: "Human",
     raceSlug: "human",
     summary: "A disciplined Human anti-Orc build that leverages rifles, slow, and bolt timings to punish raider overcommitment.",
-    difficulty: "Intermediate",
+    difficulty: "Medium",
     strategyType: "Control Timing",
     bestAgainst: "Orc",
     steps: [
@@ -1722,7 +1760,7 @@ export const builds: Build[] = [
     raceName: "Human",
     raceSlug: "human",
     summary: "A disciplined Human expansion build that leans on militia efficiency and caster scaling.",
-    difficulty: "Intermediate",
+    difficulty: "Medium",
     strategyType: "Economic Control",
     matchupSlug: "human-vs-undead",
     bestAgainst: "Undead",
@@ -1739,7 +1777,7 @@ export const builds: Build[] = [
     raceName: "Human",
     raceSlug: "human",
     summary: "A Human anti-Night Elf approach that emphasizes dispel, mana control, and breaker uptime against mobile hero play.",
-    difficulty: "Advanced",
+    difficulty: "Hard",
     strategyType: "Spell Utility",
     bestAgainst: "Night Elf",
     steps: [
@@ -1755,7 +1793,7 @@ export const builds: Build[] = [
     raceName: "Orc",
     raceSlug: "orc",
     summary: "A mirror-focused Orc opener built around wolves, ranged scaling, and clean posture against Blademaster punish windows.",
-    difficulty: "Advanced",
+    difficulty: "Hard",
     strategyType: "Mirror Tempo",
     bestAgainst: "Orc",
     steps: [
@@ -1771,7 +1809,7 @@ export const builds: Build[] = [
     raceName: "Orc",
     raceSlug: "orc",
     summary: "A stable Orc ladder opening built to pressure Human and exploit exposed expansions.",
-    difficulty: "Intermediate",
+    difficulty: "Medium",
     strategyType: "Tempo Midgame",
     matchupSlug: "orc-vs-human",
     bestAgainst: "Human",
@@ -1788,7 +1826,7 @@ export const builds: Build[] = [
     raceName: "Orc",
     raceSlug: "orc",
     summary: "A classic Orc plan against Night Elf that pressures mobility with ensnare, durable grunts, and kodo timing support.",
-    difficulty: "Intermediate",
+    difficulty: "Medium",
     strategyType: "Midgame Catch",
     bestAgainst: "Night Elf",
     steps: [
@@ -1804,7 +1842,7 @@ export const builds: Build[] = [
     raceName: "Orc",
     raceSlug: "orc",
     summary: "A sturdy anti-Undead build that uses spirit walkers, link sustain, and measured hero control to blunt nuke timings.",
-    difficulty: "Advanced",
+    difficulty: "Hard",
     strategyType: "Sustain Control",
     bestAgainst: "Undead",
     steps: [
@@ -1820,7 +1858,7 @@ export const builds: Build[] = [
     raceName: "Night Elf",
     raceSlug: "night-elf",
     summary: "A mirror-control Night Elf build that leans on entangle, map speed, and talon disruption before bears take over.",
-    difficulty: "Advanced",
+    difficulty: "Hard",
     strategyType: "Mirror Control",
     bestAgainst: "Night Elf",
     steps: [
@@ -1836,7 +1874,7 @@ export const builds: Build[] = [
     raceName: "Night Elf",
     raceSlug: "night-elf",
     summary: "A pressure-oriented Night Elf route that attacks Human mana economy and punishes vulnerable expansions.",
-    difficulty: "Intermediate",
+    difficulty: "Medium",
     strategyType: "Map Pressure",
     bestAgainst: "Human",
     steps: [
@@ -1852,7 +1890,7 @@ export const builds: Build[] = [
     raceName: "Night Elf",
     raceSlug: "night-elf",
     summary: "A tempo Night Elf opener that uses huntress pressure and strong map presence to punish Orc greed and weak scouting.",
-    difficulty: "Intermediate",
+    difficulty: "Medium",
     strategyType: "Tempo Pressure",
     bestAgainst: "Orc",
     steps: [
@@ -1868,7 +1906,7 @@ export const builds: Build[] = [
     raceName: "Night Elf",
     raceSlug: "night-elf",
     summary: "A resilient Night Elf route that aims for strong sustained fights with bear transitions.",
-    difficulty: "Advanced",
+    difficulty: "Hard",
     strategyType: "Sustain Timing",
     matchupSlug: "night-elf-vs-undead",
     bestAgainst: "Undead",
@@ -1885,7 +1923,7 @@ export const builds: Build[] = [
     raceName: "Undead",
     raceSlug: "undead",
     summary: "A precise Undead mirror build centered on safe fiend count, statue timing, and level advantages around nuke control.",
-    difficulty: "Advanced",
+    difficulty: "Hard",
     strategyType: "Mirror Precision",
     bestAgainst: "Undead",
     steps: [
@@ -1901,7 +1939,7 @@ export const builds: Build[] = [
     raceName: "Undead",
     raceSlug: "undead",
     summary: "A mobility-heavy Undead approach that pressures Human economy and punishes overreliance on static expansion patterns.",
-    difficulty: "Advanced",
+    difficulty: "Hard",
     strategyType: "Mobility Pressure",
     bestAgainst: "Human",
     steps: [
@@ -1917,7 +1955,7 @@ export const builds: Build[] = [
     raceName: "Undead",
     raceSlug: "undead",
     summary: "A snowball-oriented Undead build that uses sleep pressure and gargoyle mobility to stretch Night Elf across the map.",
-    difficulty: "Advanced",
+    difficulty: "Hard",
     strategyType: "Snowball Pressure",
     bestAgainst: "Night Elf",
     steps: [
@@ -1933,7 +1971,7 @@ export const builds: Build[] = [
     raceName: "Undead",
     raceSlug: "undead",
     summary: "A classic Undead timing route that prioritizes fiend count, statue sustain, and burst damage.",
-    difficulty: "Intermediate",
+    difficulty: "Medium",
     strategyType: "Timing Push",
     matchupSlug: "undead-vs-orc",
     bestAgainst: "Orc",

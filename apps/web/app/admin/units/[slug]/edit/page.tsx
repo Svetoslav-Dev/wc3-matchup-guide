@@ -22,7 +22,7 @@ export default async function EditAdminUnitPage({ params }: Props) {
   return (
     <div className="page-shell page-stack">
       <div className="section-head"><p className="section-label">Admin Unit Editor</p><h1 className="page-title">Edit {unit.name}</h1></div>
-      <form action={updateUnitAction} className="form-grid">
+      <form action={updateUnitAction} className="form-grid" encType="multipart/form-data">
         <input type="hidden" name="unitId" value={unit.id} />
         <section className="form-panel">
           <h2>Core Metadata</h2>
@@ -30,6 +30,12 @@ export default async function EditAdminUnitPage({ params }: Props) {
           <div className="field"><label htmlFor="name">Name</label><input id="name" name="name" type="text" defaultValue={unit.name} /></div>
           <div className="field"><label htmlFor="slug">Slug</label><input id="slug" name="slug" type="text" defaultValue={unit.slug} /></div>
           <div className="field"><label htmlFor="unitType">Unit type</label><input id="unitType" name="unitType" type="text" defaultValue={unit.unitType} /></div>
+          <input type="hidden" name="imageUrl" value={unit.imageUrl ?? ""} />
+          <div className="field">
+            <label htmlFor="imageUpload">Image (saves to /images/Units/)</label>
+            {unit.imageUrl ? <img src={unit.imageUrl} alt={unit.name} className="admin-img-preview" /> : null}
+            <input id="imageUpload" name="imageUpload" type="file" accept="image/*" />
+          </div>
         </section>
         <section className="form-panel">
           <h2>Guide Content</h2>

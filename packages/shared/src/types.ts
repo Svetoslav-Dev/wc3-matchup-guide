@@ -8,6 +8,7 @@ export type Race = {
   signatureHeroes: string[];
   ladderFocus: string;
   imageUrl?: string | null;
+  playDifficulty?: string | null;
 };
 
 export type HeroSpell = {
@@ -51,6 +52,7 @@ export type MapGuide = {
   creepNotes: string;
   expansionNotes: string;
   availableItems: string[];
+  shops: string[];
   imageUrl?: string | null;
 };
 
@@ -78,6 +80,7 @@ export type Build = {
   title: string;
   raceName: string;
   raceSlug: string;
+  raceImageUrl?: string | null;
   summary: string;
   difficulty: string;
   strategyType: string;
@@ -173,6 +176,7 @@ export type AdminHeroInput = {
   primaryAttribute: string;
   role: string;
   highlights: string[];
+  imageUrl?: string | null;
 };
 
 export type AdminHeroRecord = AdminHeroInput & {
@@ -187,6 +191,7 @@ export type AdminUnitInput = {
   unitType: string;
   strengths: string[];
   weaknesses: string[];
+  imageUrl?: string | null;
 };
 
 export type AdminUnitRecord = AdminUnitInput & {
@@ -199,6 +204,7 @@ export type AdminMapInput = {
   description: string;
   creepNotes: string;
   expansionNotes: string;
+  imageUrl?: string | null;
 };
 
 export type AdminMapRecord = AdminMapInput & {
@@ -211,6 +217,7 @@ export type AdminRaceInput = {
   description: string;
   identity: string;
   ladderFocus: string;
+  imageUrl?: string | null;
 };
 
 export type AdminRaceRecord = AdminRaceInput & {
@@ -245,6 +252,7 @@ export type AdminHeroListItem = {
   raceName: string;
   primaryAttribute: string;
   role: string;
+  imageUrl?: string | null;
 };
 
 export type AdminUnitListItem = {
@@ -254,16 +262,53 @@ export type AdminUnitListItem = {
   raceSlug: string;
   raceName: string;
   unitType: string;
+  imageUrl?: string | null;
 };
 
 export type AdminMapListItem = {
   id: number;
   slug: string;
   name: string;
+  imageUrl?: string | null;
 };
 
 export type AdminRaceListItem = {
   id: number;
   slug: string;
   name: string;
+  imageUrl?: string | null;
+};
+
+export type AdminBuildingInput = {
+  name: string;
+  race: string;
+  description: string;
+  imageFile: string;
+};
+
+export type AdminBuildingRecord = AdminBuildingInput & { id: number };
+
+export type AdminBuildingListItem = {
+  id: number;
+  name: string;
+  race: string;
+  imageFile: string;
+};
+
+export type AdminItemInput = {
+  name: string;
+  category: string;
+  shops: string[];
+  description: string;
+  imageFile: string;
+};
+
+export type AdminItemRecord = AdminItemInput & { id: number };
+
+export type AdminItemListItem = {
+  id: number;
+  name: string;
+  category: string;
+  shops: string[];
+  imageFile: string;
 };

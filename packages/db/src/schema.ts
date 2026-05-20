@@ -43,6 +43,7 @@ export const races = pgTable(
     description: text("description").notNull(),
     identity: text("identity").notNull(),
     ladderFocus: text("ladder_focus").notNull(),
+    imageUrl: varchar("image_url", { length: 500 }),
     ...timestamps,
   },
   (table) => [uniqueIndex("races_slug_idx").on(table.slug)],
@@ -191,6 +192,33 @@ export const favorites = pgTable(
     index("favorites_build_id_idx").on(table.buildId),
     uniqueIndex("favorites_user_id_build_id_idx").on(table.userId, table.buildId),
   ],
+);
+
+export const buildingsTable = pgTable(
+  "buildings",
+  {
+    id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+    name: varchar("name", { length: 120 }).notNull(),
+    race: varchar("race", { length: 50 }).notNull(),
+    description: text("description").notNull(),
+    imageFile: varchar("image_file", { length: 120 }).notNull(),
+    ...timestamps,
+  },
+  (table) => [index("buildings_race_idx").on(table.race)],
+);
+
+export const gameItems = pgTable(
+  "game_items",
+  {
+    id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+    name: varchar("name", { length: 120 }).notNull(),
+    category: varchar("category", { length: 20 }).notNull(),
+    shops: text("shops").notNull(),
+    description: text("description").notNull(),
+    imageFile: varchar("image_file", { length: 120 }).notNull(),
+    ...timestamps,
+  },
+  (table) => [index("game_items_category_idx").on(table.category)],
 );
 
 export const usersRelations = relations(users, ({ many }) => ({

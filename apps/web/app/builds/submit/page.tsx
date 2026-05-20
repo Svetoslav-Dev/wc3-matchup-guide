@@ -3,6 +3,7 @@ import { hasDatabaseUrl } from "@warcraft3-guide-hub/db";
 import { getSessionUser } from "../../../lib/auth";
 import { listBuildSubmissionsForUser, listMatchups, listRaces } from "../../../lib/content";
 import { createUserBuildAction, deleteUserBuildAction } from "../user-actions";
+import { DifficultyBadge } from "../../../components/difficulty-badge";
 
 type Props = {
   searchParams?: Promise<{ status?: string }>;
@@ -66,7 +67,7 @@ export default async function SubmitBuildPage({ searchParams }: Props) {
         </p>
         {statusMessage ? <p className="muted">{statusMessage}</p> : null}
       </div>
-      <form action={createUserBuildAction} className="form-grid">
+      <form action={createUserBuildAction} className="form-grid" id="submit-build">
         <section className="form-panel">
           <h2>Core Metadata</h2>
           <div className="field">
@@ -131,11 +132,7 @@ export default async function SubmitBuildPage({ searchParams }: Props) {
         </section>
       </form>
 
-      <section className="section">
-        <div className="section-head">
-          <p className="section-label">Your Submissions</p>
-          <h2>Remove your own builds whenever you want.</h2>
-        </div>
+      <section className="section" id="submitted-builds">
         {submissions.length > 0 ? (
           <div className="list-grid">
             {submissions.map((build) => (
@@ -145,7 +142,7 @@ export default async function SubmitBuildPage({ searchParams }: Props) {
                 <p>{build.summary}</p>
                 <div className="list-meta">
                   <span>{build.raceName}</span>
-                  <span>{build.difficulty}</span>
+                  <DifficultyBadge value={build.difficulty} />
                   <span>{build.strategyType}</span>
                 </div>
                 <div className="card__footer">
@@ -164,12 +161,7 @@ export default async function SubmitBuildPage({ searchParams }: Props) {
               </article>
             ))}
           </div>
-        ) : (
-          <article className="detail-panel">
-            <h2>No submissions yet</h2>
-            <p>Once you submit a build, it will appear here for you to review or remove.</p>
-          </article>
-        )}
+        ) : null}
       </section>
     </div>
   );

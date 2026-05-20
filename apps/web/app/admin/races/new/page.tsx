@@ -19,7 +19,7 @@ export default async function NewAdminRacePage() {
         <h1 className="page-title">Create a new race guide.</h1>
         <p className="page-intro">This editor manages the core race identity fields stored in the database.</p>
       </div>
-      <form action={createRaceAction} className="form-grid">
+      <form action={createRaceAction} className="form-grid" encType="multipart/form-data">
         <section className="form-panel">
           <h2>Core Metadata</h2>
           <div className="field"><label htmlFor="name">Name</label><input id="name" name="name" type="text" /></div>

@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { listMatchups, listRaces, listBuilds, getHomeStats } from "../lib/content";
+import { fetchMatchupWinRates } from "../lib/w3c-stats";
 import { GameImage } from "../components/game-image";
+import { DifficultyBadge } from "../components/difficulty-badge";
 
 const toRaceSlug = (name: string) => name.toLowerCase().replace(/\s+/g, "-");
 const parseMatchupTitle = (title: string) => {
@@ -12,6 +14,7 @@ const raceImages: Record<string, string> = {
   "orc": "/images/Races/Orcs_Icon.png",
   "night-elf": "/images/Races/Night_Elves_Icon.png",
   "undead": "/images/Races/Undead_Icon.png",
+  "neutral": "/images/Races/Neutral.png",
 };
 const raceImageSrc = (slug: string) => raceImages[slug] ?? "/placeholder.svg";
 
@@ -29,6 +32,20 @@ const bestMatchupSlugs: Record<string, string> = {
   orc: "orc-vs-undead",
   undead: "undead-vs-night-elf",
   "night-elf": "night-elf-vs-human",
+};
+
+const worstMatchupDifficulty: Record<string, string> = {
+  "human-vs-undead":        "Very Hard",
+  "orc-vs-human":           "Hard",
+  "undead-vs-orc":          "Hard",
+  "night-elf-vs-undead":    "Very Hard",
+};
+
+const bestMatchupDifficulty: Record<string, string> = {
+  "human-vs-orc":           "Medium",
+  "orc-vs-undead":          "Easy",
+  "undead-vs-night-elf":    "Medium",
+  "night-elf-vs-human":     "Easy",
 };
 
 const worstMatchupReasons: Record<string, string> = {
@@ -54,7 +71,7 @@ const bestMatchupReasons: Record<string, string> = {
 };
 
 export default async function HomePage() {
-  const [stats, raceResult, allMatchups, humanBuilds, orcBuilds, undeadBuilds, nightElfBuilds] = await Promise.all([
+  const [stats, raceResult, allMatchups, humanBuilds, orcBuilds, undeadBuilds, nightElfBuilds, winRates] = await Promise.all([
     getHomeStats(),
     listRaces(1, 20),
     listMatchups(1, 50),
@@ -62,6 +79,7 @@ export default async function HomePage() {
     listBuilds({ race: "orc", pageSize: 1 }),
     listBuilds({ race: "undead", pageSize: 1 }),
     listBuilds({ race: "night-elf", pageSize: 1 }),
+    fetchMatchupWinRates(),
   ]);
   const topBuilds = [humanBuilds, orcBuilds, undeadBuilds, nightElfBuilds]
     .map((result) => result.data[0])
@@ -133,7 +151,12 @@ export default async function HomePage() {
         <div className="card-grid">
           {featuredRaces.map((race) => (
             <article key={race.slug} className="card">
-              <p className="pill">{race.badge}</p>
+              <div className="list-meta">
+                <p className="pill">{race.badge}</p>
+                {race.playDifficulty ? (
+                  <p className="pill"><DifficultyBadge value={race.playDifficulty} /></p>
+                ) : null}
+              </div>
               <div className="title-row">
                 <GameImage
                   src={race.imageUrl ?? raceImageSrc(race.slug)}
@@ -166,9 +189,18 @@ export default async function HomePage() {
         <div className="list-grid">
           {worstMatchups.map((matchup) => {
             const { nameA, nameB, slugA, slugB } = parseMatchupTitle(matchup.title);
+            const wr = winRates[matchup.slug];
+            const diff = worstMatchupDifficulty[matchup.slug];
             return (
             <article key={matchup.slug} className="card">
-              <p className="pill">{matchup.difficulty}</p>
+              <div className="matchup-header">
+                {diff ? <p className="pill"><DifficultyBadge value={diff} /></p> : null}
+                {wr !== undefined ? (
+                  <span className={`winrate-badge ${wr < 45 ? "winrate-badge--low" : wr > 55 ? "winrate-badge--high" : "winrate-badge--even"}`}>
+                    {wr}% win
+                  </span>
+                ) : null}
+              </div>
               <div className="matchup-vs">
                 <GameImage src={raceImageSrc(slugA)} alt={nameA} className="game-image--icon" width={64} height={64} />
                 <span className="matchup-vs__race">{nameA}</span>
@@ -201,9 +233,18 @@ export default async function HomePage() {
         <div className="list-grid">
           {bestMatchups.map((matchup) => {
             const { nameA, nameB, slugA, slugB } = parseMatchupTitle(matchup.title);
+            const wr = winRates[matchup.slug];
+            const diff = bestMatchupDifficulty[matchup.slug];
             return (
             <article key={matchup.slug} className="card">
-              <p className="pill">{matchup.difficulty}</p>
+              <div className="matchup-header">
+                {diff ? <p className="pill"><DifficultyBadge value={diff} /></p> : null}
+                {wr !== undefined ? (
+                  <span className={`winrate-badge ${wr < 45 ? "winrate-badge--low" : wr > 55 ? "winrate-badge--high" : "winrate-badge--even"}`}>
+                    {wr}% win
+                  </span>
+                ) : null}
+              </div>
               <div className="matchup-vs">
                 <GameImage src={raceImageSrc(slugA)} alt={nameA} className="game-image--icon" width={64} height={64} />
                 <span className="matchup-vs__race">{nameA}</span>
@@ -257,7 +298,7 @@ export default async function HomePage() {
                 <p>{build.summary}</p>
                 <div className="card__footer">
                   <div className="list-meta">
-                    <span>Difficulty: {build.difficulty}</span>
+                    <span>Difficulty: <DifficultyBadge value={build.difficulty} /></span>
                     {build.bestAgainst ? <span>Best against: {build.bestAgainst}</span> : null}
                   </div>
                   <div className="card__footer-action card__footer-action--center">

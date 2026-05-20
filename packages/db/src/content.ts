@@ -3,9 +3,15 @@ import type {
   AdminBuildInput,
   AdminBuildListItem,
   AdminBuildRecord,
+  AdminBuildingInput,
+  AdminBuildingListItem,
+  AdminBuildingRecord,
   AdminHeroInput,
   AdminHeroListItem,
   AdminHeroRecord,
+  AdminItemInput,
+  AdminItemListItem,
+  AdminItemRecord,
   AdminMapInput,
   AdminMapListItem,
   AdminMapRecord,
@@ -40,7 +46,7 @@ import {
   getUnitBySlug as getSharedUnitBySlug,
 } from "@warcraft3-guide-hub/shared";
 import { getDb } from "./client";
-import { buildSteps, builds, favorites, heroes, maps, matchups, races, units, users } from "./schema";
+import { buildSteps, builds, buildingsTable, favorites, gameItems, heroes, maps, matchups, races, units, users } from "./schema";
 
 const toPaginationMeta = (page: number, pageSize: number, total: number) => ({
   page,
@@ -61,7 +67,8 @@ const enrichRace = (record: typeof races.$inferSelect): Race => {
     strengths: shared?.strengths ?? [],
     signatureHeroes: shared?.signatureHeroes ?? [],
     ladderFocus: record.ladderFocus,
-    imageUrl: shared?.imageUrl ?? null,
+    imageUrl: record.imageUrl ?? shared?.imageUrl ?? null,
+    playDifficulty: shared?.playDifficulty ?? null,
   };
 };
 
@@ -111,7 +118,8 @@ const enrichMap = (record: typeof maps.$inferSelect): MapGuide => {
     creepNotes: shared?.creepNotes ?? record.creepNotes,
     expansionNotes: shared?.expansionNotes ?? record.expansionNotes,
     availableItems: shared?.availableItems ?? [],
-    imageUrl: record.imageUrl ?? null,
+    shops: shared?.shops ?? [],
+    imageUrl: record.imageUrl ?? shared?.imageUrl ?? "/images/Maps/Wc3LostTempleRoC.png",
   };
 };
 
@@ -143,6 +151,7 @@ const enrichBuild = (
   steps: BuildStep[] = [],
 ): Build => {
   const shared = getSharedBuildBySlug(record.slug);
+  const sharedRace = getSharedRaceBySlug(raceSlug);
   const inferredBestAgainst = (() => {
     if (shared?.bestAgainst) {
       return shared.bestAgainst;
@@ -170,6 +179,7 @@ const enrichBuild = (
     title: record.title,
     raceName,
     raceSlug,
+    raceImageUrl: sharedRace?.imageUrl ?? null,
     summary: record.summary,
     difficulty: record.difficulty,
     strategyType: record.strategyType,
@@ -426,13 +436,15 @@ export const findBuildBySlug = async (slug: string) => {
 export const getContentStats = async () => {
   const db = getDb();
 
-  const [raceTotal, heroTotal, unitTotal, mapTotal, matchupTotal, buildTotal] = await Promise.all([
+  const [raceTotal, heroTotal, unitTotal, mapTotal, matchupTotal, buildTotal, buildingTotal, itemTotal] = await Promise.all([
     db.$count(races),
     db.$count(heroes),
     db.$count(units),
     db.$count(maps),
     db.$count(matchups),
     db.$count(builds),
+    db.$count(buildingsTable),
+    db.$count(gameItems),
   ]);
 
   return {
@@ -442,6 +454,8 @@ export const getContentStats = async () => {
     mapTotal,
     matchupTotal,
     buildTotal,
+    buildingTotal,
+    itemTotal,
   };
 };
 
@@ -764,6 +778,7 @@ export const createHero = async (input: AdminHeroInput) => {
       description: input.description,
       primaryAttribute: input.primaryAttribute,
       role: input.role,
+      imageUrl: input.imageUrl ?? null,
     })
     .returning();
 
@@ -791,6 +806,7 @@ export const updateHero = async (id: number, input: AdminHeroInput) => {
       description: input.description,
       primaryAttribute: input.primaryAttribute,
       role: input.role,
+      imageUrl: input.imageUrl ?? null,
       updatedAt: new Date(),
     })
     .where(eq(heroes.id, id));
@@ -818,6 +834,7 @@ export const createUnit = async (input: AdminUnitInput) => {
       unitType: input.unitType,
       strengths: input.strengths.join(", "),
       weaknesses: input.weaknesses.join(", "),
+      imageUrl: input.imageUrl ?? null,
     })
     .returning();
 
@@ -846,6 +863,7 @@ export const updateUnit = async (id: number, input: AdminUnitInput) => {
       unitType: input.unitType,
       strengths: input.strengths.join(", "),
       weaknesses: input.weaknesses.join(", "),
+      imageUrl: input.imageUrl ?? null,
       updatedAt: new Date(),
     })
     .where(eq(units.id, id));
@@ -869,6 +887,7 @@ export const createMap = async (input: AdminMapInput) => {
       description: input.description,
       creepNotes: input.creepNotes,
       expansionNotes: input.expansionNotes,
+      imageUrl: input.imageUrl ?? null,
     })
     .returning();
 
@@ -893,6 +912,7 @@ export const updateMap = async (id: number, input: AdminMapInput) => {
       description: input.description,
       creepNotes: input.creepNotes,
       expansionNotes: input.expansionNotes,
+      imageUrl: input.imageUrl ?? null,
       updatedAt: new Date(),
     })
     .where(eq(maps.id, id));
@@ -916,6 +936,7 @@ export const createRace = async (input: AdminRaceInput) => {
       description: input.description,
       identity: input.identity,
       ladderFocus: input.ladderFocus,
+      imageUrl: input.imageUrl ?? null,
     })
     .returning();
 
@@ -940,6 +961,7 @@ export const updateRace = async (id: number, input: AdminRaceInput) => {
       description: input.description,
       identity: input.identity,
       ladderFocus: input.ladderFocus,
+      imageUrl: input.imageUrl ?? null,
       updatedAt: new Date(),
     })
     .where(eq(races.id, id));
@@ -990,12 +1012,13 @@ export const getAdminBuildBySlug = async (slug: string): Promise<AdminBuildRecor
   };
 };
 
-export const listAdminBuilds = async (limit = 12): Promise<AdminBuildListItem[]> => {
+export const listAdminBuilds = async (limit = 12, search?: string): Promise<AdminBuildListItem[]> => {
   const db = getDb();
   const records = await db.query.builds.findMany({
     with: {
       race: true,
     },
+    where: search ? ilike(builds.title, `%${search}%`) : undefined,
     orderBy: asc(builds.title),
     limit,
   });
@@ -1041,13 +1064,14 @@ export const getAdminMatchupBySlug = async (slug: string): Promise<AdminMatchupR
   };
 };
 
-export const listAdminMatchups = async (limit = 12): Promise<AdminMatchupListItem[]> => {
+export const listAdminMatchups = async (limit = 12, search?: string): Promise<AdminMatchupListItem[]> => {
   const db = getDb();
   const records = await db.query.matchups.findMany({
     with: {
       raceA: true,
       raceB: true,
     },
+    where: search ? ilike(matchups.title, `%${search}%`) : undefined,
     orderBy: asc(matchups.title),
     limit,
   });
@@ -1084,15 +1108,17 @@ export const getAdminHeroBySlug = async (slug: string): Promise<AdminHeroRecord 
     primaryAttribute: hero.primaryAttribute,
     role: hero.role,
     highlights: getSharedHeroBySlug(hero.slug)?.highlights ?? [],
+    imageUrl: hero.imageUrl ?? null,
   };
 };
 
-export const listAdminHeroes = async (limit = 12): Promise<AdminHeroListItem[]> => {
+export const listAdminHeroes = async (limit = 12, search?: string): Promise<AdminHeroListItem[]> => {
   const db = getDb();
   const records = await db.query.heroes.findMany({
     with: {
       race: true,
     },
+    where: search ? ilike(heroes.name, `%${search}%`) : undefined,
     orderBy: asc(heroes.name),
     limit,
   });
@@ -1105,6 +1131,7 @@ export const listAdminHeroes = async (limit = 12): Promise<AdminHeroListItem[]> 
     raceName: hero.race.name,
     primaryAttribute: hero.primaryAttribute,
     role: hero.role,
+    imageUrl: hero.imageUrl ?? getSharedHeroBySlug(hero.slug)?.imageUrl ?? null,
   }));
 };
 
@@ -1130,15 +1157,17 @@ export const getAdminUnitBySlug = async (slug: string): Promise<AdminUnitRecord 
     unitType: unit.unitType,
     strengths: getSharedUnitBySlug(unit.slug)?.strengths ?? unit.strengths.split(",").map((value) => value.trim()),
     weaknesses: getSharedUnitBySlug(unit.slug)?.weaknesses ?? unit.weaknesses.split(",").map((value) => value.trim()),
+    imageUrl: unit.imageUrl ?? null,
   };
 };
 
-export const listAdminUnits = async (limit = 12): Promise<AdminUnitListItem[]> => {
+export const listAdminUnits = async (limit = 12, search?: string): Promise<AdminUnitListItem[]> => {
   const db = getDb();
   const records = await db.query.units.findMany({
     with: {
       race: true,
     },
+    where: search ? ilike(units.name, `%${search}%`) : undefined,
     orderBy: asc(units.name),
     limit,
   });
@@ -1150,6 +1179,7 @@ export const listAdminUnits = async (limit = 12): Promise<AdminUnitListItem[]> =
     raceSlug: unit.race.slug,
     raceName: unit.race.name,
     unitType: unit.unitType,
+    imageUrl: unit.imageUrl ?? getSharedUnitBySlug(unit.slug)?.imageUrl ?? null,
   }));
 };
 
@@ -1170,14 +1200,16 @@ export const getAdminMapBySlug = async (slug: string): Promise<AdminMapRecord | 
     description: map.description,
     creepNotes: map.creepNotes,
     expansionNotes: map.expansionNotes,
+    imageUrl: map.imageUrl ?? null,
   };
 };
 
-export const listAdminMaps = async (limit = 12): Promise<AdminMapListItem[]> => {
+export const listAdminMaps = async (limit = 12, search?: string): Promise<AdminMapListItem[]> => {
   const db = getDb();
   const records = await db
     .select()
     .from(maps)
+    .where(search ? ilike(maps.name, `%${search}%`) : undefined)
     .orderBy(asc(maps.name))
     .limit(limit);
 
@@ -1185,6 +1217,7 @@ export const listAdminMaps = async (limit = 12): Promise<AdminMapListItem[]> => 
     id: map.id,
     slug: map.slug,
     name: map.name,
+    imageUrl: map.imageUrl ?? getSharedMapBySlug(map.slug)?.imageUrl ?? null,
   }));
 };
 
@@ -1205,14 +1238,16 @@ export const getAdminRaceBySlug = async (slug: string): Promise<AdminRaceRecord 
     description: race.description,
     identity: race.identity,
     ladderFocus: race.ladderFocus,
+    imageUrl: race.imageUrl ?? null,
   };
 };
 
-export const listAdminRaces = async (limit = 12): Promise<AdminRaceListItem[]> => {
+export const listAdminRaces = async (limit = 12, search?: string): Promise<AdminRaceListItem[]> => {
   const db = getDb();
   const records = await db
     .select()
     .from(races)
+    .where(search ? ilike(races.name, `%${search}%`) : undefined)
     .orderBy(asc(races.name))
     .limit(limit);
 
@@ -1220,6 +1255,7 @@ export const listAdminRaces = async (limit = 12): Promise<AdminRaceListItem[]> =
     id: race.id,
     slug: race.slug,
     name: race.name,
+    imageUrl: race.imageUrl ?? getSharedRaceBySlug(race.slug)?.imageUrl ?? null,
   }));
 };
 
@@ -1272,3 +1308,98 @@ export const createUser = async (input: {
 };
 
 export const sanitizeUser = (user: typeof users.$inferSelect): AuthUser => toAuthUser(user);
+
+// ── Buildings ─────────────────────────────────────────────────────────────────
+
+export const listAdminBuildings = async (limit = 12, search?: string): Promise<AdminBuildingListItem[]> => {
+  const db = getDb();
+  const records = await db
+    .select()
+    .from(buildingsTable)
+    .where(search ? ilike(buildingsTable.name, `%${search}%`) : undefined)
+    .orderBy(asc(buildingsTable.name))
+    .limit(limit);
+  return records.map((b) => ({ id: b.id, name: b.name, race: b.race, imageFile: b.imageFile }));
+};
+
+export const getAdminBuildingById = async (id: number): Promise<AdminBuildingRecord | null> => {
+  const db = getDb();
+  const [b] = await db.select().from(buildingsTable).where(eq(buildingsTable.id, id));
+  if (!b) return null;
+  return { id: b.id, name: b.name, race: b.race, description: b.description, imageFile: b.imageFile };
+};
+
+export const createBuilding = async (input: AdminBuildingInput) => {
+  const db = getDb();
+  const [b] = await db.insert(buildingsTable).values(input).returning();
+  return b;
+};
+
+export const updateBuilding = async (id: number, input: AdminBuildingInput) => {
+  const db = getDb();
+  await db.update(buildingsTable).set({ ...input, updatedAt: new Date() }).where(eq(buildingsTable.id, id));
+  return getAdminBuildingById(id);
+};
+
+export const deleteBuilding = async (id: number) => {
+  const db = getDb();
+  const [removed] = await db.delete(buildingsTable).where(eq(buildingsTable.id, id)).returning();
+  return removed ?? null;
+};
+
+// ── Game Items ────────────────────────────────────────────────────────────────
+
+export const listAdminItems = async (limit = 12, search?: string): Promise<AdminItemListItem[]> => {
+  const db = getDb();
+  const records = await db
+    .select()
+    .from(gameItems)
+    .where(search ? ilike(gameItems.name, `%${search}%`) : undefined)
+    .orderBy(asc(gameItems.name))
+    .limit(limit);
+  return records.map((i) => ({
+    id: i.id,
+    name: i.name,
+    category: i.category,
+    shops: JSON.parse(i.shops) as string[],
+    imageFile: i.imageFile,
+  }));
+};
+
+export const getAdminItemById = async (id: number): Promise<AdminItemRecord | null> => {
+  const db = getDb();
+  const [i] = await db.select().from(gameItems).where(eq(gameItems.id, id));
+  if (!i) return null;
+  return {
+    id: i.id,
+    name: i.name,
+    category: i.category,
+    shops: JSON.parse(i.shops) as string[],
+    description: i.description,
+    imageFile: i.imageFile,
+  };
+};
+
+export const createItem = async (input: AdminItemInput) => {
+  const db = getDb();
+  const [i] = await db
+    .insert(gameItems)
+    .values({ ...input, shops: JSON.stringify(input.shops) })
+    .returning();
+  return i;
+};
+
+export const updateItem = async (id: number, input: AdminItemInput) => {
+  const db = getDb();
+  await db
+    .update(gameItems)
+    .set({ ...input, shops: JSON.stringify(input.shops), updatedAt: new Date() })
+    .where(eq(gameItems.id, id));
+  return getAdminItemById(id);
+};
+
+export const deleteItem = async (id: number) => {
+  const db = getDb();
+  const [removed] = await db.delete(gameItems).where(eq(gameItems.id, id)).returning();
+  return removed ?? null;
+};

@@ -13,7 +13,7 @@ export default async function NewAdminMapPage() {
   return (
     <div className="page-shell page-stack">
       <div className="section-head"><p className="section-label">Admin Map Editor</p><h1 className="page-title">Create a new map guide.</h1></div>
-      <form action={createMapAction} className="form-grid">
+      <form action={createMapAction} className="form-grid" encType="multipart/form-data">
         <section className="form-panel">
           <h2>Core Metadata</h2>
           <div className="field"><label htmlFor="name">Name</label><input id="name" name="name" type="text" /></div>

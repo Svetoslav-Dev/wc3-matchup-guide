@@ -1,5 +1,6 @@
 import { hasDatabaseUrl } from "@warcraft3-guide-hub/db";
 import Link from "next/link";
+import { DifficultyBadge } from "../../components/difficulty-badge";
 import {
   deleteBuildAction,
   deleteHeroAction,
@@ -11,40 +12,28 @@ import {
 import { getSessionUser } from "../../lib/auth";
 import {
   getHomeStats,
+  listAdminBuildings,
   listAdminBuilds,
   listAdminHeroes,
+  listAdminItems,
   listAdminMaps,
   listAdminMatchups,
   listAdminRaces,
   listAdminUnits,
 } from "../../lib/content";
+import { deleteBuildingAction, deleteItemAction } from "./actions";
 
-const adminSections = [
-  {
-    title: "Content Pipeline",
-    description: "Admin-only REST endpoints now exist for creating, updating, and deleting builds and matchups.",
-  },
-  {
-    title: "Data Integrity",
-    description: "Server-side validation covers build steps, matchup structure, publication state, and slug-based relations.",
-  },
-  {
-    title: "Seed Operations",
-    description: "The seeded admin account can manage content once the database and JWT secret are configured.",
-  },
-  {
-    title: "Role Controls",
-    description: "Session checks now distinguish signed-out users, regular users, and admins at the server boundary.",
-  },
-];
+const RECENT_LIMIT = 6;
 
 const statusMessages: Record<string, string> = {
-  "build-deleted": "Build deleted.",
-  "hero-deleted": "Hero deleted.",
-  "map-deleted": "Map deleted.",
-  "matchup-deleted": "Matchup deleted.",
-  "race-deleted": "Race deleted.",
-  "unit-deleted": "Unit deleted.",
+  "build-deleted":    "Build deleted.",
+  "hero-deleted":     "Hero deleted.",
+  "map-deleted":      "Map deleted.",
+  "matchup-deleted":  "Matchup deleted.",
+  "race-deleted":     "Race deleted.",
+  "unit-deleted":     "Unit deleted.",
+  "building-deleted": "Building deleted.",
+  "item-deleted":     "Item deleted.",
 };
 
 type Props = {
@@ -56,279 +45,273 @@ export default async function AdminPage({ searchParams }: Props) {
     return (
       <div className="page-shell page-stack">
         <div className="section-head">
-          <p className="section-label">Admin Panel</p>
+          <p className="section-label">God Panel</p>
           <h1 className="page-title">Admin tools require full backend configuration.</h1>
-          <p className="page-intro">
-            Set both <code>DATABASE_URL</code> and <code>JWT_SECRET</code>, then run migrations and seed data to use protected admin endpoints.
-          </p>
+          <p className="page-intro">Set both <code>DATABASE_URL</code> and <code>JWT_SECRET</code>, then run migrations and seed data.</p>
         </div>
       </div>
     );
   }
 
   const user = await getSessionUser();
-
   if (!user) {
     return (
       <div className="page-shell page-stack">
         <div className="section-head">
-          <p className="section-label">Admin Panel</p>
+          <p className="section-label">God Panel</p>
           <h1 className="page-title">Sign in as an admin to manage content.</h1>
-          <p className="page-intro">
-            This page mirrors the server-side admin guard used by the new <code>/api/admin/*</code> endpoints.
-          </p>
         </div>
       </div>
     );
   }
-
   if (user.role !== "admin") {
     return (
       <div className="page-shell page-stack">
         <div className="section-head">
-          <p className="section-label">Admin Panel</p>
+          <p className="section-label">God Panel</p>
           <h1 className="page-title">This account does not have admin access.</h1>
-          <p className="page-intro">
-            Role-based access is now enforced server-side. Use the seeded admin account or an elevated user record to reach content management APIs.
-          </p>
         </div>
       </div>
     );
   }
 
   const params = (await searchParams) ?? {};
-  const [stats, buildRecords, matchupRecords, heroRecords, unitRecords, mapRecords, raceRecords] = await Promise.all([
-    getHomeStats(),
-    listAdminBuilds(8),
-    listAdminMatchups(8),
-    listAdminHeroes(8),
-    listAdminUnits(8),
-    listAdminMaps(8),
-    listAdminRaces(8),
-  ]);
+  const [stats, buildRecords, matchupRecords, heroRecords, unitRecords, mapRecords, raceRecords, buildingRecords, itemRecords] =
+    await Promise.all([
+      getHomeStats(),
+      listAdminBuilds(RECENT_LIMIT),
+      listAdminMatchups(RECENT_LIMIT),
+      listAdminHeroes(RECENT_LIMIT),
+      listAdminUnits(RECENT_LIMIT),
+      listAdminMaps(RECENT_LIMIT),
+      listAdminRaces(RECENT_LIMIT),
+      listAdminBuildings(RECENT_LIMIT),
+      listAdminItems(RECENT_LIMIT),
+    ]);
+
   const statusMessage = params.status ? statusMessages[params.status] : undefined;
 
   return (
     <div className="page-shell page-stack">
       <div className="section-head">
-        <p className="section-label">Admin Panel</p>
-        <h1 className="page-title">Manage strategy content without losing structure.</h1>
-        <p className="page-intro">
-          Signed in as <strong>{user.username}</strong>. The API layer now supports protected build and matchup mutations under <code>/api/admin</code>.
-        </p>
+        <h1 className="page-title admin-chosen-title">You are the chosen one - do what you must.</h1>
       </div>
+
       {statusMessage ? <p className="status-banner">{statusMessage}</p> : null}
-      <div className="stat-grid">
-        <article className="stat-card">
-          <strong>{stats.buildTotal}</strong>
-          <span className="muted">build records available to publish, edit, or remove</span>
-        </article>
-        <article className="stat-card">
-          <strong>{stats.matchupTotal}</strong>
-          <span className="muted">matchup guides currently tracked by the content system</span>
-        </article>
-        <article className="stat-card">
-          <strong>{stats.raceTotal}</strong>
-          <span className="muted">races available for relation validation in admin mutations</span>
-        </article>
-        <article className="stat-card">
-          <strong>{stats.heroTotal}</strong>
-          <span className="muted">hero records available as surrounding strategy reference data</span>
-        </article>
-        <article className="stat-card">
-          <strong>{stats.unitTotal}</strong>
-          <span className="muted">unit records available for counter and composition coverage</span>
-        </article>
-        <article className="stat-card">
-          <strong>{stats.mapTotal}</strong>
-          <span className="muted">maps tracked with creep and expansion notes</span>
-        </article>
-      </div>
-      <div className="inline-actions">
-        <Link href="/admin/builds/new" className="button">
-          New Build
-        </Link>
-        <Link href="/admin/matchups/new" className="button button--ghost">
-          New Matchup
-        </Link>
-        <Link href="/admin/heroes/new" className="button button--ghost">
-          New Hero
-        </Link>
-        <Link href="/admin/units/new" className="button button--ghost">
-          New Unit
-        </Link>
-        <Link href="/admin/maps/new" className="button button--ghost">
-          New Map
-        </Link>
-        <Link href="/admin/races/new" className="button button--ghost">
-          New Race
-        </Link>
-      </div>
-      <div className="admin-grid">
-        {adminSections.map((section) => (
-          <article key={section.title} className="admin-card">
-            <h2>{section.title}</h2>
-            <p>{section.description}</p>
-          </article>
+
+      {/* ── Content management table ── */}
+      <div className="admin-mgmt-list">
+        {[
+          { label: "Build Orders", count: stats.buildTotal,    viewAll: "/admin/builds",    newHref: "/admin/builds/new" },
+          { label: "Matchups",   count: stats.matchupTotal,  viewAll: "/admin/matchups",  newHref: "/admin/matchups/new" },
+          { label: "Heroes",     count: stats.heroTotal,     viewAll: "/admin/heroes",    newHref: "/admin/heroes/new" },
+          { label: "Units",      count: stats.unitTotal,     viewAll: "/admin/units",     newHref: "/admin/units/new" },
+          { label: "Maps",       count: stats.mapTotal,      viewAll: "/admin/maps",      newHref: "/admin/maps/new" },
+          { label: "Races",      count: stats.raceTotal,     viewAll: "/admin/races",     newHref: "/admin/races/new" },
+          { label: "Buildings",  count: stats.buildingTotal, viewAll: "/admin/buildings", newHref: "/admin/buildings/new" },
+          { label: "Items",      count: stats.itemTotal,     viewAll: "/admin/items",     newHref: "/admin/items/new" },
+        ].map(({ label, count, viewAll, newHref }) => (
+          <div key={label} className="admin-mgmt-row">
+            <span className="admin-mgmt-row__label">{label}</span>
+            <span className="admin-mgmt-row__count">{count}</span>
+            <div className="inline-actions">
+              <Link href={viewAll} className="button button--ghost admin-view-btn">View All</Link>
+              <Link href={newHref} className="button button--ghost">+ New</Link>
+            </div>
+          </div>
         ))}
       </div>
-      <div className="detail-grid">
-        <section className="detail-panel">
-          <div className="section-head">
-            <p className="section-label">Build Records</p>
-            <h2>Recent and editable builds</h2>
+
+      {/* ── Recent records ── */}
+      <div className="admin-recent-grid">
+
+        <section className="admin-recent-panel">
+          <div className="admin-recent-panel__head">
+            <p className="section-label">Builds</p>
+            <Link href="/admin/builds" className="muted" style={{ fontSize: "0.8rem" }}>See all →</Link>
           </div>
-          <div className="page-stack">
-            {buildRecords.map((build) => (
-              <article key={build.slug} className="admin-card">
-                <h3>{build.title}</h3>
-                <p>{build.raceName} · {build.difficulty} · {build.strategyType}</p>
-                <p className="muted">{build.isPublished ? "Published" : "Draft"}</p>
-                <div className="inline-actions">
-                  <Link href={`/admin/builds/${build.slug}/edit`} className="button button--ghost">
-                    Edit
-                  </Link>
-                  <Link href={`/builds/${build.slug}`} className="button button--ghost">
-                    View
-                  </Link>
-                  <form action={deleteBuildAction}>
-                    <input type="hidden" name="buildId" value={String(build.id)} />
-                    <button className="button button--ghost" type="submit">Delete</button>
-                  </form>
+          {buildRecords.map((build) => (
+            <div key={build.slug} className="admin-row">
+              <div className="admin-row__info">
+                <p className="admin-row__title">{build.title}</p>
+                <div className="admin-card-meta">
+                  <span className="pill pill--race">{build.raceName}</span>
+                  <DifficultyBadge value={build.difficulty} />
+                  <span className="muted">{build.isPublished ? "Published" : "Draft"}</span>
                 </div>
-              </article>
-            ))}
-          </div>
+              </div>
+              <div className="inline-actions">
+                <Link href={`/admin/builds/${build.slug}/edit`} className="button button--edit">Edit</Link>
+                <form action={deleteBuildAction}>
+                  <input type="hidden" name="buildId" value={String(build.id)} />
+                  <button className="button button--danger" type="submit">Del</button>
+                </form>
+              </div>
+            </div>
+          ))}
         </section>
-        <section className="detail-panel">
-          <div className="section-head">
-            <p className="section-label">Matchup Records</p>
-            <h2>Recent and editable matchups</h2>
+
+        <section className="admin-recent-panel">
+          <div className="admin-recent-panel__head">
+            <p className="section-label">Matchups</p>
+            <Link href="/admin/matchups" className="muted" style={{ fontSize: "0.8rem" }}>See all →</Link>
           </div>
-          <div className="page-stack">
-            {matchupRecords.map((matchup) => (
-              <article key={matchup.slug} className="admin-card">
-                <h3>{matchup.title}</h3>
-                <p>{matchup.difficulty}</p>
-                <p className="muted">{matchup.raceASlug} vs {matchup.raceBSlug}</p>
-                <div className="inline-actions">
-                  <Link href={`/admin/matchups/${matchup.slug}/edit`} className="button button--ghost">
-                    Edit
-                  </Link>
-                  <Link href={`/matchups/${matchup.slug}`} className="button button--ghost">
-                    View
-                  </Link>
-                  <form action={deleteMatchupAction}>
-                    <input type="hidden" name="matchupId" value={String(matchup.id)} />
-                    <button className="button button--ghost" type="submit">Delete</button>
-                  </form>
+          {matchupRecords.map((matchup) => (
+            <div key={matchup.slug} className="admin-row">
+              <div className="admin-row__info">
+                <p className="admin-row__title">{matchup.title}</p>
+                <div className="admin-card-meta">
+                  <DifficultyBadge value={matchup.difficulty} />
+                  <span className="muted">{matchup.raceASlug} vs {matchup.raceBSlug}</span>
                 </div>
-              </article>
-            ))}
-          </div>
+              </div>
+              <div className="inline-actions">
+                <Link href={`/admin/matchups/${matchup.slug}/edit`} className="button button--edit">Edit</Link>
+                <form action={deleteMatchupAction}>
+                  <input type="hidden" name="matchupId" value={String(matchup.id)} />
+                  <button className="button button--danger" type="submit">Del</button>
+                </form>
+              </div>
+            </div>
+          ))}
         </section>
-        <section className="detail-panel">
-          <div className="section-head">
-            <p className="section-label">Race Records</p>
-            <h2>Recent and editable races</h2>
+
+        <section className="admin-recent-panel">
+          <div className="admin-recent-panel__head">
+            <p className="section-label">Heroes</p>
+            <Link href="/admin/heroes" className="muted" style={{ fontSize: "0.8rem" }}>See all →</Link>
           </div>
-          <div className="page-stack">
-            {raceRecords.map((race) => (
-              <article key={race.slug} className="admin-card">
-                <h3>{race.name}</h3>
-                <div className="inline-actions">
-                  <Link href={`/admin/races/${race.slug}/edit`} className="button button--ghost">
-                    Edit
-                  </Link>
-                  <Link href={`/races/${race.slug}`} className="button button--ghost">
-                    View
-                  </Link>
-                  <form action={deleteRaceAction}>
-                    <input type="hidden" name="raceId" value={String(race.id)} />
-                    <button className="button button--ghost" type="submit">Delete</button>
-                  </form>
+          {heroRecords.map((hero) => (
+            <div key={hero.slug} className="admin-row">
+              <div className="admin-row__info">
+                <p className="admin-row__title">{hero.name}</p>
+                <div className="admin-card-meta">
+                  <span className="pill pill--race">{hero.raceName}</span>
+                  <span className="muted">{hero.role}</span>
                 </div>
-              </article>
-            ))}
-          </div>
+              </div>
+              <div className="inline-actions">
+                <Link href={`/admin/heroes/${hero.slug}/edit`} className="button button--edit">Edit</Link>
+                <form action={deleteHeroAction}>
+                  <input type="hidden" name="heroId" value={String(hero.id)} />
+                  <button className="button button--danger" type="submit">Del</button>
+                </form>
+              </div>
+            </div>
+          ))}
         </section>
-        <section className="detail-panel">
-          <div className="section-head">
-            <p className="section-label">Hero Records</p>
-            <h2>Recent and editable heroes</h2>
+
+        <section className="admin-recent-panel">
+          <div className="admin-recent-panel__head">
+            <p className="section-label">Units</p>
+            <Link href="/admin/units" className="muted" style={{ fontSize: "0.8rem" }}>See all →</Link>
           </div>
-          <div className="page-stack">
-            {heroRecords.map((hero) => (
-              <article key={hero.slug} className="admin-card">
-                <h3>{hero.name}</h3>
-                <p>{hero.raceName} · {hero.primaryAttribute} · {hero.role}</p>
-                <div className="inline-actions">
-                  <Link href={`/admin/heroes/${hero.slug}/edit`} className="button button--ghost">
-                    Edit
-                  </Link>
-                  <Link href={`/heroes/${hero.slug}`} className="button button--ghost">
-                    View
-                  </Link>
-                  <form action={deleteHeroAction}>
-                    <input type="hidden" name="heroId" value={String(hero.id)} />
-                    <button className="button button--ghost" type="submit">Delete</button>
-                  </form>
+          {unitRecords.map((unit) => (
+            <div key={unit.slug} className="admin-row">
+              <div className="admin-row__info">
+                <p className="admin-row__title">{unit.name}</p>
+                <div className="admin-card-meta">
+                  <span className="pill pill--race">{unit.raceName}</span>
+                  <span className="muted">{unit.unitType}</span>
                 </div>
-              </article>
-            ))}
-          </div>
+              </div>
+              <div className="inline-actions">
+                <Link href={`/admin/units/${unit.slug}/edit`} className="button button--edit">Edit</Link>
+                <form action={deleteUnitAction}>
+                  <input type="hidden" name="unitId" value={String(unit.id)} />
+                  <button className="button button--danger" type="submit">Del</button>
+                </form>
+              </div>
+            </div>
+          ))}
         </section>
-        <section className="detail-panel">
-          <div className="section-head">
-            <p className="section-label">Unit Records</p>
-            <h2>Recent and editable units</h2>
+
+        <section className="admin-recent-panel">
+          <div className="admin-recent-panel__head">
+            <p className="section-label">Maps</p>
+            <Link href="/admin/maps" className="muted" style={{ fontSize: "0.8rem" }}>See all →</Link>
           </div>
-          <div className="page-stack">
-            {unitRecords.map((unit) => (
-              <article key={unit.slug} className="admin-card">
-                <h3>{unit.name}</h3>
-                <p>{unit.raceName} · {unit.unitType}</p>
-                <div className="inline-actions">
-                  <Link href={`/admin/units/${unit.slug}/edit`} className="button button--ghost">
-                    Edit
-                  </Link>
-                  <Link href={`/units/${unit.slug}`} className="button button--ghost">
-                    View
-                  </Link>
-                  <form action={deleteUnitAction}>
-                    <input type="hidden" name="unitId" value={String(unit.id)} />
-                    <button className="button button--ghost" type="submit">Delete</button>
-                  </form>
-                </div>
-              </article>
-            ))}
-          </div>
+          {mapRecords.map((map) => (
+            <div key={map.slug} className="admin-row">
+              <div className="admin-row__info">
+                <p className="admin-row__title">{map.name}</p>
+              </div>
+              <div className="inline-actions">
+                <Link href={`/admin/maps/${map.slug}/edit`} className="button button--edit">Edit</Link>
+                <form action={deleteMapAction}>
+                  <input type="hidden" name="mapId" value={String(map.id)} />
+                  <button className="button button--danger" type="submit">Del</button>
+                </form>
+              </div>
+            </div>
+          ))}
         </section>
-        <section className="detail-panel">
-          <div className="section-head">
-            <p className="section-label">Map Records</p>
-            <h2>Recent and editable maps</h2>
+
+        <section className="admin-recent-panel">
+          <div className="admin-recent-panel__head">
+            <p className="section-label">Races</p>
+            <Link href="/admin/races" className="muted" style={{ fontSize: "0.8rem" }}>See all →</Link>
           </div>
-          <div className="page-stack">
-            {mapRecords.map((map) => (
-              <article key={map.slug} className="admin-card">
-                <h3>{map.name}</h3>
-                <div className="inline-actions">
-                  <Link href={`/admin/maps/${map.slug}/edit`} className="button button--ghost">
-                    Edit
-                  </Link>
-                  <Link href={`/maps/${map.slug}`} className="button button--ghost">
-                    View
-                  </Link>
-                  <form action={deleteMapAction}>
-                    <input type="hidden" name="mapId" value={String(map.id)} />
-                    <button className="button button--ghost" type="submit">Delete</button>
-                  </form>
-                </div>
-              </article>
-            ))}
-          </div>
+          {raceRecords.map((race) => (
+            <div key={race.slug} className="admin-row">
+              <div className="admin-row__info">
+                <p className="admin-row__title">{race.name}</p>
+              </div>
+              <div className="inline-actions">
+                <Link href={`/admin/races/${race.slug}/edit`} className="button button--edit">Edit</Link>
+                <form action={deleteRaceAction}>
+                  <input type="hidden" name="raceId" value={String(race.id)} />
+                  <button className="button button--danger" type="submit">Del</button>
+                </form>
+              </div>
+            </div>
+          ))}
         </section>
+
+        <section className="admin-recent-panel">
+          <div className="admin-recent-panel__head">
+            <p className="section-label">Buildings</p>
+            <Link href="/admin/buildings" className="muted" style={{ fontSize: "0.8rem" }}>See all →</Link>
+          </div>
+          {buildingRecords.map((building) => (
+            <div key={building.id} className="admin-row">
+              <div className="admin-row__info">
+                <p className="admin-row__title">{building.name}</p>
+                <span className="pill pill--race">{building.race}</span>
+              </div>
+              <div className="inline-actions">
+                <Link href={`/admin/buildings/${building.id}/edit`} className="button button--edit">Edit</Link>
+                <form action={deleteBuildingAction}>
+                  <input type="hidden" name="buildingId" value={String(building.id)} />
+                  <button className="button button--danger" type="submit">Del</button>
+                </form>
+              </div>
+            </div>
+          ))}
+        </section>
+
+        <section className="admin-recent-panel">
+          <div className="admin-recent-panel__head">
+            <p className="section-label">Items</p>
+            <Link href="/admin/items" className="muted" style={{ fontSize: "0.8rem" }}>See all →</Link>
+          </div>
+          {itemRecords.map((item) => (
+            <div key={item.id} className="admin-row">
+              <div className="admin-row__info">
+                <p className="admin-row__title">{item.name}</p>
+                <span className="muted">{item.category}</span>
+              </div>
+              <div className="inline-actions">
+                <Link href={`/admin/items/${item.id}/edit`} className="button button--edit">Edit</Link>
+                <form action={deleteItemAction}>
+                  <input type="hidden" name="itemId" value={String(item.id)} />
+                  <button className="button button--danger" type="submit">Del</button>
+                </form>
+              </div>
+            </div>
+          ))}
+        </section>
+
       </div>
     </div>
   );

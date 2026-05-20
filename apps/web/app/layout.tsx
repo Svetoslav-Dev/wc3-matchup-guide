@@ -26,8 +26,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
   const user = await getSessionUser();
   const navigationItems = [
     ...publicNavigation,
-    ...(user ? [{ href: "/favorites", label: "Favorites" }] : []),
-    ...(user?.role === "admin" ? [{ href: "/admin", label: "Admin" }] : []),
+    ...(user?.role === "admin" ? [{ href: "/admin", label: "God Panel", god: true }] : []),
   ];
 
   return (

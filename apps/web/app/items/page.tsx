@@ -1,77 +1,57 @@
-import Link from "next/link";
 import { GameImage } from "../../components/game-image";
+import { items } from "../../lib/static-content";
 
-type Item = {
-  name: string;
-  type: "Permanent" | "Consumable" | "Power-up" | "Artifact" | "Charged";
-  description: string;
-  imageFile: string;
+type BannerInfo = { label: string; sublabel: string; icon: string };
+
+const SHOP_BANNERS: Partial<Record<string, BannerInfo>> = {
+  "human":          { label: "Faction Shop", sublabel: "Arcane Vault",       icon: "/images/Buildings/ArcaneVault.png" },
+  "orc":            { label: "Faction Shop", sublabel: "Voodoo Lounge",      icon: "/images/Buildings/VoodooLounge.png" },
+  "undead":         { label: "Faction Shop", sublabel: "Tomb of Relics",     icon: "/images/Buildings/TombOfRelics.png" },
+  "night-elf":      { label: "Faction Shop", sublabel: "Ancient of Wonders", icon: "/images/Buildings/AncientOfWonders.png" },
+  "goblin-merchant":{ label: "Neutral Shop", sublabel: "Goblin Merchant",    icon: "/images/Buildings/GoblinLaboratory.png" },
 };
 
-const items: Item[] = [
-  // Permanent
-  { name: "Ancient Janggo of Endurance", type: "Permanent", description: "Grants an aura that increases movement and attack speed of nearby friendly units.", imageFile: "AncientJanggoOfEndurance" },
-  { name: "Belt of Giant Strength", type: "Permanent", description: "Increases the hero's Strength attribute.", imageFile: "BeltOfGiantStrength" },
-  { name: "Boots of Quel'Thalas", type: "Permanent", description: "Greatly increases the hero's movement speed.", imageFile: "BootsOfQuelThalas" },
-  { name: "Boots of Speed", type: "Permanent", description: "Increases the hero's movement speed.", imageFile: "BootsOfSpeed" },
-  { name: "Circlet of Nobility", type: "Permanent", description: "Increases all attributes of the hero.", imageFile: "CircletOfNobility" },
-  { name: "Claws of Attack", type: "Permanent", description: "Increases the hero's attack damage.", imageFile: "ClawsOfAttack" },
-  { name: "Crystal Ball", type: "Permanent", description: "Grants True Sight, revealing invisible units near the hero.", imageFile: "CrystalBall" },
-  { name: "Gauntlets of Ogre Strength", type: "Permanent", description: "Increases the hero's Strength attribute.", imageFile: "GauntletsOfOgreStrength" },
-  { name: "Gloves of Haste", type: "Permanent", description: "Increases the hero's attack speed.", imageFile: "GlovesOfHaste" },
-  { name: "Helm of Valor", type: "Permanent", description: "Increases the hero's Strength and provides life regeneration.", imageFile: "HelmOfValor" },
-  { name: "Khadgar's Pipe of Insight", type: "Permanent", description: "Grants an aura that increases mana regeneration of nearby friendly units.", imageFile: "KhadgarsPipeOfInsight" },
-  { name: "Lion Horn of Stormwind", type: "Permanent", description: "Grants an aura that increases armor of nearby friendly units.", imageFile: "LionHornOfStormwind" },
-  { name: "Mantle of Intelligence", type: "Permanent", description: "Increases the hero's Intelligence attribute.", imageFile: "MantleOfIntelligence" },
-  { name: "Medallion of Courage", type: "Permanent", description: "Reduces the armor of a target enemy unit.", imageFile: "MedallionOfCourage" },
-  { name: "Orb of Corruption", type: "Permanent", description: "Adds a corrosive attack that reduces the target's armor.", imageFile: "OrbOfCorruption" },
-  { name: "Orb of Fire", type: "Permanent", description: "Adds a fiery attack that deals bonus damage over time.", imageFile: "OrbOfFire" },
-  { name: "Orb of Lightning", type: "Permanent", description: "Adds chain lightning to the hero's attacks.", imageFile: "OrbOfLightning" },
-  { name: "Orb of Venom", type: "Permanent", description: "Adds a venomous poison effect to the hero's attacks.", imageFile: "OrbOfVenom" },
-  { name: "Periapt of Vitality", type: "Permanent", description: "Increases the hero's maximum hit points.", imageFile: "PeriaptOfVitality" },
-  { name: "Ring of Protection", type: "Permanent", description: "Increases the hero's armor.", imageFile: "RingOfProtection" },
-  { name: "Robe of the Magi", type: "Permanent", description: "Increases the hero's Intelligence attribute.", imageFile: "RobeOfTheMagi" },
-  { name: "Runed Bracers", type: "Permanent", description: "Reduces magic damage taken by the hero.", imageFile: "RunedBracers" },
-  { name: "Slippers of Agility", type: "Permanent", description: "Increases the hero's Agility attribute.", imageFile: "SlippersOfAgility" },
-  { name: "Sobi Mask", type: "Permanent", description: "Increases the hero's mana regeneration rate.", imageFile: "SobiMask" },
-  // Consumable / Charged
-  { name: "Greater Invulnerability Potion", type: "Consumable", description: "Makes the hero temporarily invulnerable.", imageFile: "GreaterInvulnerabilityPotion" },
-  { name: "Potion of Greater Healing", type: "Consumable", description: "Restores a large amount of hit points to the hero.", imageFile: "PotionOfGreaterHealing" },
-  { name: "Potion of Greater Mana", type: "Consumable", description: "Restores a large amount of mana to the hero.", imageFile: "PotionOfGreaterMana" },
-  { name: "Potion of Healing", type: "Consumable", description: "Restores hit points to the hero.", imageFile: "PotionOfHealing" },
-  { name: "Potion of Mana", type: "Consumable", description: "Restores mana to the hero.", imageFile: "PotionOfMana" },
-  { name: "Scroll of Healing", type: "Consumable", description: "Heals nearby friendly units.", imageFile: "ScrollOfHealing" },
-  { name: "Scroll of Protection", type: "Consumable", description: "Grants bonus armor to nearby friendly units.", imageFile: "ScrollOfProtection" },
-  { name: "Scroll of the Beast", type: "Consumable", description: "Increases attack damage of nearby friendly units.", imageFile: "ScrollOfTheBeast" },
-  { name: "Scroll of Town Portal", type: "Consumable", description: "Teleports the hero to a friendly town hall.", imageFile: "ScrollOfTownPortal" },
-  { name: "Staff of Preservation", type: "Consumable", description: "Teleports a target friendly unit to a safe location.", imageFile: "StaffOfPreservation" },
-  { name: "Staff of Teleportation", type: "Consumable", description: "Teleports the hero to a targeted location on the map.", imageFile: "StaffOfTeleportation" },
-  { name: "Wand of Illusion", type: "Charged", description: "Creates illusions of a target unit.", imageFile: "WandOfIllusion" },
-  { name: "Wand of Mana Stealing", type: "Charged", description: "Drains mana from a target unit.", imageFile: "WandOfManaStealing" },
-  // Power-ups
-  { name: "Tome of Agility", type: "Power-up", description: "Permanently increases the hero's Agility by 1.", imageFile: "TomeOfAgility" },
-  { name: "Tome of Experience", type: "Power-up", description: "Grants the hero bonus experience points.", imageFile: "TomeOfExperience" },
-  { name: "Tome of Intelligence", type: "Power-up", description: "Permanently increases the hero's Intelligence by 1.", imageFile: "TomeOfIntelligence" },
-  { name: "Tome of Retraining", type: "Power-up", description: "Allows the hero to reassign all spent skill points.", imageFile: "TomeOfRetraining" },
-  { name: "Tome of Strength", type: "Power-up", description: "Permanently increases the hero's Strength by 1.", imageFile: "TomeOfStrength" },
+type FilterDef = { slug: string; label: string };
+
+const filters: FilterDef[] = [
+  { slug: "creep-drop",      label: "Creep Drops" },
+  { slug: "tome",            label: "Tomes" },
+  { slug: "goblin-merchant", label: "Goblin Merchant" },
+  { slug: "human",           label: "Arcane Vault" },
+  { slug: "orc",             label: "Voodoo Lounge" },
+  { slug: "undead",          label: "Tomb of Relics" },
+  { slug: "night-elf",       label: "Ancient of Wonders" },
 ];
 
-const typeFilters: Array<{ slug: string; label: string }> = [
-  { slug: "all", label: "All Items" },
-  { slug: "Permanent", label: "Permanent" },
-  { slug: "Consumable", label: "Consumable" },
-  { slug: "Charged", label: "Charged" },
-  { slug: "Power-up", label: "Power-ups" },
-];
+const SHOP_BUILDING_ICONS: Record<string, string> = {
+  "human":     "/images/Buildings/ArcaneVault.png",
+  "orc":       "/images/Buildings/VoodooLounge.png",
+  "undead":    "/images/Buildings/TombOfRelics.png",
+  "night-elf": "/images/Buildings/AncientOfWonders.png",
+};
+
+function filterIcon(slug: string): string | null {
+  if (slug in SHOP_BUILDING_ICONS) return SHOP_BUILDING_ICONS[slug];
+  if (slug === "goblin-merchant") return "/images/Buildings/GoblinLaboratory.png";
+  if (slug === "tome")            return "/images/Items/TomeOfStrength.png";
+  return null;
+}
+
+function getVisible(filter: string) {
+  if (filter === "tome")       return items.filter((i) => i.category === "tome");
+  if (filter === "creep-drop") return items.filter((i) => i.shops.includes("creep-drop"));
+  return items.filter((i) => i.shops.includes(filter));
+}
 
 type Props = {
-  searchParams?: Promise<{ type?: string }>;
+  searchParams?: Promise<{ tab?: string }>;
 };
 
 export default async function ItemsPage({ searchParams }: Props) {
-  const params = (await searchParams) ?? {};
-  const activeType = params.type ?? "all";
-  const visible = activeType === "all" ? items : items.filter((i) => i.type === activeType);
+  const params    = (await searchParams) ?? {};
+  const activeTab = params.tab ?? "creep-drop";
+  const visible   = getVisible(activeTab);
+  const banner    = SHOP_BANNERS[activeTab] ?? null;
 
   return (
     <div className="page-shell page-stack">
@@ -79,26 +59,43 @@ export default async function ItemsPage({ searchParams }: Props) {
         <p className="section-label">Item Reference</p>
         <h1 className="page-title">Items that turn the tide of fights.</h1>
         <p className="page-intro">
-          Permanent items scale your hero every game. Consumables win the fight you're in.
-          Power-ups give lasting stat gains from creep camp drops.
+          Browse creep-drop loot, faction shop stock, and neutral market inventories in one place.
         </p>
       </div>
 
-      <nav className="filter-bar" aria-label="Item type filter">
-        {typeFilters.map((f) => (
-          <Link
-            key={f.slug}
-            href={f.slug === "all" ? "/items" : `/items?type=${f.slug}`}
-            className={`filter-btn${activeType === f.slug ? " filter-btn--active" : ""}`}
-          >
-            {f.label}
-          </Link>
-        ))}
+      <nav className="filter-bar" aria-label="Item filter">
+        {filters.map((f) => {
+          const icon = filterIcon(f.slug);
+          return (
+            <a
+              key={f.slug}
+              href={`/items?tab=${f.slug}`}
+              className={`filter-btn filter-btn--race${activeTab === f.slug ? " filter-btn--active" : ""}`}
+            >
+              {f.slug === "creep-drop" ? (
+                <span className="gold-coin" aria-hidden="true" />
+              ) : icon ? (
+                <GameImage src={icon} alt="" width={18} height={18} className="filter-btn__icon" />
+              ) : null}
+              {f.label}
+            </a>
+          );
+        })}
       </nav>
+
+      {banner ? (
+        <div className="shop-banner">
+          <GameImage src={banner.icon} alt={banner.sublabel} width={40} height={40} className="game-image--icon" />
+          <div>
+            <p className="shop-banner__label">{banner.label}</p>
+            <p className="shop-banner__name">{banner.sublabel}</p>
+          </div>
+        </div>
+      ) : null}
 
       <div className="icon-grid">
         {visible.map((item) => (
-          <div key={item.imageFile} className="icon-card">
+          <div key={`${item.name}-${activeTab}`} className="icon-card">
             <GameImage
               src={`/images/Items/${item.imageFile}.png`}
               alt={item.name}
@@ -108,7 +105,9 @@ export default async function ItemsPage({ searchParams }: Props) {
             />
             <div className="icon-card__body">
               <p className="icon-card__name">{item.name}</p>
-              <p className="icon-card__type">{item.type}</p>
+              <p className="icon-card__type">
+                {item.category === "tome" ? "Tome" : item.category === "permanent" ? "Permanent" : "Consumable"}
+              </p>
               <p className="icon-card__desc">{item.description}</p>
             </div>
           </div>

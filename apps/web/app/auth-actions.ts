@@ -65,10 +65,17 @@ export async function registerAction(formData: FormData) {
     redirect(withStatus(returnTo, { auth: authMode, error: "config", status: undefined }));
   }
 
+  const password = String(formData.get("password") ?? "");
+  const confirmPassword = String(formData.get("confirmPassword") ?? "");
+
+  if (confirmPassword && password !== confirmPassword) {
+    redirect(withStatus(returnTo, { auth: authMode, error: "mismatch", status: undefined }));
+  }
+
   const parsed = registerSchema.safeParse({
     username: String(formData.get("username") ?? ""),
     email: String(formData.get("email") ?? ""),
-    password: String(formData.get("password") ?? ""),
+    password,
   });
 
   if (!parsed.success) {

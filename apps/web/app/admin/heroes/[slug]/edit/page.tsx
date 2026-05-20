@@ -24,7 +24,7 @@ export default async function EditAdminHeroPage({ params }: Props) {
   return (
     <div className="page-shell page-stack">
       <div className="section-head"><p className="section-label">Admin Hero Editor</p><h1 className="page-title">Edit {hero.name}</h1></div>
-      <form action={updateHeroAction} className="form-grid">
+      <form action={updateHeroAction} className="form-grid" encType="multipart/form-data">
         <input type="hidden" name="heroId" value={hero.id} />
         <section className="form-panel">
           <h2>Core Metadata</h2>
@@ -33,6 +33,12 @@ export default async function EditAdminHeroPage({ params }: Props) {
           <div className="field"><label htmlFor="slug">Slug</label><input id="slug" name="slug" type="text" defaultValue={hero.slug} /></div>
           <div className="field"><label htmlFor="primaryAttribute">Primary attribute</label><input id="primaryAttribute" name="primaryAttribute" type="text" defaultValue={hero.primaryAttribute} /></div>
           <div className="field"><label htmlFor="role">Role</label><input id="role" name="role" type="text" defaultValue={hero.role} /></div>
+          <input type="hidden" name="imageUrl" value={hero.imageUrl ?? ""} />
+          <div className="field">
+            <label htmlFor="imageUpload">Image (saves to /images/Heroes/)</label>
+            {hero.imageUrl ? <img src={hero.imageUrl} alt={hero.name} className="admin-img-preview" /> : null}
+            <input id="imageUpload" name="imageUpload" type="file" accept="image/*" />
+          </div>
         </section>
         <section className="form-panel">
           <h2>Guide Content</h2>

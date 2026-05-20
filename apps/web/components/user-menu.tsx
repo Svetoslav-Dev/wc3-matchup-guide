@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { logoutAction } from "../app/auth-actions";
 
@@ -33,8 +34,17 @@ export function UserMenu({ username }: Props) {
       </button>
       {open ? (
         <div className="user-menu__dropdown">
+          <Link href="/favorites" className="user-menu__item" onClick={() => setOpen(false)}>
+            Favorites
+          </Link>
+          <Link href="/builds/my-builds" className="user-menu__item" onClick={() => setOpen(false)}>
+            My Builds
+          </Link>
+          <Link href="/builds/submit" className="user-menu__item" onClick={() => setOpen(false)}>
+            Submit a Build
+          </Link>
           <form action={logoutAction}>
-            <button className="user-menu__item" type="submit">
+            <button className="user-menu__item user-menu__item--danger" type="submit">
               Log Out
             </button>
           </form>

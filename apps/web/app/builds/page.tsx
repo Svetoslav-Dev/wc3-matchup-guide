@@ -1,8 +1,8 @@
-import Link from "next/link";
 import { BuildFilterBar } from "../../components/build-filter-bar";
 import { BuildList } from "../../components/build-list";
+import { hasDatabaseUrl } from "@warcraft3-guide-hub/db";
 import { getSessionUser } from "../../lib/auth";
-import { listBuilds } from "../../lib/content";
+import { listBuilds, listFavoriteBuildsForUser } from "../../lib/content";
 
 type Props = {
   searchParams?: Promise<{
@@ -17,15 +17,12 @@ export default async function BuildsPage({ searchParams }: Props) {
   const params = (await searchParams) ?? {};
   const page = params.page ? Number.parseInt(params.page, 10) : 1;
   const [result, sessionUser] = await Promise.all([
-    listBuilds({
-      race: params.race,
-      matchup: params.matchup,
-      search: params.search,
-      page,
-      pageSize: 20,
-    }),
+    listBuilds({ race: params.race, matchup: params.matchup, search: params.search, page, pageSize: 20 }),
     getSessionUser(),
   ]);
+  const favoriteSlugs = sessionUser && hasDatabaseUrl()
+    ? (await listFavoriteBuildsForUser(sessionUser.id)).map((f) => f.build.slug)
+    : [];
 
   return (
     <div className="page-shell page-stack">
@@ -37,21 +34,6 @@ export default async function BuildsPage({ searchParams }: Props) {
           read like plans instead of raw lists.
         </p>
       </div>
-      {sessionUser ? (
-        <div className="panel panel--padded">
-          <div className="section-head">
-            <p className="section-label">Your Build Ideas</p>
-            <h2>Submit a build for your race and manage it later.</h2>
-            <p className="page-intro">
-              Logged-in users can submit their own builds as drafts and remove their own submissions
-              from the submission page.
-            </p>
-          </div>
-          <div className="hero-actions">
-            <Link href="/builds/submit" className="button">Submit a Build</Link>
-          </div>
-        </div>
-      ) : null}
       <BuildFilterBar activeRace={params.race} activeMatchup={params.matchup} />
       <BuildList
         key={`${params.race ?? ""}-${params.matchup ?? ""}-${params.search ?? ""}`}
@@ -59,6 +41,7 @@ export default async function BuildsPage({ searchParams }: Props) {
         race={params.race}
         matchup={params.matchup}
         search={params.search}
+        favoriteSlugs={favoriteSlugs}
       />
     </div>
   );

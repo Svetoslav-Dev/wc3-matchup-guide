@@ -20,12 +20,18 @@ export default async function EditAdminMapPage({ params }: Props) {
   return (
     <div className="page-shell page-stack">
       <div className="section-head"><p className="section-label">Admin Map Editor</p><h1 className="page-title">Edit {map.name}</h1></div>
-      <form action={updateMapAction} className="form-grid">
+      <form action={updateMapAction} className="form-grid" encType="multipart/form-data">
         <input type="hidden" name="mapId" value={map.id} />
         <section className="form-panel">
           <h2>Core Metadata</h2>
           <div className="field"><label htmlFor="name">Name</label><input id="name" name="name" type="text" defaultValue={map.name} /></div>
           <div className="field"><label htmlFor="slug">Slug</label><input id="slug" name="slug" type="text" defaultValue={map.slug} /></div>
+          <input type="hidden" name="imageUrl" value={map.imageUrl ?? ""} />
+          <div className="field">
+            <label htmlFor="imageUpload">Image (saves to /images/Maps/)</label>
+            {map.imageUrl ? <img src={map.imageUrl} alt={map.name} className="admin-img-preview" /> : null}
+            <input id="imageUpload" name="imageUpload" type="file" accept="image/*" />
+          </div>
         </section>
         <section className="form-panel">
           <h2>Guide Content</h2>

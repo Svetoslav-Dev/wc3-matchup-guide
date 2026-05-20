@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { getMapBySlug } from "../../../lib/content";
 import { GameImage } from "../../../components/game-image";
+import { getItemInfo } from "../../../lib/item-lookup";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -36,12 +37,38 @@ export default async function MapDetailPage({ params }: Props) {
           <h2>Expansion Notes</h2>
           <p>{map.expansionNotes}</p>
         </article>
+        {map.shops.length > 0 ? (
+          <article className="detail-panel">
+            <h2>Shops On This Map</h2>
+            <div className="shop-chip-row">
+              {map.shops.map((shop) => (
+                <span key={shop} className="pill">
+                  {shop}
+                </span>
+              ))}
+            </div>
+          </article>
+        ) : null}
         {map.availableItems.length > 0 ? (
           <article className="detail-panel">
             <h2>Available Items</h2>
-            <ul>
+            <ul className="map-item-list">
               {map.availableItems.map((item) => (
-                <li key={item}>{item}</li>
+                <li key={item} className="map-item-list__item">
+                  {getItemInfo(item).imageFile ? (
+                    <GameImage
+                      src={`/images/Items/${getItemInfo(item).imageFile}.png`}
+                      alt=""
+                      width={20}
+                      height={20}
+                      className="filter-btn__icon"
+                    />
+                  ) : (
+                    <span className="gold-coin" aria-hidden="true" />
+                  )}
+                  <span>{item}</span>
+                  <span className="map-item-source">{getItemInfo(item).source}</span>
+                </li>
               ))}
             </ul>
           </article>

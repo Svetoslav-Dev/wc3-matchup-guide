@@ -22,7 +22,7 @@ export default async function NewAdminHeroPage() {
         <h1 className="page-title">Create a new hero guide.</h1>
         <p className="page-intro">Highlights format: one point per line.</p>
       </div>
-      <form action={createHeroAction} className="form-grid">
+      <form action={createHeroAction} className="form-grid" encType="multipart/form-data">
         <section className="form-panel">
           <h2>Core Metadata</h2>
           <div className="field">

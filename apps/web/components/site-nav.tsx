@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 type NavItem = {
   href: string;
   label: string;
+  god?: boolean;
 };
 
 const isActiveRoute = (pathname: string, href: string) =>
@@ -20,7 +21,15 @@ export function SiteNav({ items }: { items: NavItem[] }) {
         const active = isActiveRoute(pathname, item.href);
 
         return (
-          <Link key={item.href} href={item.href} className={active ? "nav__link nav__link--active" : "nav__link"}>
+          <Link
+            key={item.href}
+            href={item.href}
+            className={[
+              "nav__link",
+              active ? "nav__link--active" : "",
+              item.god ? "nav__link--god" : "",
+            ].filter(Boolean).join(" ")}
+          >
             {item.label}
           </Link>
         );

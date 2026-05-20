@@ -5,6 +5,7 @@ import { registerAction } from "../auth-actions";
 const errorMessages: Record<string, string> = {
   config: "Registration is unavailable until DATABASE_URL and JWT_SECRET are configured.",
   invalid: "Enter a valid username, email, and password.",
+  mismatch: "Passwords do not match.",
   email: "That email is already registered.",
   username: "That username is already taken.",
   unknown: "Registration failed.",
@@ -46,6 +47,10 @@ export default async function RegisterPage({ searchParams }: Props) {
           <div className="field">
             <label htmlFor="register-password">Password</label>
             <input id="register-password" name="password" type="password" placeholder="NoMoreMilitiaCalls" />
+          </div>
+          <div className="field">
+            <label htmlFor="register-confirm-password">Confirm Password</label>
+            <input id="register-confirm-password" name="confirmPassword" type="password" placeholder="NoMoreMilitiaCalls" />
           </div>
           <button className="button" type="submit" disabled={!hasDatabaseUrl() || !process.env.JWT_SECRET}>
             Create Account

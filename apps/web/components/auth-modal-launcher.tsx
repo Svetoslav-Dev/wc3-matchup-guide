@@ -18,6 +18,7 @@ const loginStatusMessages: Record<string, string> = {
 const registerErrorMessages: Record<string, string> = {
   config: "Registration is unavailable until DATABASE_URL and JWT_SECRET are configured.",
   invalid: "Enter a valid username, email, and password.",
+  mismatch: "Passwords do not match.",
   email: "That email is already registered.",
   username: "That username is already taken.",
   unknown: "Registration failed.",
@@ -68,7 +69,7 @@ export function AuthModalLauncher() {
 
   return (
     <>
-      <div className="inline-actions">
+      <div className="auth-trigger">
         <Link href={buildHref(pathname, searchParams, "login")} className="button button--ghost">
           Log In
         </Link>
@@ -117,6 +118,15 @@ export function AuthModalLauncher() {
                   <input
                     id="modal-register-password"
                     name="password"
+                    type="password"
+                    placeholder="NoMoreMilitiaCalls"
+                  />
+                </div>
+                <div className="field">
+                  <label htmlFor="modal-confirm-password">Confirm Password</label>
+                  <input
+                    id="modal-confirm-password"
+                    name="confirmPassword"
                     type="password"
                     placeholder="NoMoreMilitiaCalls"
                   />

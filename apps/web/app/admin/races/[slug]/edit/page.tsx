@@ -30,13 +30,19 @@ export default async function EditAdminRacePage({ params }: Props) {
         <p className="section-label">Admin Race Editor</p>
         <h1 className="page-title">Edit {race.name}</h1>
       </div>
-      <form action={updateRaceAction} className="form-grid">
+      <form action={updateRaceAction} className="form-grid" encType="multipart/form-data">
         <input type="hidden" name="raceId" value={race.id} />
         <section className="form-panel">
           <h2>Core Metadata</h2>
           <div className="field"><label htmlFor="name">Name</label><input id="name" name="name" type="text" defaultValue={race.name} /></div>
           <div className="field"><label htmlFor="slug">Slug</label><input id="slug" name="slug" type="text" defaultValue={race.slug} /></div>
           <div className="field"><label htmlFor="identity">Identity</label><textarea id="identity" name="identity" defaultValue={race.identity} /></div>
+          <input type="hidden" name="imageUrl" value={race.imageUrl ?? ""} />
+          <div className="field">
+            <label htmlFor="imageUpload">Image (saves to /images/Races/)</label>
+            {race.imageUrl ? <img src={race.imageUrl} alt={race.name} className="admin-img-preview" /> : null}
+            <input id="imageUpload" name="imageUpload" type="file" accept="image/*" />
+          </div>
         </section>
         <section className="form-panel">
           <h2>Guide Content</h2>

@@ -15,7 +15,7 @@ export default async function NewAdminUnitPage() {
   return (
     <div className="page-shell page-stack">
       <div className="section-head"><p className="section-label">Admin Unit Editor</p><h1 className="page-title">Create a new unit guide.</h1><p className="page-intro">Strengths and weaknesses format: one point per line.</p></div>
-      <form action={createUnitAction} className="form-grid">
+      <form action={createUnitAction} className="form-grid" encType="multipart/form-data">
         <section className="form-panel">
           <h2>Core Metadata</h2>
           <div className="field"><label htmlFor="raceSlug">Race</label><select id="raceSlug" name="raceSlug" defaultValue={raceResult.data[0]?.slug}>{raceResult.data.map((race) => <option key={race.slug} value={race.slug}>{race.name}</option>)}</select></div>
