@@ -7,7 +7,7 @@
   },
   "scripts": {
     "dev": "next dev",
-    "db:migrate": "drizzle-kit migrate --config ../../drizzle.config.ts",
+    "db:migrate": "node ../../scripts/bootstrap-drizzle-journal.mjs",
     "build": "next build",
     "start": "next start",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
@@ -17,8 +17,10 @@
     "@warcraft3-guide-hub/db": "*",
     "@warcraft3-guide-hub/shared": "*",
     "bcryptjs": "^3.0.3",
+    "dotenv": "^17.4.2",
     "jose": "^6.2.3",
     "next": "15.3.8",
+    "postgres": "^3.4.9",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "zod": "^4.4.3"
