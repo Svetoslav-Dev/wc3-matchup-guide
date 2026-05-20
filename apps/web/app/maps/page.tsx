@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { listMaps } from "../../lib/content";
+import { GameImage } from "../../components/game-image";
 import { mapCategories, mapCategoryNameBySlug, mapSlugsByCategory } from "./categories";
 
 type Props = {
@@ -60,7 +61,18 @@ export default async function MapsPage({ searchParams }: Props) {
           return (
             <article key={map.slug} className="card">
               <p className="pill">{categories.join(" · ")}</p>
-              <h2>{map.name}</h2>
+              <div className="title-row">
+                <GameImage
+                  src={map.imageUrl ?? `/images/maps/${map.slug}.jpg`}
+                  alt={map.name}
+                  className="game-image--icon"
+                  width={64}
+                  height={64}
+                />
+                <div className="title-stack">
+                  <h2>{map.name}</h2>
+                </div>
+              </div>
               <p>{map.description}</p>
               <div className="card__footer">
                 <div className="list-meta">

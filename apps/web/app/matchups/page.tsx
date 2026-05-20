@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { listMatchups } from "../../lib/content";
+import { GameImage } from "../../components/game-image";
 
 type Props = {
   searchParams?: Promise<{
@@ -15,6 +16,18 @@ const raceFilters = [
 ];
 
 const getPerspectiveRace = (title: string) => title.split(" vs ")[0]?.trim() ?? "";
+const toRaceSlug = (name: string) => name.toLowerCase().replace(/\s+/g, "-");
+const parseMatchup = (title: string) => {
+  const [a = "", b = ""] = title.split(" vs ").map((s) => s.trim());
+  return { nameA: a, nameB: b, slugA: toRaceSlug(a), slugB: toRaceSlug(b) };
+};
+const raceImages: Record<string, string> = {
+  "human": "/images/Races/Humans_Icon.png",
+  "orc": "/images/Races/Orcs_Icon.png",
+  "night-elf": "/images/Races/Night_Elves_Icon.png",
+  "undead": "/images/Races/Undead_Icon.png",
+};
+const raceImageSrc = (slug: string) => raceImages[slug] ?? "/placeholder.svg";
 
 export default async function MatchupsPage({ searchParams }: Props) {
   const params = (await searchParams) ?? {};
@@ -58,19 +71,33 @@ export default async function MatchupsPage({ searchParams }: Props) {
               <p className="pill pill--race">{getPerspectiveRace(matchup.title)}</p>
               <p className="pill">{matchup.difficulty}</p>
             </div>
-            <h2>{matchup.title}</h2>
+            {(() => {
+              const { nameA, nameB, slugA, slugB } = parseMatchup(matchup.title);
+              return (
+                <div className="matchup-vs">
+                  <GameImage src={raceImageSrc(slugA)} alt={nameA} className="game-image--icon" width={64} height={64} />
+                  <span className="matchup-vs__race">{nameA}</span>
+                  <span className="matchup-vs__label">vs</span>
+                  <GameImage src={raceImageSrc(slugB)} alt={nameB} className="game-image--icon" width={64} height={64} />
+                  <span className="matchup-vs__race">{nameB}</span>
+                </div>
+              );
+            })()}
             <p>{matchup.summary}</p>
-            <div className="list-meta">
-              <span>Difficulty for {getPerspectiveRace(matchup.title)}: {matchup.difficulty}</span>
-              <span>Hero focus: {matchup.heroChoices.join(", ")}</span>
+            <div className="card__footer">
+              <div className="list-meta">
+                <span>Difficulty for {getPerspectiveRace(matchup.title)}: {matchup.difficulty}</span>
+                <span>Hero focus: {matchup.heroChoices.join(", ")}</span>
+              </div>
+              <div className="card__footer-action card__footer-action--center">
+                <Link href={`/matchups/${matchup.slug}`} className="button button--ghost">
+                  View Matchup Plan
+                </Link>
+              </div>
             </div>
-            <Link href={`/matchups/${matchup.slug}`} className="button button--ghost">
-              View Matchup Plan
-            </Link>
           </article>
         ))}
       </div>
-      <p className="muted">Showing {filteredMatchups.length} of {result.total} matchups.</p>
     </div>
   );
 }

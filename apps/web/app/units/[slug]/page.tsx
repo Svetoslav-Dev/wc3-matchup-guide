@@ -54,10 +54,19 @@ export default async function UnitDetailPage({ params }: Props) {
               <article key={unit.slug} className="card">
                 <p className="pill">{unit.raceName}</p>
                 <div className="title-row">
-                  <h2>{unit.name}</h2>
-                  <div className="list-meta">
-                    <span>{unit.tier}</span>
-                    <span>{unit.unitType}</span>
+                  <GameImage
+                    src={unit.imageUrl ?? `/images/units/${unit.slug}.jpg`}
+                    alt={unit.name}
+                    className="game-image--icon"
+                    width={64}
+                    height={64}
+                  />
+                  <div className="title-stack">
+                    <h2>{unit.name}</h2>
+                    <div className="list-meta">
+                      <span>{unit.tier}</span>
+                      <span>{unit.unitType}</span>
+                    </div>
                   </div>
                 </div>
                 <p>{unit.description}</p>

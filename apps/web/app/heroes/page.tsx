@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { listHeroes } from "../../lib/content";
+import { GameImage } from "../../components/game-image";
 
 export default async function HeroesPage() {
   const result = await listHeroes(1, 64);
@@ -39,8 +40,15 @@ export default async function HeroesPage() {
           <div className="card-grid">
             {group.heroes.map((hero) => (
               <article key={hero.slug} className="card">
+                <p className="pill pill--race">{hero.raceName}</p>
                 <div className="title-row">
-                  <p className="pill pill--race">{hero.raceName}</p>
+                  <GameImage
+                    src={hero.imageUrl ?? `/images/heroes/${hero.slug}.jpg`}
+                    alt={hero.name}
+                    className="game-image--icon"
+                    width={64}
+                    height={64}
+                  />
                   <div className="title-stack">
                     <h3>{hero.name}</h3>
                     <div className="list-meta">

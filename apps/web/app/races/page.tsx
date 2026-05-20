@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { listRaces } from "../../lib/content";
+import { GameImage } from "../../components/game-image";
 
 export default async function RacesPage() {
   const result = await listRaces(1, 20);
@@ -19,7 +20,16 @@ export default async function RacesPage() {
         {playableRaces.map((race) => (
           <article key={race.slug} className="card">
             <p className="pill">{race.badge}</p>
-            <h2>{race.name}</h2>
+            <div className="title-row">
+              <GameImage
+                src={race.imageUrl ?? `/images/races/${race.slug}.jpg`}
+                alt={race.name}
+                className="game-image--icon"
+                width={64}
+                height={64}
+              />
+              <h2>{race.name}</h2>
+            </div>
             <p>{race.identity}</p>
             <div className="card__footer">
               <div className="list-meta">

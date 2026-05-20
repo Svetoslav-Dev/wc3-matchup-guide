@@ -63,6 +63,8 @@ export function AuthModalLauncher() {
   const message = isRegisterOpen
     ? (status ? registerStatusMessages[status] : undefined) ?? (error ? registerErrorMessages[error] : undefined)
     : (status ? loginStatusMessages[status] : undefined) ?? (error ? loginErrorMessages[error] : undefined);
+  const isError = Boolean(error);
+  const isLoggedOut = status === "logged-out";
 
   return (
     <>
@@ -88,7 +90,11 @@ export function AuthModalLauncher() {
               <h1>{title}</h1>
               <p className="page-intro">{intro}</p>
             </div>
-            {message ? <p className="status-banner">{message}</p> : null}
+            {message ? (
+              <p className={`status-banner${isError || isLoggedOut ? " status-banner--error" : ""}`}>
+                {message}
+              </p>
+            ) : null}
             {isRegisterOpen ? (
               <form action={registerAction} className="page-stack">
                 <input type="hidden" name="returnTo" value={returnTo} />

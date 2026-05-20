@@ -1,26 +1,81 @@
 import Link from "next/link";
-import { listMatchups, listRaces, getHomeStats } from "../lib/content";
+import { listMatchups, listRaces, listBuilds, getHomeStats } from "../lib/content";
+import { GameImage } from "../components/game-image";
+
+const toRaceSlug = (name: string) => name.toLowerCase().replace(/\s+/g, "-");
+const parseMatchupTitle = (title: string) => {
+  const [a = "", b = ""] = title.split(" vs ").map((s) => s.trim());
+  return { nameA: a, nameB: b, slugA: toRaceSlug(a), slugB: toRaceSlug(b) };
+};
+const raceImages: Record<string, string> = {
+  "human": "/images/Races/Humans_Icon.png",
+  "orc": "/images/Races/Orcs_Icon.png",
+  "night-elf": "/images/Races/Night_Elves_Icon.png",
+  "undead": "/images/Races/Undead_Icon.png",
+};
+const raceImageSrc = (slug: string) => raceImages[slug] ?? "/placeholder.svg";
+
+const raceOrder = ["human", "orc", "undead", "night-elf"];
+
+const worstMatchupSlugs: Record<string, string> = {
+  human: "human-vs-undead",
+  orc: "orc-vs-human",
+  undead: "undead-vs-orc",
+  "night-elf": "night-elf-vs-undead",
+};
+
+const bestMatchupSlugs: Record<string, string> = {
+  human: "human-vs-orc",
+  orc: "orc-vs-undead",
+  undead: "undead-vs-night-elf",
+  "night-elf": "night-elf-vs-human",
+};
+
+const worstMatchupReasons: Record<string, string> = {
+  "human-vs-undead":
+    "Undead is difficult for Human because coil-nova pressure, statue sustain, and sharp tier-two timing attacks heavily punish loose positioning and greedy expansions.",
+  "orc-vs-human":
+    "Human is difficult for Orc because militia creeping, safe expansions, and breaker-caster scaling punish Orc if the early pressure does not land cleanly.",
+  "undead-vs-orc":
+    "Orc is difficult for Undead because Blademaster scouting, raider pressure, and hex catches make every fiend loss and statue misstep much more expensive.",
+  "night-elf-vs-undead":
+    "Undead is difficult for Night Elf because fiend-statue control, destroyer timing, and hero nuke threat punish fragile Elf armies when map control slips.",
+};
+
+const bestMatchupReasons: Record<string, string> = {
+  "human-vs-orc":
+    "Orc is a strong matchup for Human because rifles, bolt, and slow directly answer raider dives, and disciplined caster control punishes every Orc overextension.",
+  "orc-vs-undead":
+    "Undead is a strong matchup for Orc because raider mobility, ensnare catches, and hex control disrupt the fragile fiend-statue timing Undead needs to win.",
+  "undead-vs-night-elf":
+    "Night Elf is a strong matchup for Undead because mass fiend pressure, nova timing, and destroyer conversion punish thin Elf armies before moonwells reset the map.",
+  "night-elf-vs-human":
+    "Human is a strong matchup for Night Elf because mana burn, entangle, and map mobility undermine Human's economy and prevent the caster backbone from forming.",
+};
 
 export default async function HomePage() {
-  const [stats, raceResult, matchupResult] = await Promise.all([
+  const [stats, raceResult, allMatchups, humanBuilds, orcBuilds, undeadBuilds, nightElfBuilds] = await Promise.all([
     getHomeStats(),
     listRaces(1, 20),
-    listMatchups(1, 4),
+    listMatchups(1, 50),
+    listBuilds({ race: "human", pageSize: 1 }),
+    listBuilds({ race: "orc", pageSize: 1 }),
+    listBuilds({ race: "undead", pageSize: 1 }),
+    listBuilds({ race: "night-elf", pageSize: 1 }),
   ]);
-  const featuredRaceOrder = ["human", "orc", "undead", "night-elf"];
-  const featuredRaces = featuredRaceOrder
+  const topBuilds = [humanBuilds, orcBuilds, undeadBuilds, nightElfBuilds]
+    .map((result) => result.data[0])
+    .filter((b): b is NonNullable<typeof b> => Boolean(b));
+  const featuredRaces = raceOrder
     .map((slug) => raceResult.data.find((race) => race.slug === slug))
     .filter((race): race is NonNullable<typeof race> => Boolean(race));
-  const worstMatchupReasons: Record<string, string> = {
-    "orc-vs-human":
-      "Human is difficult for Orc because militia creeping, safe expansions, and breaker-caster scaling punish Orc if the early pressure does not land cleanly.",
-    "human-vs-undead":
-      "Undead is difficult for Human because coil-nova pressure, statue sustain, and sharp tier-two timing attacks heavily punish loose positioning and greedy expansions.",
-    "night-elf-vs-undead":
-      "Undead is difficult for Night Elf because fiend-statue control, destroyer timing, and hero nuke threat punish fragile Elf armies when map control slips.",
-    "undead-vs-orc":
-      "Orc is difficult for Undead because Blademaster scouting, raider pressure, and hex catches make every fiend loss and statue misstep much more expensive.",
-  };
+  const matchupBySlug = new Map(allMatchups.data.map((m) => [m.slug, m]));
+  const worstMatchups = raceOrder
+    .map((race) => matchupBySlug.get(worstMatchupSlugs[race]))
+    .filter((m): m is NonNullable<typeof m> => Boolean(m));
+  const bestMatchups = raceOrder
+    .map((race) => matchupBySlug.get(bestMatchupSlugs[race]))
+    .filter((m): m is NonNullable<typeof m> => Boolean(m));
 
   return (
     <div className="page-shell">
@@ -79,7 +134,16 @@ export default async function HomePage() {
           {featuredRaces.map((race) => (
             <article key={race.slug} className="card">
               <p className="pill">{race.badge}</p>
-              <h3>{race.name}</h3>
+              <div className="title-row">
+                <GameImage
+                  src={race.imageUrl ?? raceImageSrc(race.slug)}
+                  alt={race.name}
+                  className="game-image--icon"
+                  width={64}
+                  height={64}
+                />
+                <h3>{race.name}</h3>
+              </div>
               <p>{race.identity}</p>
               <div className="card__footer">
                 <div className="list-meta">
@@ -97,17 +161,25 @@ export default async function HomePage() {
       <section className="section">
         <div className="section-head">
           <p className="section-label">Worst Matchups</p>
-          <h2>Races worst matchups</h2>
+          <h2>Every race has a wall they have to climb.</h2>
         </div>
         <div className="list-grid">
-          {matchupResult.data.map((matchup) => (
+          {worstMatchups.map((matchup) => {
+            const { nameA, nameB, slugA, slugB } = parseMatchupTitle(matchup.title);
+            return (
             <article key={matchup.slug} className="card">
               <p className="pill">{matchup.difficulty}</p>
-              <h3>{matchup.title}</h3>
+              <div className="matchup-vs">
+                <GameImage src={raceImageSrc(slugA)} alt={nameA} className="game-image--icon" width={64} height={64} />
+                <span className="matchup-vs__race">{nameA}</span>
+                <span className="matchup-vs__label">vs</span>
+                <GameImage src={raceImageSrc(slugB)} alt={nameB} className="game-image--icon" width={64} height={64} />
+                <span className="matchup-vs__race">{nameB}</span>
+              </div>
               <p>{worstMatchupReasons[matchup.slug] ?? matchup.summary}</p>
               <div className="card__footer">
                 <div className="list-meta">
-                  <span>Why it is hard: {matchup.commonMistakes[0]}</span>
+                  <span>Common mistake: {matchup.commonMistakes[0]}</span>
                 </div>
                 <div className="card__footer-action card__footer-action--center">
                   <Link href={`/matchups/${matchup.slug}`} className="button button--ghost">
@@ -116,9 +188,89 @@ export default async function HomePage() {
                 </div>
               </div>
             </article>
-          ))}
+            );
+          })}
         </div>
       </section>
+
+      <section className="section">
+        <div className="section-head">
+          <p className="section-label">Best Matchups</p>
+          <h2>And every race has a lane where they thrive.</h2>
+        </div>
+        <div className="list-grid">
+          {bestMatchups.map((matchup) => {
+            const { nameA, nameB, slugA, slugB } = parseMatchupTitle(matchup.title);
+            return (
+            <article key={matchup.slug} className="card">
+              <p className="pill">{matchup.difficulty}</p>
+              <div className="matchup-vs">
+                <GameImage src={raceImageSrc(slugA)} alt={nameA} className="game-image--icon" width={64} height={64} />
+                <span className="matchup-vs__race">{nameA}</span>
+                <span className="matchup-vs__label">vs</span>
+                <GameImage src={raceImageSrc(slugB)} alt={nameB} className="game-image--icon" width={64} height={64} />
+                <span className="matchup-vs__race">{nameB}</span>
+              </div>
+              <p>{bestMatchupReasons[matchup.slug] ?? matchup.summary}</p>
+              <div className="card__footer">
+                <div className="list-meta">
+                  <span>Key strength: {matchup.heroChoices[0]}</span>
+                </div>
+                <div className="card__footer-action card__footer-action--center">
+                  <Link href={`/matchups/${matchup.slug}`} className="button button--ghost">
+                    Open Matchup
+                  </Link>
+                </div>
+              </div>
+            </article>
+            );
+          })}
+        </div>
+      </section>
+
+      {topBuilds.length > 0 ? (
+        <section className="section">
+          <div className="section-head">
+            <p className="section-label">Top Builds by Race</p>
+            <h2>Most popular opening for each race.</h2>
+            <p className="page-intro">
+              One featured build order per race — the most commonly played general opener based on
+              current submissions.
+            </p>
+          </div>
+          <div className="list-grid">
+            {topBuilds.map((build) => (
+              <article key={build.slug} className="card">
+                <div className="list-meta">
+                  <p className="pill">{build.strategyType}</p>
+                </div>
+                <div className="title-row">
+                  <GameImage
+                    src={raceImageSrc(build.raceSlug)}
+                    alt={build.raceName}
+                    className="game-image--icon"
+                    width={64}
+                    height={64}
+                  />
+                  <h3>{build.title}</h3>
+                </div>
+                <p>{build.summary}</p>
+                <div className="card__footer">
+                  <div className="list-meta">
+                    <span>Difficulty: {build.difficulty}</span>
+                    {build.bestAgainst ? <span>Best against: {build.bestAgainst}</span> : null}
+                  </div>
+                  <div className="card__footer-action card__footer-action--center">
+                    <Link href={`/builds/${build.slug}`} className="button button--ghost">
+                      Open Build
+                    </Link>
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+      ) : null}
     </div>
   );
 }

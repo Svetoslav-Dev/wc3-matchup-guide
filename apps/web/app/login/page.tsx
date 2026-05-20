@@ -21,6 +21,8 @@ export default async function LoginPage({ searchParams }: Props) {
   const [user, params] = await Promise.all([getSessionUser(), searchParams]);
   const errorMessage = params?.error ? errorMessages[params.error] : undefined;
   const statusMessage = params?.status ? statusMessages[params.status] : undefined;
+  const statusClassName =
+    params?.status === "logged-out" || errorMessage ? "status-banner status-banner--error" : "status-banner";
 
   return (
     <div className="page-shell auth-shell">
@@ -30,8 +32,8 @@ export default async function LoginPage({ searchParams }: Props) {
           <h1>Login</h1>
           <p className="page-intro">Log in to save builds and manage content.</p>
         </div>
-        {statusMessage ? <p className="status-banner">{statusMessage}</p> : null}
-        {errorMessage ? <p className="status-banner">{errorMessage}</p> : null}
+        {statusMessage ? <p className={statusClassName}>{statusMessage}</p> : null}
+        {errorMessage ? <p className="status-banner status-banner--error">{errorMessage}</p> : null}
         {user ? <p className="muted">Current session: {user.email} ({user.role})</p> : null}
         <form action={loginAction} className="page-stack">
           <div className="field">

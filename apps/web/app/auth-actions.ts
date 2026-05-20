@@ -96,5 +96,5 @@ export async function registerAction(formData: FormData) {
 
 export async function logoutAction() {
   await removeAuthCookie();
-  redirect("/login?status=logged-out");
+  redirect("/?status=logged-out");
 }

@@ -1,7 +1,7 @@
 import { hasDatabaseUrl } from "@warcraft3-guide-hub/db";
 import { AuthModalLauncher } from "./auth-modal-launcher";
+import { UserMenu } from "./user-menu";
 import { getSessionUser } from "../lib/auth";
-import { logoutAction } from "../app/auth-actions";
 
 export async function SiteAuth() {
   const user = await getSessionUser();
@@ -14,16 +14,5 @@ export async function SiteAuth() {
     return <AuthModalLauncher />;
   }
 
-  return (
-    <div className="inline-actions">
-      <span className="muted">
-        Signed in as <strong>{user.username}</strong>
-      </span>
-      <form action={logoutAction}>
-        <button className="button button--ghost" type="submit">
-          Log Out
-        </button>
-      </form>
-    </div>
-  );
+  return <UserMenu username={user.username} />;
 }

@@ -36,6 +36,16 @@ export default async function MapDetailPage({ params }: Props) {
           <h2>Expansion Notes</h2>
           <p>{map.expansionNotes}</p>
         </article>
+        {map.availableItems.length > 0 ? (
+          <article className="detail-panel">
+            <h2>Available Items</h2>
+            <ul>
+              {map.availableItems.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+          </article>
+        ) : null}
       </div>
     </div>
   );

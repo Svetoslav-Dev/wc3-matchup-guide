@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { listRaces } from "../../lib/content";
+import { GameImage } from "../../components/game-image";
 
 export default async function UnitsPage() {
   const races = await listRaces(1, 20);
@@ -29,7 +30,16 @@ export default async function UnitsPage() {
         {categories.map((category) => (
           <article key={category.slug} className="card">
             <p className="pill">{category.badge}</p>
-            <h2>{category.name}</h2>
+            <div className="title-row">
+              <GameImage
+                src={category.imageUrl ?? `/images/races/${category.slug}.jpg`}
+                alt={category.name}
+                className="game-image--icon"
+                width={64}
+                height={64}
+              />
+              <h2>{category.name}</h2>
+            </div>
             <p>{categoryDescriptions[category.slug] ?? category.description}</p>
             <div className="card__footer">
               <div className="list-meta">

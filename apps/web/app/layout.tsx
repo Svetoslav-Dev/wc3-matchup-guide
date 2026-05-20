@@ -13,11 +13,13 @@ export const metadata: Metadata = {
 const publicNavigation = [
   { href: "/", label: "Home" },
   { href: "/races", label: "Races" },
+  { href: "/heroes", label: "Heroes" },
   { href: "/units", label: "Units" },
+  { href: "/buildings", label: "Buildings" },
+  { href: "/items", label: "Items" },
   { href: "/maps", label: "Maps" },
   { href: "/matchups", label: "Matchups" },
   { href: "/builds", label: "Builds" },
-  { href: "/heroes", label: "Heroes" },
 ];
 
 export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
@@ -32,13 +34,15 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
     <html lang="en">
       <body>
         <header className="site-header">
-          <div className="page-shell site-header__inner">
+          <div className="page-shell site-header__top">
             <Link href="/" className="brand">
               <span className="brand__eyebrow">Warcraft III Matchup Platform</span>
               <span className="brand__name">WC3 Matchup Guide</span>
             </Link>
-            <SiteNav items={navigationItems} />
             <SiteAuth />
+          </div>
+          <div className="page-shell site-header__nav">
+            <SiteNav items={navigationItems} />
           </div>
         </header>
         <main>{children}</main>

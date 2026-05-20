@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { BuildFilterBar } from "../../components/build-filter-bar";
+import { BuildList } from "../../components/build-list";
 import { getSessionUser } from "../../lib/auth";
 import { listBuilds } from "../../lib/content";
 
@@ -52,26 +53,13 @@ export default async function BuildsPage({ searchParams }: Props) {
         </div>
       ) : null}
       <BuildFilterBar activeRace={params.race} activeMatchup={params.matchup} />
-      <div className="list-grid">
-        {result.data.map((build) => (
-          <article key={build.slug} className="card">
-            <div className="list-meta">
-              <p className="pill pill--race">{build.raceName}</p>
-              <p className="pill">{build.strategyType}</p>
-            </div>
-            <h2>{build.title}</h2>
-            <p>{build.summary}</p>
-            <div className="list-meta">
-              <span>Difficulty: {build.difficulty}</span>
-              {build.bestAgainst ? <span>Best against: {build.bestAgainst}</span> : null}
-            </div>
-            <Link href={`/builds/${build.slug}`} className="button button--ghost">
-              Open Build
-            </Link>
-          </article>
-        ))}
-      </div>
-      <p className="muted">Showing {result.data.length} of {result.total} builds.</p>
+      <BuildList
+        key={`${params.race ?? ""}-${params.matchup ?? ""}-${params.search ?? ""}`}
+        initialResult={result}
+        race={params.race}
+        matchup={params.matchup}
+        search={params.search}
+      />
     </div>
   );
 }
