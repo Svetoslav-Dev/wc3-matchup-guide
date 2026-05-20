@@ -1,6 +1,13 @@
 # WC3 Matchup Guide
 
-WC3 Matchup Guide is a production-style capstone project for a Warcraft III strategy database with a Next.js web app, PostgreSQL/Neon, Drizzle ORM, JWT auth, protected favorites, and admin content management.
+WC3 Matchup Guide is a production-style Warcraft III strategy database built as a capstone project. It includes a Next.js web app, a PostgreSQL/Neon backend with Drizzle ORM, JWT authentication, favorites, user-submitted builds, admin content management, and an Expo mobile client backed by the same content API.
+
+## Demo accounts
+
+For quick testing after the database is migrated and seeded:
+
+- Admin: `admin@example.com` / `demo123`
+- User: `user@example.com` / `demo123`
 
 ## Disclaimer
 
@@ -10,7 +17,7 @@ This project was built as a capstone submission for the "Full Stack Apps with AI
 
 Hero portraits, unit icons, and map previews are sourced from [Warcraft Wiki](https://warcraft.wiki.gg/wiki/) — the community wiki for Warcraft lore and game assets.
 
-Images are stored locally and excluded from the repository. The `imageUrl` column on heroes, units, and maps can be populated with hosted URLs for production deployments.
+Most game art is served from `apps/web/public/images`. The database also supports `imageUrl` fields for races, heroes, units, and maps when hosted assets are preferred.
 
 ## Tech stack
 
@@ -32,26 +39,32 @@ Images are stored locally and excluded from the repository. The `imageUrl` colum
 ### Web app
 
 **Content pages**
-- Home page with featured races, worst/best matchup cards per race (with race image placeholders), and top builds by race
-- Races, heroes, units, and maps listing pages — each card shows a race/unit/hero image placeholder
-- Race detail, hero detail (role, highlights, best items, spells), unit detail (cost, strengths, weaknesses), and map detail (creep notes, expansion notes, available items)
-- Matchup listing with per-race filter and race image placeholders on each card
-- Build orders listing with AJAX load-more pagination, per-page selector (20 / 50 / 100), and race image placeholders
+- Home page with featured races, worst/best matchup cards per race, and top builds by race
+- Races, heroes, units, buildings, items, maps, matchups, and builds listing pages
+- Race detail, hero detail, unit detail, and map detail pages
+- Hero detail pages with best items and spell breakdowns
+- Unit pages grouped by race category, with heroes shown beneath each race roster
+- Map detail pages with creep notes, expansion notes, shop types, and item icons/source labels
+- Matchup listing with race filters and difficulty/perspective cards
+- Build orders listing with AJAX load-more pagination, per-page selector (20 / 50 / 100), title search, and race images
 - Build detail with step-by-step supply/timing instructions and save/remove favorite
 
 **Auth and user features**
-- Login and register modal with background blur, styled error messages (red) and success messages (green)
-- Signed-in username button in the header that opens a logout dropdown
+- Login and register modal with a full-page blur/dim overlay
+- Signed-in username dropdown with favorites, submitted builds, build submission, and logout actions
 - Protected favorites page synced with `/api/me/favorites`
+- User build submission flow at `/builds/submit`
+- Submitted builds list with per-user deletion for owned builds
 
 **Admin**
 - Admin mutation APIs for races, heroes, units, maps, builds, and matchups
-- Admin dashboard with create, edit, and delete flows across all content types
+- Admin dashboard with create, edit, and delete flows across races, heroes, units, maps, builds, and matchups
+- Admin reference management pages for buildings and items
 
 **Infrastructure**
-- Drizzle schema with `imageUrl` on heroes, units, and maps
+- Drizzle schema with `imageUrl` on races, heroes, units, and maps
 - Automatic database migration on every Vercel deploy (`db:migrate` runs before `build`)
-- Seed script with demo users and 10,000 generated build records
+- Seed script with demo users, Warcraft reference content, and 10,000 generated build records
 
 ### Mobile app (Expo)
 
@@ -60,7 +73,7 @@ Images are stored locally and excluded from the repository. The `imageUrl` colum
 - Units screen: searchable list with race filter chips (Human, Orc, Undead, Night Elf, Neutral)
 - Unit detail: tier, cost (food/gold/lumber), strengths, and weaknesses
 - Maps screen: searchable map list
-- Map detail: creep notes, expansion notes, and available items list
+- Map detail: creep notes, expansion notes, available items list, and shop context
 - Hero detail: role, primary attribute, highlights, best items, and spells with Ultimate badge
 - Build detail with step-by-step instructions and favorites toggle
 - Dropdown navigation menu covering all nine sections
@@ -88,11 +101,11 @@ wc3-matchup-guide/
 ## Architecture
 
 - `apps/web`
-  Next.js App Router web app, public pages, API routes, auth flows, and admin editors
+  Next.js App Router web app, public pages, REST API routes, auth flows, user build submission, and admin editors
 - `packages/db`
-  Drizzle schema, generated migrations, database client, content queries, seed script
+  Drizzle schema, generated migrations, database client, content queries, buildings/items CRUD helpers, and seed script
 - `packages/shared`
-  Shared domain types and mock fallback content
+  Shared domain types, seeded reference content, and mock fallback content
 
 ## Database schema overview
 
@@ -103,11 +116,81 @@ erDiagram
   races ||--o{ heroes : has
   races ||--o{ units : has
   races ||--o{ builds : has
-  races ||--o{ matchups : race_a
-  races ||--o{ matchups : race_b
+  races ||--o{ matchups : as_race_a
+  races ||--o{ matchups : as_race_b
   matchups ||--o{ builds : contains
   builds ||--o{ build_steps : has
   builds ||--o{ favorites : saved_in
+  users {
+    int id
+    varchar email
+    varchar username
+    enum role
+  }
+  races {
+    int id
+    varchar slug
+    varchar name
+    varchar image_url
+  }
+  heroes {
+    int id
+    int race_id
+    varchar slug
+    varchar name
+    varchar image_url
+  }
+  units {
+    int id
+    int race_id
+    varchar slug
+    varchar unit_type
+    varchar image_url
+  }
+  maps {
+    int id
+    varchar slug
+    varchar name
+    varchar image_url
+  }
+  matchups {
+    int id
+    int race_a_id
+    int race_b_id
+    varchar slug
+    varchar difficulty
+  }
+  builds {
+    int id
+    int race_id
+    int matchup_id
+    int created_by_user_id
+    varchar slug
+    varchar strategy_type
+    bool is_published
+  }
+  build_steps {
+    int id
+    int build_id
+    int step_number
+  }
+  favorites {
+    int id
+    int user_id
+    int build_id
+  }
+  buildings {
+    int id
+    varchar race
+    varchar name
+    varchar image_file
+  }
+  game_items {
+    int id
+    varchar category
+    varchar name
+    varchar image_file
+  }
 ```
 
 ## Environment variables
@@ -184,7 +267,7 @@ npm run mobile:dev
 npm run mobile:web
 ```
 
-9. Open `http://localhost:3000`
+9. Open the web app at `http://localhost:3000` unless your local env points it to another port
 
 ## Demo credentials
 
@@ -196,13 +279,11 @@ These only work after the database is migrated and seeded.
 ## Validation commands
 
 ```bash
-npm run test
-```
-
-```bash
 npm run typecheck
 npm run lint
 npm run build
+npm run test
+npm run mobile:typecheck
 npm run mobile:export
 npm run deploy:check
 npm run deploy:smoke
@@ -222,7 +303,7 @@ Current production verification status:
 - Neon-backed database connection is live
 - Auth readiness is live
 - `npm run deploy:smoke` passed against the deployed web app
-- Expo web export builds successfully and is ready to publish from `apps/mobile/dist`
+- Expo web export builds successfully from `apps/mobile/dist`
 
 Continuous validation:
 
@@ -248,7 +329,7 @@ Recommended target: Vercel
 - Build command:
 
 ```bash
-npm run build
+npm run db:migrate && npm run build
 ```
 
 - Install command:
@@ -340,11 +421,17 @@ Public APIs:
 
 - `GET /api/health`
 - `GET /api/races`
+- `GET /api/races/:slug`
 - `GET /api/heroes`
+- `GET /api/heroes/:slug`
 - `GET /api/units`
+- `GET /api/units/:slug`
 - `GET /api/maps`
+- `GET /api/maps/:slug`
 - `GET /api/matchups`
+- `GET /api/matchups/:slug`
 - `GET /api/builds`
+- `GET /api/builds/:slug`
 
 `GET /api/health` reports service status plus readiness flags for database and auth configuration.
 
@@ -388,12 +475,14 @@ The seed script creates:
 
 - demo admin user
 - demo regular user
-- four races
+- one additional local admin seed user
+- four playable races plus the neutral content race
 - heroes
 - units
 - maps
 - matchups
+- buildings
+- game items
 - base build orders and steps
 - favorites
 - 10,000 generated build rows for pagination and performance testing
-
