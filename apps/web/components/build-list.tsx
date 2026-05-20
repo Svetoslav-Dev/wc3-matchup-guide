@@ -52,7 +52,11 @@ export function BuildList({ initialResult, race, matchup, search, favoriteSlugs 
     const isFav = favSet.has(slug);
     setFavSet((prev) => {
       const next = new Set(prev);
-      isFav ? next.delete(slug) : next.add(slug);
+      if (isFav) {
+        next.delete(slug);
+      } else {
+        next.add(slug);
+      }
       return next;
     });
     startTransition(async () => {
