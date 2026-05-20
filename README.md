@@ -8,23 +8,17 @@ This project was built as a capstone submission for the "Full Stack Apps with AI
 
 ## Image credits
 
-Community artwork for hero portraits, unit icons, and map previews is sourced from [Hiveworkshop](https://www.hiveworkshop.com) — the Warcraft III modding community. Only classic (non-Reforged) style assets are used.
+Hero portraits, unit icons, and map previews are sourced from [Warcraft Wiki](https://warcraft.wiki.gg/wiki/) — the community wiki for Warcraft lore and game assets.
 
 Images are stored locally and excluded from the repository. The `imageUrl` column on heroes, units, and maps can be populated with hosted URLs for production deployments.
-
-Individual asset credits should be listed here as images are added:
-
-| Asset | Author | Source |
-|---|---|---|
-| *(add entries as you download assets)* | | |
 
 ## Tech stack
 
 | Layer | Technology |
 |---|---|
-| Web framework | Next.js (App Router) |
-| Web UI | React, TypeScript, Tailwind CSS |
-| Mobile app | Expo, React Native, TypeScript |
+| Web framework | Next.js 15 (App Router) |
+| Web UI | React 19, TypeScript, custom CSS |
+| Mobile app | Expo SDK 53, React Native, TypeScript, expo-router |
 | Database | PostgreSQL via Neon |
 | ORM | Drizzle ORM + Drizzle migrations |
 | Auth | JWT (cookie-based), bcrypt password hashing |
@@ -35,15 +29,43 @@ Individual asset credits should be listed here as images are added:
 
 ## Features
 
-- Home, race, hero, unit, map, matchup, and build pages
-- Build detail pages with save/remove favorite actions
-- Login, register, logout, and current-session lookup
-- Protected favorites page and `/api/me/favorites` endpoints
+### Web app
+
+**Content pages**
+- Home page with featured races, worst/best matchup cards per race (with race image placeholders), and top builds by race
+- Races, heroes, units, and maps listing pages — each card shows a race/unit/hero image placeholder
+- Race detail, hero detail (role, highlights, best items, spells), unit detail (cost, strengths, weaknesses), and map detail (creep notes, expansion notes, available items)
+- Matchup listing with per-race filter and race image placeholders on each card
+- Build orders listing with AJAX load-more pagination, per-page selector (20 / 50 / 100), and race image placeholders
+- Build detail with step-by-step supply/timing instructions and save/remove favorite
+
+**Auth and user features**
+- Login and register modal with background blur, styled error messages (red) and success messages (green)
+- Signed-in username button in the header that opens a logout dropdown
+- Protected favorites page synced with `/api/me/favorites`
+
+**Admin**
 - Admin mutation APIs for races, heroes, units, maps, builds, and matchups
-- Admin dashboard with create, edit, and delete flows across core content types
-- Drizzle schema for users, races, heroes, units, maps, matchups, builds, build steps, and favorites
+- Admin dashboard with create, edit, and delete flows across all content types
+
+**Infrastructure**
+- Drizzle schema with `imageUrl` on heroes, units, and maps
+- Automatic database migration on every Vercel deploy (`db:migrate` runs before `build`)
 - Seed script with demo users and 10,000 generated build records
-- Expo mobile app with home, races, matchups, builds, heroes, favorites, and profile flows
+
+### Mobile app (Expo)
+
+- Home, races, units, maps, matchups, builds, heroes, favorites, and profile screens
+- Home page mirrors web: worst/best matchup sections and build route previews
+- Units screen: searchable list with race filter chips (Human, Orc, Undead, Night Elf, Neutral)
+- Unit detail: tier, cost (food/gold/lumber), strengths, and weaknesses
+- Maps screen: searchable map list
+- Map detail: creep notes, expansion notes, and available items list
+- Hero detail: role, primary attribute, highlights, best items, and spells with Ultimate badge
+- Build detail with step-by-step instructions and favorites toggle
+- Dropdown navigation menu covering all nine sections
+- API-first with shared-package fallback for offline / no-config usage
+- Auth flow with AsyncStorage token persistence
 
 ## Project structure
 

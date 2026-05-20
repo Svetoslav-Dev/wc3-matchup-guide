@@ -61,6 +61,7 @@ const enrichRace = (record: typeof races.$inferSelect): Race => {
     strengths: shared?.strengths ?? [],
     signatureHeroes: shared?.signatureHeroes ?? [],
     ladderFocus: record.ladderFocus,
+    imageUrl: shared?.imageUrl ?? null,
   };
 };
 
@@ -75,7 +76,9 @@ const enrichHero = (record: typeof heroes.$inferSelect, raceName: string): Hero 
     primaryAttribute: record.primaryAttribute,
     role: record.role,
     highlights: shared?.highlights ?? [],
-    imageUrl: record.imageUrl ?? null,
+    bestItems: shared?.bestItems ?? [],
+    spells: shared?.spells ?? [],
+    imageUrl: record.imageUrl ?? shared?.imageUrl ?? null,
   };
 };
 
@@ -94,7 +97,7 @@ const enrichUnit = (record: typeof units.$inferSelect, raceName: string): Unit =
     lumber: shared?.lumber ?? 0,
     strengths: shared?.strengths ?? record.strengths.split(",").map((value) => value.trim()),
     weaknesses: shared?.weaknesses ?? record.weaknesses.split(",").map((value) => value.trim()),
-    imageUrl: record.imageUrl ?? null,
+    imageUrl: record.imageUrl ?? shared?.imageUrl ?? null,
   };
 };
 
@@ -107,6 +110,7 @@ const enrichMap = (record: typeof maps.$inferSelect): MapGuide => {
     description: record.description,
     creepNotes: shared?.creepNotes ?? record.creepNotes,
     expansionNotes: shared?.expansionNotes ?? record.expansionNotes,
+    availableItems: shared?.availableItems ?? [],
     imageUrl: record.imageUrl ?? null,
   };
 };

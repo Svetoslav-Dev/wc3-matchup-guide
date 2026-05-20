@@ -7,6 +7,13 @@ export type Race = {
   strengths: string[];
   signatureHeroes: string[];
   ladderFocus: string;
+  imageUrl?: string | null;
+};
+
+export type HeroSpell = {
+  name: string;
+  description: string;
+  isUltimate: boolean;
 };
 
 export type Hero = {
@@ -17,6 +24,8 @@ export type Hero = {
   primaryAttribute: string;
   role: string;
   highlights: string[];
+  bestItems: string[];
+  spells: HeroSpell[];
   imageUrl?: string | null;
 };
 
@@ -41,6 +50,7 @@ export type MapGuide = {
   description: string;
   creepNotes: string;
   expansionNotes: string;
+  availableItems: string[];
   imageUrl?: string | null;
 };
 

@@ -11,6 +11,7 @@ export const races: Race[] = [
     strengths: ["Militia-assisted map control", "Safe expansions", "Strong late-game spell utility"],
     signatureHeroes: ["Archmage", "Mountain King", "Paladin"],
     ladderFocus: "Secure creeping routes, preserve peasants, and expand on favorable map flow.",
+    imageUrl: "/images/Races/Humans_Icon.png",
   },
   {
     slug: "orc",
@@ -22,6 +23,7 @@ export const races: Race[] = [
     strengths: ["Early hero pressure", "Efficient tier-two timing", "Excellent focus fire"],
     signatureHeroes: ["Blademaster", "Far Seer", "Shadow Hunter"],
     ladderFocus: "Force reactions, scout constantly, and punish greedy tech or expansion patterns.",
+    imageUrl: "/images/Races/Orcs_Icon.png",
   },
   {
     slug: "night-elf",
@@ -33,6 +35,7 @@ export const races: Race[] = [
     strengths: ["Map mobility", "Sustain through Moon Wells", "Tactical tech switches"],
     signatureHeroes: ["Demon Hunter", "Keeper of the Grove", "Warden"],
     ladderFocus: "Creep efficiently, deny safe expansions, and convert mobility into resource advantages.",
+    imageUrl: "/images/Races/Night_Elves_Icon.png",
   },
   {
     slug: "undead",
@@ -44,6 +47,7 @@ export const races: Race[] = [
     strengths: ["Reliable nuke damage", "Strong timing pushes", "Efficient sustain with statues"],
     signatureHeroes: ["Death Knight", "Lich", "Crypt Lord"],
     ladderFocus: "Keep experience flowing, protect fiend numbers, and decide when to all-in versus expand.",
+    imageUrl: "/images/Races/Undead_Icon.png",
   },
   {
     slug: "neutral",
@@ -67,6 +71,14 @@ export const heroes: Hero[] = [
     primaryAttribute: "Intelligence",
     role: "Tempo support",
     highlights: ["Smooth early creeping", "Improves caster mana economy", "Reliable expansion partner"],
+    bestItems: ["Sobi Mask", "Boots of Speed", "Robe of the Magi", "Staff of Sanctuary", "Potion of Mana"],
+    imageUrl: "/images/Heroes/HeroArchMage.png",
+    spells: [
+      { name: "Blizzard", description: "Calls down waves of ice shards that slow and damage enemies in an area.", isUltimate: false },
+      { name: "Summon Water Elemental", description: "Summons a Water Elemental to aid in combat.", isUltimate: false },
+      { name: "Brilliance Aura", description: "Increases the mana regeneration rate of nearby friendly units.", isUltimate: false },
+      { name: "Mass Teleport", description: "Teleports all friendly nearby units to a target allied unit or building.", isUltimate: true },
+    ],
   },
   {
     slug: "mountain-king",
@@ -76,6 +88,14 @@ export const heroes: Hero[] = [
     primaryAttribute: "Strength",
     role: "Single-target lockdown",
     highlights: ["Storm Bolt pressure", "Frontline durability", "Pairs well with rifles and casters"],
+    bestItems: ["Boots of Speed", "Claws of Attack +12", "Ancient Janggo of Endurance", "Helm of Valor", "Periapt of Vitality"],
+    imageUrl: "/images/Heroes/HeroMountainKing.png",
+    spells: [
+      { name: "Storm Bolt", description: "Throws a magical hammer that stuns a target unit and deals damage.", isUltimate: false },
+      { name: "Thunder Clap", description: "Slams the ground, dealing damage and slowing nearby enemies.", isUltimate: false },
+      { name: "Bash", description: "Gives a chance to stun an opponent on each attack.", isUltimate: false },
+      { name: "Avatar", description: "Transforms into a powerful avatar, greatly increasing strength and spell immunity.", isUltimate: true },
+    ],
   },
   {
     slug: "paladin",
@@ -85,6 +105,14 @@ export const heroes: Hero[] = [
     primaryAttribute: "Strength",
     role: "Sustain support",
     highlights: ["Holy Light saves", "Excellent versus Undead", "Scales in long macro games"],
+    bestItems: ["Periapt of Vitality", "Boots of Speed", "Khadgar's Gem of Health", "Ancient Janggo of Endurance", "Healing Salve"],
+    imageUrl: "/images/Heroes/HeroPaladin.png",
+    spells: [
+      { name: "Holy Light", description: "Heals a friendly unit or damages an undead unit.", isUltimate: false },
+      { name: "Divine Shield", description: "Makes the Paladin temporarily immune to all spells and attacks.", isUltimate: false },
+      { name: "Devotion Aura", description: "Increases the armor of nearby friendly units.", isUltimate: false },
+      { name: "Resurrection", description: "Instantly resurrects fallen friendly units near the Paladin.", isUltimate: true },
+    ],
   },
   {
     slug: "blood-mage",
@@ -94,6 +122,14 @@ export const heroes: Hero[] = [
     primaryAttribute: "Intelligence",
     role: "Spell utility",
     highlights: ["Mana Siphon control", "Flame Strike siege threat", "Strong in caster-heavy compositions"],
+    bestItems: ["Sobi Mask", "Boots of Speed", "Staff of Sanctuary", "Robe of the Magi", "Clarity Potion"],
+    imageUrl: "/images/Heroes/HeroBloodElfPrince.png",
+    spells: [
+      { name: "Flame Strike", description: "Conjures a column of fire that burns enemies in the target area.", isUltimate: false },
+      { name: "Banish", description: "Sends a target unit to another dimension, making it ethereal and vulnerable to spells.", isUltimate: false },
+      { name: "Siphon Mana", description: "Drains mana from enemy units or transfers mana to friendly units.", isUltimate: false },
+      { name: "Phoenix", description: "Summons a Phoenix that attacks enemies. When killed it is reborn from its egg.", isUltimate: true },
+    ],
   },
   {
     slug: "blademaster",
@@ -103,6 +139,14 @@ export const heroes: Hero[] = [
     primaryAttribute: "Agility",
     role: "Harass carry",
     highlights: ["Exceptional scouting", "Item-dependent burst", "Forces defensive reactions"],
+    bestItems: ["Boots of Speed", "Claws of Attack +12", "Mask of Death", "Ancient Janggo of Endurance", "Scroll of Town Portal"],
+    imageUrl: "/images/Heroes/HeroBlademaster.png",
+    spells: [
+      { name: "Wind Walk", description: "Turns the Blademaster invisible, granting a speed and damage bonus on the next attack.", isUltimate: false },
+      { name: "Mirror Image", description: "Creates illusions of the Blademaster that confuse enemies.", isUltimate: false },
+      { name: "Critical Strike", description: "Gives a chance to deal extra damage on each attack.", isUltimate: false },
+      { name: "Bladestorm", description: "The Blademaster becomes a whirlwind of blades dealing damage to all nearby units.", isUltimate: true },
+    ],
   },
   {
     slug: "shadow-hunter",
@@ -112,6 +156,14 @@ export const heroes: Hero[] = [
     primaryAttribute: "Intelligence",
     role: "Backline support",
     highlights: ["Healing Wave sustain", "Hex for hero catches", "Improves grunts and raiders longevity"],
+    bestItems: ["Sobi Mask", "Boots of Speed", "Staff of Sanctuary", "Clarity Potion", "Healing Salve"],
+    imageUrl: "/images/Heroes/ShadowHunter.png",
+    spells: [
+      { name: "Healing Wave", description: "Launches a wave of energy that heals a target and nearby friendly units.", isUltimate: false },
+      { name: "Hex", description: "Transforms an enemy unit into a harmless critter.", isUltimate: false },
+      { name: "Serpent Ward", description: "Summons a Serpent Ward to attack enemy units.", isUltimate: false },
+      { name: "Big Bad Voodoo", description: "Makes nearby friendly units temporarily invulnerable.", isUltimate: true },
+    ],
   },
   {
     slug: "far-seer",
@@ -121,6 +173,14 @@ export const heroes: Hero[] = [
     primaryAttribute: "Intelligence",
     role: "Tempo pressure",
     highlights: ["Excellent scouting", "Strong tier-one pressure", "Flexible creeping and harassment routes"],
+    bestItems: ["Sobi Mask", "Boots of Speed", "Robe of the Magi", "Staff of Sanctuary", "Potion of Mana"],
+    imageUrl: "/images/Heroes/HeroFarseer.png",
+    spells: [
+      { name: "Chain Lightning", description: "Hurls a bolt of lightning that jumps between nearby enemies.", isUltimate: false },
+      { name: "Far Sight", description: "Allows the Far Seer to see a remote area of the map.", isUltimate: false },
+      { name: "Feral Spirit", description: "Summons Spirit Wolves to aid in battle.", isUltimate: false },
+      { name: "Earthquake", description: "Causes an earthquake that slows buildings and units in a large area.", isUltimate: true },
+    ],
   },
   {
     slug: "tauren-chieftain",
@@ -130,6 +190,14 @@ export const heroes: Hero[] = [
     primaryAttribute: "Strength",
     role: "Frontline disruptor",
     highlights: ["War Stomp control", "High durability", "Excellent in extended melee fights"],
+    bestItems: ["Periapt of Vitality", "Ancient Janggo of Endurance", "Boots of Speed", "Helm of Valor", "Scroll of Town Portal"],
+    imageUrl: "/images/Heroes/HeroTaurenChieftain.png",
+    spells: [
+      { name: "War Stomp", description: "Slams the ground, stunning and damaging nearby enemy units.", isUltimate: false },
+      { name: "Shockwave", description: "Sends out a wave of force that deals damage to ground units in a line.", isUltimate: false },
+      { name: "Endurance Aura", description: "Increases the attack speed and movement speed of nearby friendly units.", isUltimate: false },
+      { name: "Reincarnation", description: "Automatically brings the Tauren Chieftain back to life upon death.", isUltimate: true },
+    ],
   },
   {
     slug: "demon-hunter",
@@ -139,6 +207,14 @@ export const heroes: Hero[] = [
     primaryAttribute: "Agility",
     role: "Anti-caster duelist",
     highlights: ["Mana Burn pressure", "High mobility", "Excellent frontline scaling"],
+    bestItems: ["Boots of Speed", "Sobi Mask", "Staff of Sanctuary", "Claws of Attack +6", "Scroll of Town Portal"],
+    imageUrl: "/images/Heroes/HeroDemonHunter.png",
+    spells: [
+      { name: "Mana Burn", description: "Burns an enemy's mana, dealing damage equal to mana lost.", isUltimate: false },
+      { name: "Immolation", description: "Burns nearby enemies for damage when active.", isUltimate: false },
+      { name: "Evasion", description: "Gives a chance to dodge incoming attacks.", isUltimate: false },
+      { name: "Metamorphosis", description: "Transforms into a powerful demon form with ranged attack and increased stats.", isUltimate: true },
+    ],
   },
   {
     slug: "keeper-of-the-grove",
@@ -148,6 +224,14 @@ export const heroes: Hero[] = [
     primaryAttribute: "Intelligence",
     role: "Map pressure",
     highlights: ["Entangle pickoffs", "Treant creeping", "Strong versus exposed expansions"],
+    bestItems: ["Sobi Mask", "Boots of Speed", "Staff of Sanctuary", "Robe of the Magi", "Clarity Potion"],
+    imageUrl: "/images/Heroes/KeeperOfTheGrove.png",
+    spells: [
+      { name: "Entangling Roots", description: "Roots an enemy unit in place, preventing movement.", isUltimate: false },
+      { name: "Force of Nature", description: "Transforms trees into Treant units that fight for the Keeper.", isUltimate: false },
+      { name: "Thorns Aura", description: "Returns a portion of damage dealt to nearby friendly units back to the attacker.", isUltimate: false },
+      { name: "Tranquility", description: "Calls upon nature to heal all nearby friendly units over time.", isUltimate: true },
+    ],
   },
   {
     slug: "priestess-of-the-moon",
@@ -157,6 +241,14 @@ export const heroes: Hero[] = [
     primaryAttribute: "Agility",
     role: "Aura support",
     highlights: ["Trueshot Aura scaling", "Solid ranged pressure", "Useful for tempo-oriented openers"],
+    bestItems: ["Boots of Speed", "Claws of Attack +6", "Ancient Janggo of Endurance", "Orb of Frost", "Periapt of Vitality"],
+    imageUrl: "/images/Heroes/PriestessOfTheMoon.png",
+    spells: [
+      { name: "Scout", description: "Summons an Owl Scout to provide vision of a target area.", isUltimate: false },
+      { name: "Searing Arrows", description: "Adds fire damage to the Priestess's attacks.", isUltimate: false },
+      { name: "Trueshot Aura", description: "Increases the ranged attack damage of nearby friendly units.", isUltimate: false },
+      { name: "Starfall", description: "Calls down waves of stars to damage enemy units in a large area.", isUltimate: true },
+    ],
   },
   {
     slug: "warden",
@@ -166,6 +258,14 @@ export const heroes: Hero[] = [
     primaryAttribute: "Agility",
     role: "Pickoff assassin",
     highlights: ["Blink mobility", "High solo kill threat", "Excellent for snowballing hero advantage"],
+    bestItems: ["Boots of Speed", "Mask of Death", "Claws of Attack +12", "Staff of Sanctuary", "Scroll of Town Portal"],
+    imageUrl: "/images/Heroes/HeroWarden.png",
+    spells: [
+      { name: "Fan of Knives", description: "Releases blades in all directions, damaging nearby enemies.", isUltimate: false },
+      { name: "Blink", description: "Teleports the Warden to a target location.", isUltimate: false },
+      { name: "Shadow Strike", description: "Throws a poisoned dagger that deals damage and slows a target.", isUltimate: false },
+      { name: "Vengeance", description: "Summons an Avatar of Vengeance from the souls of dead enemies.", isUltimate: true },
+    ],
   },
   {
     slug: "death-knight",
@@ -175,6 +275,14 @@ export const heroes: Hero[] = [
     primaryAttribute: "Strength",
     role: "Sustain and mobility",
     highlights: ["Death Coil saves", "Aura movement boost", "Reliable first-hero safety"],
+    bestItems: ["Boots of Speed", "Periapt of Vitality", "Ancient Janggo of Endurance", "Healing Salve", "Scroll of Town Portal"],
+    imageUrl: "/images/Heroes/HeroDeathKnight.png",
+    spells: [
+      { name: "Death Coil", description: "Launches a coil of death that damages an enemy or heals an undead unit.", isUltimate: false },
+      { name: "Death Pact", description: "Kills a friendly unit to restore health to the Death Knight.", isUltimate: false },
+      { name: "Unholy Aura", description: "Increases the movement speed and HP regeneration of nearby undead units.", isUltimate: false },
+      { name: "Animate Dead", description: "Reanimates dead units as invulnerable skeletons under your control.", isUltimate: true },
+    ],
   },
   {
     slug: "lich",
@@ -184,6 +292,14 @@ export const heroes: Hero[] = [
     primaryAttribute: "Intelligence",
     role: "Burst finisher",
     highlights: ["Nova nuke threat", "Orb scaling", "Core to tier-two pressure"],
+    bestItems: ["Sobi Mask", "Boots of Speed", "Robe of the Magi", "Clarity Potion", "Staff of Sanctuary"],
+    imageUrl: "/images/Heroes/LichVersion2.png",
+    spells: [
+      { name: "Frost Nova", description: "Blasts enemy units with a wave of frost that damages and slows them.", isUltimate: false },
+      { name: "Frost Armor", description: "Creates a shield of frost around a friendly unit that slows attackers.", isUltimate: false },
+      { name: "Dark Ritual", description: "Sacrifices a friendly unit to restore mana to the Lich.", isUltimate: false },
+      { name: "Death and Decay", description: "Destroys units and structures in a target area over time.", isUltimate: true },
+    ],
   },
   {
     slug: "dread-lord",
@@ -193,6 +309,14 @@ export const heroes: Hero[] = [
     primaryAttribute: "Strength",
     role: "Control initiator",
     highlights: ["Sleep disables", "Strong ghoul openings", "Durable frontliner with swarm value"],
+    bestItems: ["Boots of Speed", "Periapt of Vitality", "Claws of Attack +6", "Ancient Janggo of Endurance", "Healing Salve"],
+    imageUrl: "/images/Heroes/HeroDreadLord.png",
+    spells: [
+      { name: "Carrion Swarm", description: "Sends a swarm of bats to damage all enemy units in a line.", isUltimate: false },
+      { name: "Sleep", description: "Puts a target unit into a deep sleep, preventing it from taking any actions.", isUltimate: false },
+      { name: "Vampiric Aura", description: "Nearby friendly melee units steal life from the units they attack.", isUltimate: false },
+      { name: "Inferno", description: "Calls down an Infernal meteor that stuns and damages nearby enemies.", isUltimate: true },
+    ],
   },
   {
     slug: "crypt-lord",
@@ -202,6 +326,14 @@ export const heroes: Hero[] = [
     primaryAttribute: "Strength",
     role: "Summon bruiser",
     highlights: ["Beetle pressure", "Impale control", "Strong versus ranged openings when supported"],
+    bestItems: ["Periapt of Vitality", "Ancient Janggo of Endurance", "Boots of Speed", "Helm of Valor", "Healing Salve"],
+    imageUrl: "/images/Heroes/HeroCryptLord.png",
+    spells: [
+      { name: "Impale", description: "Sends a row of spiked columns from the ground that stun and damage units.", isUltimate: false },
+      { name: "Spiked Carapace", description: "Reflects a portion of melee damage back to the attacker.", isUltimate: false },
+      { name: "Carrion Beetles", description: "Summons Carrion Beetles from the corpses of enemies.", isUltimate: false },
+      { name: "Locust Swarm", description: "Releases a swarm of locusts that damage enemies and restore health.", isUltimate: true },
+    ],
   },
   {
     slug: "beastmaster",
@@ -211,6 +343,14 @@ export const heroes: Hero[] = [
     primaryAttribute: "Strength",
     role: "Summon pressure",
     highlights: ["Quillbeast map control", "Excellent creeping support", "Fits push-oriented second-hero timings"],
+    bestItems: ["Periapt of Vitality", "Boots of Speed", "Ancient Janggo of Endurance", "Helm of Valor", "Scroll of Town Portal"],
+    imageUrl: "/images/Heroes/BeastMaster.png",
+    spells: [
+      { name: "Summon Bear", description: "Summons a War Bear to fight for the Beastmaster.", isUltimate: false },
+      { name: "Summon Quilbeast", description: "Summons a Quilbeast to attack enemies with its quills.", isUltimate: false },
+      { name: "Summon Hawk", description: "Summons a Storm Hawk to provide aerial support.", isUltimate: false },
+      { name: "Stampede", description: "Summons a herd of stampeding beasts to trample enemies.", isUltimate: true },
+    ],
   },
   {
     slug: "dark-ranger",
@@ -220,6 +360,14 @@ export const heroes: Hero[] = [
     primaryAttribute: "Agility",
     role: "Ranged utility",
     highlights: ["Silence versus spellcasters", "Skeleton momentum", "Strong in ranged core armies"],
+    bestItems: ["Boots of Speed", "Claws of Attack +6", "Mask of Death", "Ancient Janggo of Endurance", "Scroll of Town Portal"],
+    imageUrl: "/images/Heroes/BansheeRanger.png",
+    spells: [
+      { name: "Black Arrow", description: "Adds a damage bonus to attacks and raises slain units as skeletons.", isUltimate: false },
+      { name: "Silence", description: "Prevents enemy units in a target area from casting spells.", isUltimate: false },
+      { name: "Life Drain", description: "Drains life from a target, healing the Dark Ranger.", isUltimate: false },
+      { name: "Charm", description: "Takes permanent control of a target enemy unit.", isUltimate: true },
+    ],
   },
   {
     slug: "naga-sea-witch",
@@ -229,6 +377,14 @@ export const heroes: Hero[] = [
     primaryAttribute: "Agility",
     role: "Chase burst",
     highlights: ["Forked Lightning damage", "Frost Arrows catches", "Popular for decisive second-hero timing pushes"],
+    bestItems: ["Boots of Speed", "Sobi Mask", "Orb of Frost", "Claws of Attack +6", "Robe of the Magi"],
+    imageUrl: "/images/Heroes/NagaSeaWitch.png",
+    spells: [
+      { name: "Forked Lightning", description: "Calls a cone of lightning that damages multiple enemy units.", isUltimate: false },
+      { name: "Mana Shield", description: "Absorbs damage using the Sea Witch's mana instead of health.", isUltimate: false },
+      { name: "Frost Arrows", description: "Slows the attack and movement speed of a target with each hit.", isUltimate: false },
+      { name: "Tornado", description: "Summons a tornado that slows and damages nearby enemy units.", isUltimate: true },
+    ],
   },
   {
     slug: "pandaren-brewmaster",
@@ -238,6 +394,14 @@ export const heroes: Hero[] = [
     primaryAttribute: "Strength",
     role: "AoE bruiser",
     highlights: ["Breath of Fire splash", "Drunken Haze control", "Strong into clustered ground armies"],
+    bestItems: ["Periapt of Vitality", "Boots of Speed", "Ancient Janggo of Endurance", "Healing Salve", "Scroll of Town Portal"],
+    imageUrl: "/images/Heroes/PandarenBrewmaster.png",
+    spells: [
+      { name: "Breath of Fire", description: "Breathes fire in a cone, damaging and setting enemies ablaze.", isUltimate: false },
+      { name: "Drunken Haze", description: "Drenches enemies in alcohol, slowing them and making attacks against them cause fire damage.", isUltimate: false },
+      { name: "Evasion", description: "Gives a chance to dodge incoming attacks.", isUltimate: false },
+      { name: "Storm, Earth, and Fire", description: "Splits into three elemental spirits with unique abilities.", isUltimate: true },
+    ],
   },
   {
     slug: "pit-lord",
@@ -247,6 +411,14 @@ export const heroes: Hero[] = [
     primaryAttribute: "Strength",
     role: "Frontline siege",
     highlights: ["Howl of Terror utility", "Cleave melee pressure", "Rain of Fire siege threat"],
+    bestItems: ["Periapt of Vitality", "Boots of Speed", "Claws of Attack +12", "Ancient Janggo of Endurance", "Helm of Valor"],
+    imageUrl: "/images/Heroes/PitLord.png",
+    spells: [
+      { name: "Rain of Fire", description: "Calls down waves of fire that damage units in a target area.", isUltimate: false },
+      { name: "Cleave", description: "Deals damage to units around the main target on each attack.", isUltimate: false },
+      { name: "Howl of Terror", description: "Emits a terrifying howl that reduces nearby enemies' attack damage.", isUltimate: false },
+      { name: "Doom", description: "Dooms an enemy unit to die after a short delay, releasing a powerful demon.", isUltimate: true },
+    ],
   },
   {
     slug: "goblin-tinker",
@@ -256,6 +428,14 @@ export const heroes: Hero[] = [
     primaryAttribute: "Intelligence",
     role: "Siege utility",
     highlights: ["Pocket Factory map control", "Strong building pressure", "Useful versus static defenses"],
+    bestItems: ["Sobi Mask", "Boots of Speed", "Robe of the Magi", "Scroll of Town Portal", "Clarity Potion"],
+    imageUrl: "/images/Heroes/HeroTinker.png",
+    spells: [
+      { name: "Cluster Rockets", description: "Fires a spread of rockets that damage enemies in a target area.", isUltimate: false },
+      { name: "Engineering Upgrade", description: "Upgrades the Tinker with permanent enhancements to stats and abilities.", isUltimate: false },
+      { name: "Pocket Factory", description: "Deploys a factory that produces Clockwerk Goblins to attack enemies.", isUltimate: false },
+      { name: "Robo-Goblin", description: "Transforms the Tinker into a powerful robotic suit with enhanced melee capabilities.", isUltimate: true },
+    ],
   },
   {
     slug: "firelord",
@@ -265,6 +445,14 @@ export const heroes: Hero[] = [
     primaryAttribute: "Agility",
     role: "Timing all-in",
     highlights: ["Lava Spawn momentum", "Punishes weak anti-summon setups", "Snowballs fast if unanswered"],
+    bestItems: ["Boots of Speed", "Claws of Attack +6", "Sobi Mask", "Scroll of Town Portal", "Healing Salve"],
+    imageUrl: "/images/Heroes/HeroAvatarOfFlame.png",
+    spells: [
+      { name: "Summon Lava Spawn", description: "Calls forth Lava Spawn from the earth to attack nearby enemies.", isUltimate: false },
+      { name: "Rain of Fire", description: "Calls down waves of fire that damage units in a target area.", isUltimate: false },
+      { name: "Incinerate", description: "Adds bonus fire damage to attacks that burns over time.", isUltimate: false },
+      { name: "Volcano", description: "Erupts a volcano that hurls flaming boulders to damage enemies.", isUltimate: true },
+    ],
   },
   {
     slug: "goblin-alchemist",
@@ -274,6 +462,14 @@ export const heroes: Hero[] = [
     primaryAttribute: "Intelligence",
     role: "Sustain support",
     highlights: ["Healing Spray sustain", "Acid Bomb amplification", "Strong when armies want longer fights"],
+    bestItems: ["Sobi Mask", "Boots of Speed", "Staff of Sanctuary", "Robe of the Magi", "Clarity Potion"],
+    imageUrl: "/images/Heroes/HeroAlchemist.png",
+    spells: [
+      { name: "Acid Bomb", description: "Hurls an acid-filled bomb that reduces armor and deals damage to a target.", isUltimate: false },
+      { name: "Healing Spray", description: "Sprays a healing mist that restores health to multiple nearby units.", isUltimate: false },
+      { name: "Unstable Concoction", description: "Brews an explosive potion that deals massive damage when it detonates.", isUltimate: false },
+      { name: "Chemical Rage", description: "Transforms into a raging chemical monstrosity with greatly enhanced stats.", isUltimate: true },
+    ],
   },
 ];
 
@@ -290,6 +486,7 @@ export const units: Unit[] = [
     lumber: 0,
     strengths: ["Fast militia conversion", "Repairs buildings and mechanical units", "Enables Human expansion patterns"],
     weaknesses: ["Low combat stats outside militia", "Vulnerable to harassment", "Worker losses slow tech and production"],
+    imageUrl: "/images/Units/Peasant.png",
   },
   {
     slug: "footman",
@@ -303,6 +500,7 @@ export const units: Unit[] = [
     lumber: 0,
     strengths: ["Affordable frontline", "Defend upgrade utility", "Good early map presence"],
     weaknesses: ["Falls off in late-game scaling", "Struggles against heavy magic and siege", "Needs support to stay relevant"],
+    imageUrl: "/images/Units/Footman.png",
   },
   {
     slug: "rifleman",
@@ -316,6 +514,7 @@ export const units: Unit[] = [
     lumber: 30,
     strengths: ["Strong sustained damage", "Simple control requirements", "Scales well with caster support"],
     weaknesses: ["Vulnerable to heavy melee surrounds", "Needs frontline protection"],
+    imageUrl: "/images/Units/Rifleman.png",
   },
   {
     slug: "mortar-team",
@@ -329,6 +528,7 @@ export const units: Unit[] = [
     lumber: 70,
     strengths: ["Excellent anti-building damage", "Splash versus light ground units", "Strong with human vision control"],
     weaknesses: ["Fragile and slow", "Needs screening to fire safely", "Weak when dived by mobile melee"],
+    imageUrl: "/images/Units/MortarTeam.png",
   },
   {
     slug: "priest",
@@ -342,6 +542,7 @@ export const units: Unit[] = [
     lumber: 10,
     strengths: ["Reliable healing", "Dispel utility", "Efficient long fights"],
     weaknesses: ["Mana-dependent", "Low durability", "Poor alone without a damage core"],
+    imageUrl: "/images/Units/Priest.png",
   },
   {
     slug: "sorceress",
@@ -355,6 +556,7 @@ export const units: Unit[] = [
     lumber: 20,
     strengths: ["Strong slow control", "Excellent kiting support", "Great in rifle-caster compositions"],
     weaknesses: ["Fragile", "Low direct damage", "Requires good positioning and mana management"],
+    imageUrl: "/images/Units/Sorceress.png",
   },
   {
     slug: "spell-breaker",
@@ -368,6 +570,7 @@ export const units: Unit[] = [
     lumber: 30,
     strengths: ["Spell immunity", "Steals key buffs", "Solid versus caster-heavy armies"],
     weaknesses: ["Low raw damage", "Limited burst", "Less effective versus pure physical armies"],
+    imageUrl: "/images/Units/SpellBreaker.png",
   },
   {
     slug: "dragonhawk-rider",
@@ -381,6 +584,7 @@ export const units: Unit[] = [
     lumber: 30,
     strengths: ["Aerial shackles utility", "Strong anti-air support", "Useful versus big tech units"],
     weaknesses: ["Expensive", "Needs protection from anti-air focus", "Awkward in low-upkeep skirmishes"],
+    imageUrl: "/images/Units/DragonHawk.png",
   },
   {
     slug: "flying-machine",
@@ -394,6 +598,7 @@ export const units: Unit[] = [
     lumber: 30,
     strengths: ["Fast scouting", "Cheap anti-air volume", "Good map vision and harassment coverage"],
     weaknesses: ["Very fragile", "Low ground impact", "Weak if overproduced into wrong matchup"],
+    imageUrl: "/images/Units/FlyingMachine.png",
   },
   {
     slug: "knight",
@@ -407,6 +612,7 @@ export const units: Unit[] = [
     lumber: 60,
     strengths: ["Durable frontline", "Strong upgrades", "Scales well into late game"],
     weaknesses: ["Expensive tech path", "Susceptible to focus without support", "Slow to reach critical mass"],
+    imageUrl: "/images/Units/Knight.png",
   },
   {
     slug: "siege-engine",
@@ -420,6 +626,7 @@ export const units: Unit[] = [
     lumber: 60,
     strengths: ["Massive building damage", "Durable mechanical body", "Strong in split-pressure play"],
     weaknesses: ["Limited anti-unit value", "Slow", "Requires map control to justify cost"],
+    imageUrl: "/images/Units/SeigeEngine.png",
   },
   {
     slug: "peon",
@@ -433,6 +640,7 @@ export const units: Unit[] = [
     lumber: 0,
     strengths: ["Sturdy worker body", "Repairs key structures", "Useful for scouting and emergency tower play"],
     weaknesses: ["Low combat power", "Worker losses hurt tech tempo", "Vulnerable while building expansions"],
+    imageUrl: "/images/Units/Peon.png",
   },
   {
     slug: "grunt",
@@ -446,6 +654,7 @@ export const units: Unit[] = [
     lumber: 0,
     strengths: ["Durable early body", "Strong with hero focus fire", "Simple and reliable opening unit"],
     weaknesses: ["Can be kited", "Falls off without upgrades or support", "Limited utility on its own"],
+    imageUrl: "/images/Units/Grunt.png",
   },
   {
     slug: "headhunter",
@@ -459,6 +668,7 @@ export const units: Unit[] = [
     lumber: 20,
     strengths: ["Efficient ranged damage", "Strong Berserker upgrade", "Excellent with Bloodlust and healing"],
     weaknesses: ["Fragile compared to Grunts", "Needs support to survive dives", "Can feed experience if mispositioned"],
+    imageUrl: "/images/Units/HeadHunter.png",
   },
   {
     slug: "raider",
@@ -472,6 +682,7 @@ export const units: Unit[] = [
     lumber: 40,
     strengths: ["Excellent at catches", "Great for surrounds", "Punishes exposed expansions"],
     weaknesses: ["Falls off in raw combat value without support", "Can overextend easily"],
+    imageUrl: "/images/Units/Raider.png",
   },
   {
     slug: "kodo-beast",
@@ -485,6 +696,7 @@ export const units: Unit[] = [
     lumber: 60,
     strengths: ["War Drums aura", "Devour utility", "Excellent support for ranged Orc armies"],
     weaknesses: ["Expensive support slot", "Large target", "Weak if sniped before impact"],
+    imageUrl: "/images/Units/KodoBeast.png",
   },
   {
     slug: "wind-rider",
@@ -498,6 +710,7 @@ export const units: Unit[] = [
     lumber: 40,
     strengths: ["Heavy burst damage", "Great versus isolated units", "Strong air timing potential"],
     weaknesses: ["Very fragile", "Punished by dedicated anti-air", "Needs careful focus fire control"],
+    imageUrl: "/images/Units/WindRider.png",
   },
   {
     slug: "shaman",
@@ -511,6 +724,7 @@ export const units: Unit[] = [
     lumber: 20,
     strengths: ["Purge utility", "Bloodlust scaling", "Useful versus summons and mobility heroes"],
     weaknesses: ["Mana hungry", "Low durability", "Slow to matter without upgrades"],
+    imageUrl: "/images/Units/Shaman.png",
   },
   {
     slug: "witch-doctor",
@@ -524,6 +738,7 @@ export const units: Unit[] = [
     lumber: 25,
     strengths: ["Healing Ward", "Sentry map vision", "Stasis punishes careless movement"],
     weaknesses: ["Fragile", "Ward reliance", "Low direct combat impact"],
+    imageUrl: "/images/Units/WitchDoctor.png",
   },
   {
     slug: "spirit-walker",
@@ -537,6 +752,7 @@ export const units: Unit[] = [
     lumber: 35,
     strengths: ["Disenchant", "Spirit Link durability", "Solid anti-magic utility"],
     weaknesses: ["Expensive upgrades", "Limited damage", "Needs army value around it"],
+    imageUrl: "/images/Units/SpiritWalker.png",
   },
   {
     slug: "tauren",
@@ -550,6 +766,7 @@ export const units: Unit[] = [
     lumber: 80,
     strengths: ["Extreme durability", "Huge melee damage", "Powerful with Spirit Link and Bloodlust"],
     weaknesses: ["Very expensive", "Slow to reach", "Punished before critical mass"],
+    imageUrl: "/images/Units/Tauren.png",
   },
   {
     slug: "demolisher",
@@ -563,6 +780,7 @@ export const units: Unit[] = [
     lumber: 50,
     strengths: ["High siege damage", "Good range", "Threatens turtling opponents"],
     weaknesses: ["Fragile when caught", "Slow repositioning", "Poor without frontline protection"],
+    imageUrl: "/images/Units/Demolisher.png",
   },
   {
     slug: "troll-batrider",
@@ -576,6 +794,7 @@ export const units: Unit[] = [
     lumber: 40,
     strengths: ["Explosive anti-air trade", "Fast harassment", "Useful against greedy air tech"],
     weaknesses: ["Self-destructive value pattern", "Low general-purpose combat power", "Weak versus spread armies"],
+    imageUrl: "/images/Units/TrollBatRider.png",
   },
   {
     slug: "acolyte",
@@ -589,6 +808,7 @@ export const units: Unit[] = [
     lumber: 0,
     strengths: ["Safe blight economy", "Can summon buildings without walking off base", "Supports haunted expansion patterns"],
     weaknesses: ["Very fragile", "Worker losses are painful", "Poor scouting and map presence"],
+    imageUrl: "/images/Units/Acolyte.png",
   },
   {
     slug: "ghoul",
@@ -602,6 +822,7 @@ export const units: Unit[] = [
     lumber: 0,
     strengths: ["Fast movement", "Good early surround pressure", "Double as lumber workers"],
     weaknesses: ["Fragile", "Scale poorly without support", "Feed experience if traded badly"],
+    imageUrl: "/images/Units/Ghoul.png",
   },
   {
     slug: "crypt-fiend",
@@ -615,6 +836,7 @@ export const units: Unit[] = [
     lumber: 40,
     strengths: ["High single-target damage", "Web utility", "Strong orb timing support"],
     weaknesses: ["Fragile when isolated", "Relies on statue sustain"],
+    imageUrl: "/images/Units/CryptFiend.png",
   },
   {
     slug: "gargoyle",
@@ -628,6 +850,7 @@ export const units: Unit[] = [
     lumber: 30,
     strengths: ["Excellent anti-air swarms", "Fast map mobility", "Good worker and expansion harassment"],
     weaknesses: ["Weak against strong splash or dedicated anti-air", "Can be supply-inefficient in bad fights"],
+    imageUrl: "/images/Units/Gargoyle.png",
   },
   {
     slug: "abomination",
@@ -641,6 +864,7 @@ export const units: Unit[] = [
     lumber: 70,
     strengths: ["Durable body", "Disease cloud pressure", "Strong meat shield for ranged cores"],
     weaknesses: ["Slow", "Large target", "Needs statue sustain and positioning"],
+    imageUrl: "/images/Units/Abomination.png",
   },
   {
     slug: "necromancer",
@@ -654,6 +878,7 @@ export const units: Unit[] = [
     lumber: 20,
     strengths: ["Skeleton pressure", "Great in siege scenarios", "Can overwhelm unprepared defenses"],
     weaknesses: ["Mana dependent", "Countered by dispel", "Weak in fast skirmishes"],
+    imageUrl: "/images/Units/Necromancer.png",
   },
   {
     slug: "banshee",
@@ -667,6 +892,7 @@ export const units: Unit[] = [
     lumber: 30,
     strengths: ["Curse utility", "Anti-physical value", "Possession win condition"],
     weaknesses: ["Expensive upgrades", "Fragile", "Slow tempo without mana support"],
+    imageUrl: "/images/Units/Banshee.png",
   },
   {
     slug: "meat-wagon",
@@ -680,6 +906,7 @@ export const units: Unit[] = [
     lumber: 50,
     strengths: ["Strong siege damage", "Supports corpse-based strategies", "Useful versus fortified bases"],
     weaknesses: ["Slow", "Fragile when exposed", "Weak without a supporting composition"],
+    imageUrl: "/images/Units/MeatWagon.png",
   },
   {
     slug: "obsidian-statue",
@@ -693,6 +920,7 @@ export const units: Unit[] = [
     lumber: 35,
     strengths: ["Excellent sustain", "Critical for fiend and hero pressure", "Transforms fights through attrition"],
     weaknesses: ["Low combat stats", "Prime focus target", "Vulnerable if left unprotected"],
+    imageUrl: "/images/Units/ObsidianStatue.png",
   },
   {
     slug: "destroyer",
@@ -706,6 +934,7 @@ export const units: Unit[] = [
     lumber: 0,
     strengths: ["Devour Magic", "Strong spell resistance", "High value versus caster-heavy armies"],
     weaknesses: ["Consumes statue economy", "Can be focus-fired by dedicated anti-air", "Expensive to field repeatedly"],
+    imageUrl: "/images/Units/Destroyer.png",
   },
   {
     slug: "frost-wyrm",
@@ -719,6 +948,7 @@ export const units: Unit[] = [
     lumber: 120,
     strengths: ["Huge damage", "Frost attack slow", "Excellent siege and late-game air dominance"],
     weaknesses: ["Very expensive", "Slow to tech to", "Hard-punished by focused anti-air"],
+    imageUrl: "/images/Units/FrostWyrm.png",
   },
   {
     slug: "wisp",
@@ -732,6 +962,7 @@ export const units: Unit[] = [
     lumber: 0,
     strengths: ["Detonate anti-magic utility", "Fast scouting", "Safe tree-based economy support"],
     weaknesses: ["Very fragile", "Low direct combat value", "Worker losses disrupt moonwell and tech flow"],
+    imageUrl: "/images/Units/Wisp.png",
   },
   {
     slug: "archer",
@@ -745,6 +976,7 @@ export const units: Unit[] = [
     lumber: 10,
     strengths: ["Good early ranged DPS", "Flexible openers", "Mobile with Night Elf tempo play"],
     weaknesses: ["Fragile", "Needs hero support", "Can feed experience when overproduced"],
+    imageUrl: "/images/Units/Archer.png",
   },
   {
     slug: "huntress",
@@ -758,6 +990,7 @@ export const units: Unit[] = [
     lumber: 20,
     strengths: ["Strong early map control", "Bouncing attack", "Durable for tier-one pressure"],
     weaknesses: ["Falls off without transitions", "Weak against focused piercing damage", "Can be kited by tech armies"],
+    imageUrl: "/images/Units/Huntress.png",
   },
   {
     slug: "glaive-thrower",
@@ -771,6 +1004,7 @@ export const units: Unit[] = [
     lumber: 65,
     strengths: ["Strong anti-building damage", "Useful in push timings", "Combines well with map-control openers"],
     weaknesses: ["Fragile", "Slow repositioning", "Limited direct combat value"],
+    imageUrl: "/images/Units/GlaiveThrower.png",
   },
   {
     slug: "dryad",
@@ -784,6 +1018,7 @@ export const units: Unit[] = [
     lumber: 60,
     strengths: ["Abolish Magic", "Fast movement", "Poison utility and kiting"],
     weaknesses: ["Low burst", "Fragile when surrounded", "Needs frontline support"],
+    imageUrl: "/images/Units/Dryad.png",
   },
   {
     slug: "druid-of-the-claw",
@@ -797,6 +1032,7 @@ export const units: Unit[] = [
     lumber: 80,
     strengths: ["Durable frontline", "Roar scaling", "Strong sustained fights"],
     weaknesses: ["Expensive", "Timing-sensitive before master training"],
+    imageUrl: "/images/Units/DruidOfTheClaw.png",
   },
   {
     slug: "druid-of-the-talon",
@@ -810,6 +1046,7 @@ export const units: Unit[] = [
     lumber: 20,
     strengths: ["Cyclone control", "Faerie Fire utility", "Excellent disruption in hero-centric battles"],
     weaknesses: ["Fragile", "Mana hungry", "Weak if caught without positioning"],
+    imageUrl: "/images/Units/DruidOfTheTalon.png",
   },
   {
     slug: "mountain-giant",
@@ -823,6 +1060,7 @@ export const units: Unit[] = [
     lumber: 100,
     strengths: ["Extreme durability", "Taunt utility", "Great space-making body"],
     weaknesses: ["Low direct DPS", "Expensive", "Needs support to convert durability into wins"],
+    imageUrl: "/images/Units/MountainGiant.png",
   },
   {
     slug: "hippogryph",
@@ -836,6 +1074,7 @@ export const units: Unit[] = [
     lumber: 20,
     strengths: ["Good anti-air mobility", "Can pair with archers", "Fast map coverage"],
     weaknesses: ["Limited ground impact", "Vulnerable to strong anti-air focus", "Awkward when overbuilt"],
+    imageUrl: "/images/Units/Hippogriff.png",
   },
   {
     slug: "faerie-dragon",
@@ -849,6 +1088,7 @@ export const units: Unit[] = [
     lumber: 40,
     strengths: ["Strong versus casters", "Phase Shift survivability", "Excellent disruption value"],
     weaknesses: ["Low raw damage", "Niche role", "Can underperform versus pure physical armies"],
+    imageUrl: "/images/Units/FaerieDragon.png",
   },
   {
     slug: "chimaera",
@@ -862,6 +1102,7 @@ export const units: Unit[] = [
     lumber: 70,
     strengths: ["Massive siege damage", "Dominant versus static positions", "High late-game threat"],
     weaknesses: ["Expensive", "No air attack", "Punished by dedicated anti-air focus"],
+    imageUrl: "/images/Units/Chimaera.png",
   },
   {
     slug: "goblin-sapper",
@@ -875,6 +1116,7 @@ export const units: Unit[] = [
     lumber: 0,
     strengths: ["Huge burst versus buildings", "Surprise timing potential", "Excellent expansion punish tool"],
     weaknesses: ["Single-use", "Requires precise timing", "Low value if scouted early"],
+    imageUrl: "/images/Units/GoblinSapper.png",
   },
   {
     slug: "goblin-zeppelin",
@@ -888,6 +1130,7 @@ export const units: Unit[] = [
     lumber: 0,
     strengths: ["Drop play", "Unit rescue utility", "Creative map mobility"],
     weaknesses: ["No combat power", "Vulnerable to anti-air", "High positional risk if lost loaded"],
+    imageUrl: "/images/Units/GoblinZeppelin.png",
   },
   {
     slug: "goblin-shredder",
@@ -901,6 +1144,7 @@ export const units: Unit[] = [
     lumber: 0,
     strengths: ["Massive lumber income", "Strong early combat body", "High value pickup on many maps"],
     weaknesses: ["Expensive neutral purchase", "Can be focused down", "Occupies supply in tight builds"],
+    imageUrl: "/images/Units/GoblinShredder.png",
   },
   {
     slug: "forest-troll-shadow-priest",
@@ -914,6 +1158,7 @@ export const units: Unit[] = [
     lumber: 0,
     strengths: ["Healing utility", "Dispel option", "Useful flexible mercenary support"],
     weaknesses: ["Fragile", "Mana limited", "Dependent on merc camp access"],
+    imageUrl: "/images/Units/DarkTrollShadowPriest.png",
   },
   {
     slug: "forest-troll-berserker",
@@ -927,6 +1172,7 @@ export const units: Unit[] = [
     lumber: 0,
     strengths: ["Strong ranged DPS", "Immediate merc camp power spike", "Simple high-impact pickup"],
     weaknesses: ["Fragile", "Can be expensive to sustain", "No advanced utility beyond damage"],
+    imageUrl: "/images/Units/ForestTrollBerserker.png",
   },
   {
     slug: "mud-golem",
@@ -940,6 +1186,7 @@ export const units: Unit[] = [
     lumber: 0,
     strengths: ["Slow utility", "Sturdy mercenary body", "Good tempo value on contested maps"],
     weaknesses: ["Niche availability", "Low scaling late", "Awkward if the matchup demands mobility"],
+    imageUrl: "/images/Units/MudGolem.png",
   },
   {
     slug: "ogre-mauler",
@@ -953,6 +1200,7 @@ export const units: Unit[] = [
     lumber: 0,
     strengths: ["Durable body", "Simple frontline power", "Good immediate merc camp value"],
     weaknesses: ["Low utility", "Can be kited", "Poor long-term scaling compared with race tech"],
+    imageUrl: "/images/Units/OgreMauler.png",
   },
   {
     slug: "dark-troll-trapper",
@@ -966,6 +1214,7 @@ export const units: Unit[] = [
     lumber: 0,
     strengths: ["Ensnare utility", "Good tempo pickup", "Useful versus mobility and air"],
     weaknesses: ["Fragile", "Map dependent", "Low value if fights stay front-to-back"],
+    imageUrl: "/images/Units/DarkTrollTrapper.png",
   },
   {
     slug: "furbolg-tracker",
@@ -979,6 +1228,7 @@ export const units: Unit[] = [
     lumber: 0,
     strengths: ["Immediate ranged power", "Good merc timing filler", "Simple efficient statline"],
     weaknesses: ["Little utility", "Falls off versus teched armies", "Camp dependent"],
+    imageUrl: "/images/Units/FurbolgTracker.png",
   },
 ];
 
@@ -989,6 +1239,8 @@ export const maps: MapGuide[] = [
     description: "A compact map with fast skirmish timings and contestable merchant play.",
     creepNotes: "Small camp routes accelerate first-hero tempo for all races.",
     expansionNotes: "Natural expansions can be pressured quickly if scouting is weak.",
+    availableItems: ["Boots of Speed", "Claws of Attack +6", "Periapt of Vitality", "Ancient Janggo of Endurance", "Staff of Sanctuary", "Scroll of Town Portal", "Healing Salve", "Clarity Potion", "Dust of Appearance", "Potion of Healing", "Potion of Mana", "Goblin Zeppelin"],
+    imageUrl: "/images/Maps/Echo_Isles.png",
   },
   {
     slug: "terenas-stand",
@@ -996,6 +1248,8 @@ export const maps: MapGuide[] = [
     description: "A measured classic duel map with narrow lanes, close contact, and decisive creep tempo.",
     creepNotes: "Fast early camps and nearby merchants reward efficient hero route planning.",
     expansionNotes: "Expansions are reachable, but they become vulnerable quickly if vision falls behind.",
+    availableItems: ["Boots of Speed", "Claws of Attack +6", "Periapt of Vitality", "Ancient Janggo of Endurance", "Staff of Sanctuary", "Scroll of Town Portal", "Healing Salve", "Clarity Potion", "Dust of Appearance", "Potion of Healing", "Potion of Mana"],
+    imageUrl: "/images/Maps/Wc3TerenasStand.png",
   },
   {
     slug: "turtle-rock",
@@ -1003,6 +1257,8 @@ export const maps: MapGuide[] = [
     description: "A large original melee map known for creeping variety, mercenary access, and swingy item paths.",
     creepNotes: "Multiple safe and risky routes let players choose between experience greed and faster pressure.",
     expansionNotes: "Corner expansions are strong but hard to hold without map control and scouting discipline.",
+    availableItems: ["Boots of Speed", "Claws of Attack +6", "Periapt of Vitality", "Ancient Janggo of Endurance", "Staff of Sanctuary", "Scroll of Town Portal", "Healing Salve", "Clarity Potion", "Dust of Appearance", "Goblin Zeppelin", "Orb of Lightning", "Orb of Frost", "Mask of Death", "Helm of Valor", "Robe of the Magi", "Khadgar's Gem of Health"],
+    imageUrl: "/images/Maps/Turtle_Rock.png",
   },
   {
     slug: "twisted-meadows",
@@ -1010,6 +1266,8 @@ export const maps: MapGuide[] = [
     description: "One of the most iconic classic maps, mixing open movement with contested neutral structures.",
     creepNotes: "Creep routes are flexible and often hinge on whether players race the center or secure laboratories first.",
     expansionNotes: "Extra mines make long games viable, but expansion timing depends heavily on control of the middle.",
+    availableItems: ["Boots of Speed", "Claws of Attack +6", "Periapt of Vitality", "Ancient Janggo of Endurance", "Staff of Sanctuary", "Scroll of Town Portal", "Healing Salve", "Clarity Potion", "Dust of Appearance", "Goblin Zeppelin", "Potion of Healing", "Potion of Mana"],
+    imageUrl: "/images/Maps/Twisted_Meadows.png",
   },
   {
     slug: "the-two-rivers",
@@ -1017,6 +1275,8 @@ export const maps: MapGuide[] = [
     description: "A tight duel map split by bridges that rewards scouting, transport control, and precise movement.",
     creepNotes: "Short routes speed up level progression, but bridge control determines who gets to creep safely.",
     expansionNotes: "Bridge chokepoints make expansions commit-heavy and punish weak map reads.",
+    availableItems: ["Boots of Speed", "Claws of Attack +6", "Periapt of Vitality", "Ancient Janggo of Endurance", "Staff of Sanctuary", "Scroll of Town Portal", "Healing Salve", "Clarity Potion", "Dust of Appearance", "Potion of Healing", "Potion of Mana"],
+    imageUrl: "/images/Maps/TheTwoRivers.png",
   },
   {
     slug: "floodplains-1v1",
@@ -1024,6 +1284,8 @@ export const maps: MapGuide[] = [
     description: "A classic solo map where the stream lanes and central spaces create constant movement pressure.",
     creepNotes: "Players can creep efficiently, but side camps and center pulls often expose greedy paths.",
     expansionNotes: "Expansions are strong if secured early, yet they are difficult to keep safe without lane vision.",
+    availableItems: ["Boots of Speed", "Claws of Attack +6", "Periapt of Vitality", "Ancient Janggo of Endurance", "Staff of Sanctuary", "Scroll of Town Portal", "Healing Salve", "Clarity Potion", "Dust of Appearance", "Potion of Healing", "Potion of Mana"],
+    imageUrl: "/images/Maps/Floodplains_1v1.png",
   },
   {
     slug: "secret-valley",
@@ -1031,6 +1293,8 @@ export const maps: MapGuide[] = [
     description: "A high-resource duel map where merchant access and side pressure create explosive tempo swings.",
     creepNotes: "Rich camp routes enable fast leveling, but center contests can punish players who over-path greedily.",
     expansionNotes: "Expandable lanes exist, though each mine becomes a focal point for counter-pressure.",
+    availableItems: ["Boots of Speed", "Claws of Attack +6", "Periapt of Vitality", "Ancient Janggo of Endurance", "Staff of Sanctuary", "Scroll of Town Portal", "Healing Salve", "Clarity Potion", "Dust of Appearance", "Orb of Lightning", "Orb of Frost", "Orb of Corruption", "Mask of Death", "Helm of Valor", "Robe of the Magi"],
+    imageUrl: "/images/Maps/Secret_Valley.png",
   },
   {
     slug: "lost-temple",
@@ -1038,6 +1302,8 @@ export const maps: MapGuide[] = [
     description: "A legendary original map with multiple outer mines and a central healing prize that invites conflict.",
     creepNotes: "Temple-side camps and outer lanes offer many pathing choices, but center control often defines momentum.",
     expansionNotes: "With so many mines available, players can macro hard if they survive the midgame fights.",
+    availableItems: ["Boots of Speed", "Claws of Attack +6", "Periapt of Vitality", "Ancient Janggo of Endurance", "Staff of Sanctuary", "Scroll of Town Portal", "Healing Salve", "Clarity Potion", "Dust of Appearance", "Goblin Zeppelin", "Orb of Lightning", "Orb of Frost", "Orb of Corruption", "Mask of Death", "Helm of Valor", "Robe of the Magi"],
+    imageUrl: "/images/Maps/Wc3LostTempleRoC.png",
   },
   {
     slug: "traversing-the-ruins",
@@ -1045,6 +1311,7 @@ export const maps: MapGuide[] = [
     description: "A Frozen Throne team map built around river crossings, outer gold, and coordinated rotations.",
     creepNotes: "Open team routes make shared creeping and partner support much more valuable than isolated farming.",
     expansionNotes: "Forward expansions pay off when teams can collapse together, but isolated mines are easy to punish.",
+    availableItems: ["Boots of Speed", "Claws of Attack +6", "Periapt of Vitality", "Ancient Janggo of Endurance", "Staff of Sanctuary", "Scroll of Town Portal", "Healing Salve", "Clarity Potion", "Dust of Appearance", "Potion of Healing", "Potion of Mana"],
   },
   {
     slug: "tranquil-paths",
@@ -1052,6 +1319,8 @@ export const maps: MapGuide[] = [
     description: "A classic multi-mode map where wide lanes and mercenary control shape flexible macro games.",
     creepNotes: "Merc camps and merchants create several strong opening patterns for both duos and FFA play.",
     expansionNotes: "The outer mines are rich but demand map coverage because flank pressure arrives from multiple angles.",
+    availableItems: ["Boots of Speed", "Claws of Attack +6", "Periapt of Vitality", "Ancient Janggo of Endurance", "Staff of Sanctuary", "Scroll of Town Portal", "Healing Salve", "Clarity Potion", "Dust of Appearance", "Goblin Zeppelin", "Potion of Healing", "Potion of Mana"],
+    imageUrl: "/images/Maps/Tranquilpaths.png",
   },
   {
     slug: "avalanche",
@@ -1059,6 +1328,8 @@ export const maps: MapGuide[] = [
     description: "A snowy original battleground where split fountains and exposed taverns reward assertive map control.",
     creepNotes: "Team creeping is fast, but central movement remains dangerous because both sides contest healing access.",
     expansionNotes: "The side expansions are powerful, though they become liabilities if your formation gets split.",
+    availableItems: ["Boots of Speed", "Claws of Attack +6", "Periapt of Vitality", "Ancient Janggo of Endurance", "Staff of Sanctuary", "Scroll of Town Portal", "Healing Salve", "Clarity Potion", "Dust of Appearance", "Goblin Zeppelin", "Potion of Healing", "Potion of Mana"],
+    imageUrl: "/images/Maps/Avalanche.png",
   },
   {
     slug: "the-crucible",
@@ -1066,6 +1337,8 @@ export const maps: MapGuide[] = [
     description: "A classic large map built around rich outer gold and central magic fountains that amplify big fights.",
     creepNotes: "The map rewards broad creeping plans and constant awareness of enemy movement around the fountains.",
     expansionNotes: "Many mines exist, but long reinforcement paths mean overextending on one side can lose the other.",
+    availableItems: ["Boots of Speed", "Claws of Attack +6", "Periapt of Vitality", "Ancient Janggo of Endurance", "Staff of Sanctuary", "Scroll of Town Portal", "Healing Salve", "Clarity Potion", "Dust of Appearance", "Goblin Zeppelin", "Orb of Lightning", "Orb of Frost", "Mask of Death", "Khadgar's Gem of Health"],
+    imageUrl: "/images/Maps/Wc3TheCrucible.png",
   },
   {
     slug: "gnoll-wood",
@@ -1073,6 +1346,8 @@ export const maps: MapGuide[] = [
     description: "A six-player classic map where close starts and crowded merchants create immediate tension.",
     creepNotes: "Short travel time makes early skirmishes common, so creeping routes must respect nearby enemy spikes.",
     expansionNotes: "Additional mines are available, but aggressive starts often delay safe expansion windows.",
+    availableItems: ["Boots of Speed", "Claws of Attack +6", "Periapt of Vitality", "Ancient Janggo of Endurance", "Staff of Sanctuary", "Scroll of Town Portal", "Healing Salve", "Clarity Potion", "Dust of Appearance", "Goblin Zeppelin", "Potion of Healing", "Potion of Mana"],
+    imageUrl: "/images/Maps/Wc3GnollWood.png",
   },
   {
     slug: "monsoon",
@@ -1080,6 +1355,8 @@ export const maps: MapGuide[] = [
     description: "A Frozen Throne six-player map with broad water lanes and several opportunities for team rotations.",
     creepNotes: "The map supports shared creeping and wide sweeps, but exposed camps can turn into ambush points.",
     expansionNotes: "Expansions are rewarding if the team owns the nearby travel lanes and can reinforce quickly.",
+    availableItems: ["Boots of Speed", "Claws of Attack +6", "Periapt of Vitality", "Ancient Janggo of Endurance", "Staff of Sanctuary", "Scroll of Town Portal", "Healing Salve", "Clarity Potion", "Dust of Appearance", "Goblin Zeppelin", "Potion of Healing", "Potion of Mana"],
+    imageUrl: "/images/Maps/Wc3Monsoon.png",
   },
   {
     slug: "typhoon",
@@ -1087,6 +1364,8 @@ export const maps: MapGuide[] = [
     description: "A classic six-player battleground that emphasizes spacing, long rotations, and decisive flank control.",
     creepNotes: "Large distances slow greedy creeping, so safe routes and shared map information matter a great deal.",
     expansionNotes: "Side mines scale well into longer games, but they are vulnerable when teams lose movement control.",
+    availableItems: ["Boots of Speed", "Claws of Attack +6", "Periapt of Vitality", "Ancient Janggo of Endurance", "Staff of Sanctuary", "Scroll of Town Portal", "Healing Salve", "Clarity Potion", "Dust of Appearance", "Potion of Healing", "Potion of Mana"],
+    imageUrl: "/images/Maps/WC3Typhoon.png",
   },
   {
     slug: "deadlands",
@@ -1094,6 +1373,8 @@ export const maps: MapGuide[] = [
     description: "An Outland battlefield designed for mayhem, with broad routes and heavy emphasis on team collisions.",
     creepNotes: "The camps are straightforward, but the open paths make it easy for opponents to interrupt greedy clears.",
     expansionNotes: "Expanding works best after a clean fight because the open terrain makes static defense harder to lean on.",
+    availableItems: ["Boots of Speed", "Claws of Attack +6", "Periapt of Vitality", "Ancient Janggo of Endurance", "Staff of Sanctuary", "Scroll of Town Portal", "Healing Salve", "Clarity Potion", "Dust of Appearance", "Goblin Zeppelin", "Potion of Healing", "Potion of Mana"],
+    imageUrl: "/images/Maps/Wc3Deadlands.png",
   },
   {
     slug: "gold-rush",
@@ -1101,6 +1382,8 @@ export const maps: MapGuide[] = [
     description: "A classic large-team staple overflowing with mines and built for sprawling macro battles.",
     creepNotes: "Teams can farm quickly, but the abundance of routes makes map vision and timing coordination essential.",
     expansionNotes: "The map is defined by expansions, so the side that secures and protects more mines usually scales hardest.",
+    availableItems: ["Boots of Speed", "Claws of Attack +6", "Periapt of Vitality", "Ancient Janggo of Endurance", "Staff of Sanctuary", "Scroll of Town Portal", "Healing Salve", "Clarity Potion", "Dust of Appearance", "Goblin Zeppelin", "Orb of Lightning", "Orb of Frost", "Orb of Corruption", "Mask of Death", "Helm of Valor", "Robe of the Magi", "Khadgar's Gem of Health"],
+    imageUrl: "/images/Maps/Wc3GoldRush.png",
   },
   {
     slug: "market-square",
@@ -1108,6 +1391,8 @@ export const maps: MapGuide[] = [
     description: "A city-style team map where broad movement lanes and central access create layered reinforcement battles.",
     creepNotes: "The creeps are accessible, but open approach angles mean teams can punish predictable routes quickly.",
     expansionNotes: "Expansions are valuable yet often hinge on who can hold the center and rotate first.",
+    availableItems: ["Boots of Speed", "Claws of Attack +6", "Periapt of Vitality", "Ancient Janggo of Endurance", "Staff of Sanctuary", "Scroll of Town Portal", "Healing Salve", "Clarity Potion", "Dust of Appearance", "Goblin Zeppelin", "Orb of Lightning", "Orb of Frost", "Mask of Death", "Helm of Valor", "Robe of the Magi"],
+    imageUrl: "/images/Maps/Wc3MarketSquare.png",
   },
   {
     slug: "battleground",
@@ -1115,6 +1400,8 @@ export const maps: MapGuide[] = [
     description: "A classic eight-player warzone built for direct clashes, fast reinforcements, and heavy frontline fights.",
     creepNotes: "Central camps and side routes both matter, but teams usually gain more from moving together than splitting greedily.",
     expansionNotes: "Extra mines exist across the map, though holding them depends on staying connected as a team.",
+    availableItems: ["Boots of Speed", "Claws of Attack +6", "Periapt of Vitality", "Ancient Janggo of Endurance", "Staff of Sanctuary", "Scroll of Town Portal", "Healing Salve", "Clarity Potion", "Dust of Appearance", "Goblin Zeppelin", "Orb of Lightning", "Orb of Corruption", "Mask of Death", "Helm of Valor", "Robe of the Magi", "Khadgar's Gem of Health"],
+    imageUrl: "/images/Maps/Wc3Battleground.png",
   },
   {
     slug: "murgul-oasis",
@@ -1122,6 +1409,8 @@ export const maps: MapGuide[] = [
     description: "A broad oasis battleground where positioning around shared structures shapes the pace of the game.",
     creepNotes: "Teams can clear efficiently, but the open center invites early collapses on overextended heroes.",
     expansionNotes: "Expansions are attractive on paper, yet wide angles of attack make them difficult to secure alone.",
+    availableItems: ["Boots of Speed", "Claws of Attack +6", "Periapt of Vitality", "Ancient Janggo of Endurance", "Staff of Sanctuary", "Scroll of Town Portal", "Healing Salve", "Clarity Potion", "Dust of Appearance", "Goblin Zeppelin", "Potion of Healing", "Potion of Mana"],
+    imageUrl: "/images/Maps/Mur'gul_Oasis.png",
   },
   {
     slug: "dustwallow-keys",
@@ -1129,6 +1418,7 @@ export const maps: MapGuide[] = [
     description: "A huge original map packed with gold and dense creep pockets, ideal for long team macro wars.",
     creepNotes: "Large camp clusters reward organized team paths and punish players who wander without support.",
     expansionNotes: "So many mines are available that the map naturally stretches into multi-base games if teams stabilize.",
+    availableItems: ["Boots of Speed", "Claws of Attack +6", "Periapt of Vitality", "Ancient Janggo of Endurance", "Staff of Sanctuary", "Scroll of Town Portal", "Healing Salve", "Clarity Potion", "Dust of Appearance", "Goblin Zeppelin", "Orb of Lightning", "Orb of Frost", "Orb of Corruption", "Mask of Death", "Helm of Valor", "Robe of the Magi", "Khadgar's Gem of Health"],
   },
   {
     slug: "dragon-falls",
@@ -1136,6 +1426,8 @@ export const maps: MapGuide[] = [
     description: "A large original melee map built for crowded team battles and contested resource control.",
     creepNotes: "The neutral camps create multiple approach lanes, so teams benefit from moving in coordinated waves.",
     expansionNotes: "Outer mines are plentiful, but each new base increases the burden on scouting and reinforcement timing.",
+    availableItems: ["Boots of Speed", "Claws of Attack +6", "Periapt of Vitality", "Ancient Janggo of Endurance", "Staff of Sanctuary", "Scroll of Town Portal", "Healing Salve", "Clarity Potion", "Dust of Appearance", "Goblin Zeppelin", "Orb of Lightning", "Orb of Frost", "Mask of Death", "Helm of Valor", "Robe of the Magi", "Khadgar's Gem of Health"],
+    imageUrl: "/images/Maps/Dragon_Falls.png",
   },
   {
     slug: "ice-crown",
@@ -1143,6 +1435,8 @@ export const maps: MapGuide[] = [
     description: "A massive original battlefield for huge armies, long routes, and chaotic late-game collapses.",
     creepNotes: "The map has enough space for broad creeping, but strong teams still contest the key neutral structures early.",
     expansionNotes: "With many mines and long travel paths, successful expansion play depends on map coverage more than static defense.",
+    availableItems: ["Boots of Speed", "Claws of Attack +6", "Periapt of Vitality", "Ancient Janggo of Endurance", "Staff of Sanctuary", "Scroll of Town Portal", "Healing Salve", "Clarity Potion", "Dust of Appearance", "Goblin Zeppelin", "Orb of Lightning", "Orb of Frost", "Orb of Corruption", "Mask of Death", "Helm of Valor", "Robe of the Magi", "Khadgar's Gem of Health", "Ring of Regeneration"],
+    imageUrl: "/images/Maps/Wc3_IceCrown.png",
   },
 ];
 
