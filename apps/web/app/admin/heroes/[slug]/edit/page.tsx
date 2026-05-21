@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import { hasDatabaseUrl } from "@warcraft3-guide-hub/db";
 import { formatLineItemsInput } from "../../../../../lib/admin-forms";
@@ -36,7 +37,7 @@ export default async function EditAdminHeroPage({ params }: Props) {
           <input type="hidden" name="imageUrl" value={hero.imageUrl ?? ""} />
           <div className="field">
             <label htmlFor="imageUpload">Image (saves to /images/Heroes/)</label>
-            {hero.imageUrl ? <img src={hero.imageUrl} alt={hero.name} className="admin-img-preview" /> : null}
+            {hero.imageUrl ? <Image src={hero.imageUrl} alt={hero.name} className="admin-img-preview" width={80} height={80} /> : null}
             <input id="imageUpload" name="imageUpload" type="file" accept="image/*" />
           </div>
         </section>

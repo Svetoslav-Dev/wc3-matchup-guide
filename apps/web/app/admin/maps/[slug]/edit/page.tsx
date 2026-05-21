@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import { hasDatabaseUrl } from "@warcraft3-guide-hub/db";
 import { getSessionUser } from "../../../../../lib/auth";
@@ -29,7 +30,7 @@ export default async function EditAdminMapPage({ params }: Props) {
           <input type="hidden" name="imageUrl" value={map.imageUrl ?? ""} />
           <div className="field">
             <label htmlFor="imageUpload">Image (saves to /images/Maps/)</label>
-            {map.imageUrl ? <img src={map.imageUrl} alt={map.name} className="admin-img-preview" /> : null}
+            {map.imageUrl ? <Image src={map.imageUrl} alt={map.name} className="admin-img-preview" width={80} height={80} /> : null}
             <input id="imageUpload" name="imageUpload" type="file" accept="image/*" />
           </div>
         </section>

@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { notFound, redirect } from "next/navigation";
 import { hasDatabaseUrl } from "@warcraft3-guide-hub/db";
 import { getSessionUser } from "../../../../../lib/auth";
@@ -37,7 +38,7 @@ export default async function EditAdminBuildingPage({ params }: Props) {
           <div className="field"><label htmlFor="imageFile">Image file (without extension)</label><input id="imageFile" name="imageFile" type="text" defaultValue={building.imageFile} placeholder="TownHall" /></div>
           <div className="field">
             <label htmlFor="imageUpload">Image (saves to /images/Buildings/)</label>
-            {building.imageFile ? <img src={`/images/Buildings/${building.imageFile}.png`} alt={building.name} className="admin-img-preview" /> : null}
+            {building.imageFile ? <Image src={`/images/Buildings/${building.imageFile}.png`} alt={building.name} className="admin-img-preview" width={80} height={80} /> : null}
             <input id="imageUpload" name="imageUpload" type="file" accept="image/*" />
           </div>
           <div className="field"><label htmlFor="description">Description</label><textarea id="description" name="description" defaultValue={building.description} /></div>

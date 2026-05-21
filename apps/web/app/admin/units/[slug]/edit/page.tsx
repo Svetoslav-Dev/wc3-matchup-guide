@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import { hasDatabaseUrl } from "@warcraft3-guide-hub/db";
 import { formatLineItemsInput } from "../../../../../lib/admin-forms";
@@ -33,7 +34,7 @@ export default async function EditAdminUnitPage({ params }: Props) {
           <input type="hidden" name="imageUrl" value={unit.imageUrl ?? ""} />
           <div className="field">
             <label htmlFor="imageUpload">Image (saves to /images/Units/)</label>
-            {unit.imageUrl ? <img src={unit.imageUrl} alt={unit.name} className="admin-img-preview" /> : null}
+            {unit.imageUrl ? <Image src={unit.imageUrl} alt={unit.name} className="admin-img-preview" width={80} height={80} /> : null}
             <input id="imageUpload" name="imageUpload" type="file" accept="image/*" />
           </div>
         </section>
