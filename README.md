@@ -24,7 +24,7 @@ Most game art is served from `apps/web/public/images`. The database also support
 | Layer | Technology |
 |---|---|
 | Web framework | Next.js 15 (App Router) |
-| Web UI | React 19, TypeScript, custom CSS |
+| Web UI | React 19, TypeScript, Tailwind CSS v4 |
 | Mobile app | Expo SDK 53, React Native, TypeScript, expo-router |
 | Database | PostgreSQL via Neon |
 | ORM | Drizzle ORM + Drizzle migrations |

@@ -14,6 +14,7 @@
     "typecheck": "tsc --project tsconfig.json --noEmit --incremental false"
   },
   "dependencies": {
+    "@tailwindcss/postcss": "^4.3.0",
     "@warcraft3-guide-hub/db": "*",
     "@warcraft3-guide-hub/shared": "*",
     "bcryptjs": "^3.0.3",
@@ -23,6 +24,7 @@
     "postgres": "^3.4.9",
     "react": "19.1.0",
     "react-dom": "19.1.0",
+    "tailwindcss": "^4.3.0",
     "zod": "^4.4.3"
   },
   "devDependencies": {
