@@ -1,4 +1,4 @@
-import type { Build, Hero, MapGuide, Matchup, Race, Unit } from "./types";
+import type { Build, Building, Hero, Item, MapGuide, Matchup, Race, Unit } from "./types";
 
 export const races: Race[] = [
   {
@@ -1246,6 +1246,7 @@ const baseMaps: Omit<MapGuide, "shops">[] = [
     expansionNotes: "Natural expansions can be pressured quickly if scouting is weak.",
     availableItems: ["Boots of Speed", "Claws of Attack +6", "Periapt of Vitality", "Ancient Janggo of Endurance", "Staff of Sanctuary", "Scroll of Town Portal", "Healing Salve", "Clarity Potion", "Dust of Appearance", "Potion of Healing", "Potion of Mana", "Goblin Zeppelin"],
     imageUrl: "/images/Maps/Echo_Isles.png",
+    raceAdvantage: { race: "Orc", reason: "The compact layout suits Blademaster harassment and Orc's aggressive early-game pressure before Human or Undead can stabilize." },
   },
   {
     slug: "terenas-stand",
@@ -1255,6 +1256,7 @@ const baseMaps: Omit<MapGuide, "shops">[] = [
     expansionNotes: "Expansions are reachable, but they become vulnerable quickly if vision falls behind.",
     availableItems: ["Boots of Speed", "Claws of Attack +6", "Periapt of Vitality", "Ancient Janggo of Endurance", "Staff of Sanctuary", "Scroll of Town Portal", "Healing Salve", "Clarity Potion", "Dust of Appearance", "Potion of Healing", "Potion of Mana"],
     imageUrl: "/images/Maps/Wc3TerenasStand.png",
+    raceAdvantage: { race: "Human", reason: "Narrow lanes reward Human's defensive militia and caster positioning, making it hard for enemies to safely creep or threaten the main base." },
   },
   {
     slug: "turtle-rock",
@@ -1264,6 +1266,7 @@ const baseMaps: Omit<MapGuide, "shops">[] = [
     expansionNotes: "Corner expansions are strong but hard to hold without map control and scouting discipline.",
     availableItems: ["Boots of Speed", "Claws of Attack +6", "Periapt of Vitality", "Ancient Janggo of Endurance", "Staff of Sanctuary", "Scroll of Town Portal", "Healing Salve", "Clarity Potion", "Dust of Appearance", "Goblin Zeppelin", "Orb of Lightning", "Orb of Frost", "Mask of Death", "Helm of Valor", "Robe of the Magi", "Khadgar's Gem of Health"],
     imageUrl: "/images/Maps/Turtle_Rock.png",
+    raceAdvantage: { race: "Night Elf", reason: "The large space and diverse creep routes favor Night Elf's mobility and ability to choose fights, while Shadowmeld denies scouting." },
   },
   {
     slug: "twisted-meadows",
@@ -1273,6 +1276,7 @@ const baseMaps: Omit<MapGuide, "shops">[] = [
     expansionNotes: "Extra mines make long games viable, but expansion timing depends heavily on control of the middle.",
     availableItems: ["Boots of Speed", "Claws of Attack +6", "Periapt of Vitality", "Ancient Janggo of Endurance", "Staff of Sanctuary", "Scroll of Town Portal", "Healing Salve", "Clarity Potion", "Dust of Appearance", "Goblin Zeppelin", "Potion of Healing", "Potion of Mana"],
     imageUrl: "/images/Maps/Twisted_Meadows.png",
+    raceAdvantage: { race: "Undead", reason: "Open terrain and accessible expansions suit Undead's stationary towers and creep economy, letting them scale into a dominant late-game." },
   },
   {
     slug: "the-two-rivers",
@@ -1282,6 +1286,7 @@ const baseMaps: Omit<MapGuide, "shops">[] = [
     expansionNotes: "Bridge chokepoints make expansions commit-heavy and punish weak map reads.",
     availableItems: ["Boots of Speed", "Claws of Attack +6", "Periapt of Vitality", "Ancient Janggo of Endurance", "Staff of Sanctuary", "Scroll of Town Portal", "Healing Salve", "Clarity Potion", "Dust of Appearance", "Potion of Healing", "Potion of Mana"],
     imageUrl: "/images/Maps/TheTwoRivers.png",
+    raceAdvantage: { race: "Human", reason: "Bridge chokepoints amplify Human's ability to deny crossings with towers and militia, turning the map into a series of defensive tempo plays." },
   },
   {
     slug: "floodplains-1v1",
@@ -1291,6 +1296,7 @@ const baseMaps: Omit<MapGuide, "shops">[] = [
     expansionNotes: "Expansions are strong if secured early, yet they are difficult to keep safe without lane vision.",
     availableItems: ["Boots of Speed", "Claws of Attack +6", "Periapt of Vitality", "Ancient Janggo of Endurance", "Staff of Sanctuary", "Scroll of Town Portal", "Healing Salve", "Clarity Potion", "Dust of Appearance", "Potion of Healing", "Potion of Mana"],
     imageUrl: "/images/Maps/Floodplains_1v1.png",
+    raceAdvantage: { race: "Orc", reason: "Wide stream lanes give Orc room to harass with Raiders and rotate quickly, keeping constant pressure without over-committing." },
   },
   {
     slug: "secret-valley",
@@ -1300,6 +1306,7 @@ const baseMaps: Omit<MapGuide, "shops">[] = [
     expansionNotes: "Expandable lanes exist, though each mine becomes a focal point for counter-pressure.",
     availableItems: ["Boots of Speed", "Claws of Attack +6", "Periapt of Vitality", "Ancient Janggo of Endurance", "Staff of Sanctuary", "Scroll of Town Portal", "Healing Salve", "Clarity Potion", "Dust of Appearance", "Orb of Lightning", "Orb of Frost", "Orb of Corruption", "Mask of Death", "Helm of Valor", "Robe of the Magi"],
     imageUrl: "/images/Maps/Secret_Valley.png",
+    raceAdvantage: { race: "Night Elf", reason: "Rich creep routes and multiple expansion options reward Night Elf's superior mobility and the ability to control multiple points simultaneously." },
   },
   {
     slug: "lost-temple",
@@ -1309,6 +1316,7 @@ const baseMaps: Omit<MapGuide, "shops">[] = [
     expansionNotes: "With so many mines available, players can macro hard if they survive the midgame fights.",
     availableItems: ["Boots of Speed", "Claws of Attack +6", "Periapt of Vitality", "Ancient Janggo of Endurance", "Staff of Sanctuary", "Scroll of Town Portal", "Healing Salve", "Clarity Potion", "Dust of Appearance", "Goblin Zeppelin", "Orb of Lightning", "Orb of Frost", "Orb of Corruption", "Mask of Death", "Helm of Valor", "Robe of the Magi"],
     imageUrl: "/images/Maps/Wc3LostTempleRoC.png",
+    raceAdvantage: { race: "Human", reason: "The central healing fountain rewards the race best at controlling it; Human's tower rushes and militia make the fountain zone a powerful staging ground." },
   },
   {
     slug: "traversing-the-ruins",
@@ -1318,6 +1326,7 @@ const baseMaps: Omit<MapGuide, "shops">[] = [
     expansionNotes: "Forward expansions pay off when teams can collapse together, but isolated mines are easy to punish.",
     availableItems: ["Boots of Speed", "Claws of Attack +6", "Periapt of Vitality", "Ancient Janggo of Endurance", "Staff of Sanctuary", "Scroll of Town Portal", "Healing Salve", "Clarity Potion", "Dust of Appearance", "Potion of Healing", "Potion of Mana"],
     imageUrl: "/images/Maps/Wc3LostTempleRoC.png",
+    raceAdvantage: { race: "Orc", reason: "River crossing bottlenecks suit Orc's kodo and raider combo, letting them punish teams attempting to cross while controlling expansion timing." },
   },
   {
     slug: "tranquil-paths",
@@ -1327,6 +1336,7 @@ const baseMaps: Omit<MapGuide, "shops">[] = [
     expansionNotes: "The outer mines are rich but demand map coverage because flank pressure arrives from multiple angles.",
     availableItems: ["Boots of Speed", "Claws of Attack +6", "Periapt of Vitality", "Ancient Janggo of Endurance", "Staff of Sanctuary", "Scroll of Town Portal", "Healing Salve", "Clarity Potion", "Dust of Appearance", "Goblin Zeppelin", "Potion of Healing", "Potion of Mana"],
     imageUrl: "/images/Maps/Tranquilpaths.png",
+    raceAdvantage: { race: "Undead", reason: "Wide lanes and multiple mines let Undead expand safely and use stationary creep defenses to hold a larger map footprint than other races." },
   },
   {
     slug: "avalanche",
@@ -1336,6 +1346,7 @@ const baseMaps: Omit<MapGuide, "shops">[] = [
     expansionNotes: "The side expansions are powerful, though they become liabilities if your formation gets split.",
     availableItems: ["Boots of Speed", "Claws of Attack +6", "Periapt of Vitality", "Ancient Janggo of Endurance", "Staff of Sanctuary", "Scroll of Town Portal", "Healing Salve", "Clarity Potion", "Dust of Appearance", "Goblin Zeppelin", "Potion of Healing", "Potion of Mana"],
     imageUrl: "/images/Maps/Avalanche.png",
+    raceAdvantage: { race: "Orc", reason: "Contested fountain access rewards Orc's fast raider mobility and ability to deny healing zones while keeping army pressure constant." },
   },
   {
     slug: "the-crucible",
@@ -1345,6 +1356,7 @@ const baseMaps: Omit<MapGuide, "shops">[] = [
     expansionNotes: "Many mines exist, but long reinforcement paths mean overextending on one side can lose the other.",
     availableItems: ["Boots of Speed", "Claws of Attack +6", "Periapt of Vitality", "Ancient Janggo of Endurance", "Staff of Sanctuary", "Scroll of Town Portal", "Healing Salve", "Clarity Potion", "Dust of Appearance", "Goblin Zeppelin", "Orb of Lightning", "Orb of Frost", "Mask of Death", "Khadgar's Gem of Health"],
     imageUrl: "/images/Maps/Wc3TheCrucible.png",
+    raceAdvantage: { race: "Night Elf", reason: "Long reinforcement paths and multiple expansion points suit Night Elf's mobility, allowing them to react quickly and hold spread-out map positions." },
   },
   {
     slug: "gnoll-wood",
@@ -1354,6 +1366,7 @@ const baseMaps: Omit<MapGuide, "shops">[] = [
     expansionNotes: "Additional mines are available, but aggressive starts often delay safe expansion windows.",
     availableItems: ["Boots of Speed", "Claws of Attack +6", "Periapt of Vitality", "Ancient Janggo of Endurance", "Staff of Sanctuary", "Scroll of Town Portal", "Healing Salve", "Clarity Potion", "Dust of Appearance", "Goblin Zeppelin", "Potion of Healing", "Potion of Mana"],
     imageUrl: "/images/Maps/Wc3GnollWood.png",
+    raceAdvantage: { race: "Orc", reason: "Close starts suit Orc's aggressive early pressure; Blademaster can punish greedy creeping immediately and the compact space limits defensive setups." },
   },
   {
     slug: "monsoon",
@@ -1363,6 +1376,7 @@ const baseMaps: Omit<MapGuide, "shops">[] = [
     expansionNotes: "Expansions are rewarding if the team owns the nearby travel lanes and can reinforce quickly.",
     availableItems: ["Boots of Speed", "Claws of Attack +6", "Periapt of Vitality", "Ancient Janggo of Endurance", "Staff of Sanctuary", "Scroll of Town Portal", "Healing Salve", "Clarity Potion", "Dust of Appearance", "Goblin Zeppelin", "Potion of Healing", "Potion of Mana"],
     imageUrl: "/images/Maps/Wc3Monsoon.png",
+    raceAdvantage: { race: "Night Elf", reason: "Broad water lanes reward Night Elf's long-range harassment and ability to rotate across the map faster than slower-moving armies." },
   },
   {
     slug: "typhoon",
@@ -1372,6 +1386,7 @@ const baseMaps: Omit<MapGuide, "shops">[] = [
     expansionNotes: "Side mines scale well into longer games, but they are vulnerable when teams lose movement control.",
     availableItems: ["Boots of Speed", "Claws of Attack +6", "Periapt of Vitality", "Ancient Janggo of Endurance", "Staff of Sanctuary", "Scroll of Town Portal", "Healing Salve", "Clarity Potion", "Dust of Appearance", "Potion of Healing", "Potion of Mana"],
     imageUrl: "/images/Maps/WC3Typhoon.png",
+    raceAdvantage: { race: "Human", reason: "Long distances between bases favor Human's flying machines for scouting and the ability to teleport reinforcements, giving superior map information." },
   },
   {
     slug: "deadlands",
@@ -1381,6 +1396,7 @@ const baseMaps: Omit<MapGuide, "shops">[] = [
     expansionNotes: "Expanding works best after a clean fight because the open terrain makes static defense harder to lean on.",
     availableItems: ["Boots of Speed", "Claws of Attack +6", "Periapt of Vitality", "Ancient Janggo of Endurance", "Staff of Sanctuary", "Scroll of Town Portal", "Healing Salve", "Clarity Potion", "Dust of Appearance", "Goblin Zeppelin", "Potion of Healing", "Potion of Mana"],
     imageUrl: "/images/Maps/Wc3Deadlands.png",
+    raceAdvantage: { race: "Orc", reason: "Open terrain with constant collision risk rewards Orc's front-line durability and kodo aura, making engagements favorable when fights are unavoidable." },
   },
   {
     slug: "gold-rush",
@@ -1390,6 +1406,7 @@ const baseMaps: Omit<MapGuide, "shops">[] = [
     expansionNotes: "The map is defined by expansions, so the side that secures and protects more mines usually scales hardest.",
     availableItems: ["Boots of Speed", "Claws of Attack +6", "Periapt of Vitality", "Ancient Janggo of Endurance", "Staff of Sanctuary", "Scroll of Town Portal", "Healing Salve", "Clarity Potion", "Dust of Appearance", "Goblin Zeppelin", "Orb of Lightning", "Orb of Frost", "Orb of Corruption", "Mask of Death", "Helm of Valor", "Robe of the Magi", "Khadgar's Gem of Health"],
     imageUrl: "/images/Maps/Wc3GoldRush.png",
+    raceAdvantage: { race: "Undead", reason: "Abundant mines suit Undead's strong multi-base economy; their stationary defense holds mines cheaply while opponents struggle to contest all locations." },
   },
   {
     slug: "market-square",
@@ -1399,6 +1416,7 @@ const baseMaps: Omit<MapGuide, "shops">[] = [
     expansionNotes: "Expansions are valuable yet often hinge on who can hold the center and rotate first.",
     availableItems: ["Boots of Speed", "Claws of Attack +6", "Periapt of Vitality", "Ancient Janggo of Endurance", "Staff of Sanctuary", "Scroll of Town Portal", "Healing Salve", "Clarity Potion", "Dust of Appearance", "Goblin Zeppelin", "Orb of Lightning", "Orb of Frost", "Mask of Death", "Helm of Valor", "Robe of the Magi"],
     imageUrl: "/images/Maps/Wc3MarketSquare.png",
+    raceAdvantage: { race: "Human", reason: "Central-lane design favors Human's structured army and tower support, letting them anchor the city center and dictate engagement terms." },
   },
   {
     slug: "battleground",
@@ -1408,6 +1426,7 @@ const baseMaps: Omit<MapGuide, "shops">[] = [
     expansionNotes: "Extra mines exist across the map, though holding them depends on staying connected as a team.",
     availableItems: ["Boots of Speed", "Claws of Attack +6", "Periapt of Vitality", "Ancient Janggo of Endurance", "Staff of Sanctuary", "Scroll of Town Portal", "Healing Salve", "Clarity Potion", "Dust of Appearance", "Goblin Zeppelin", "Orb of Lightning", "Orb of Corruption", "Mask of Death", "Helm of Valor", "Robe of the Magi", "Khadgar's Gem of Health"],
     imageUrl: "/images/Maps/Wc3Battleground.png",
+    raceAdvantage: { race: "Orc", reason: "Constant frontline skirmishes favor Orc's tankier units and Bloodlust uptime, making them consistently stronger in the direct fights this map forces." },
   },
   {
     slug: "murgul-oasis",
@@ -1417,6 +1436,7 @@ const baseMaps: Omit<MapGuide, "shops">[] = [
     expansionNotes: "Expansions are attractive on paper, yet wide angles of attack make them difficult to secure alone.",
     availableItems: ["Boots of Speed", "Claws of Attack +6", "Periapt of Vitality", "Ancient Janggo of Endurance", "Staff of Sanctuary", "Scroll of Town Portal", "Healing Salve", "Clarity Potion", "Dust of Appearance", "Goblin Zeppelin", "Potion of Healing", "Potion of Mana"],
     imageUrl: "/images/Maps/Mur'gul_Oasis.png",
+    raceAdvantage: { race: "Undead", reason: "Shared oasis structures reward Undead's ability to hold key positions with towers and summons, denying healing access to opponents." },
   },
   {
     slug: "dustwallow-keys",
@@ -1426,6 +1446,7 @@ const baseMaps: Omit<MapGuide, "shops">[] = [
     expansionNotes: "So many mines are available that the map naturally stretches into multi-base games if teams stabilize.",
     availableItems: ["Boots of Speed", "Claws of Attack +6", "Periapt of Vitality", "Ancient Janggo of Endurance", "Staff of Sanctuary", "Scroll of Town Portal", "Healing Salve", "Clarity Potion", "Dust of Appearance", "Goblin Zeppelin", "Orb of Lightning", "Orb of Frost", "Orb of Corruption", "Mask of Death", "Helm of Valor", "Robe of the Magi", "Khadgar's Gem of Health"],
     imageUrl: "/images/Maps/Wc3LostTempleRoC.png",
+    raceAdvantage: { race: "Night Elf", reason: "Dense creep pockets and wide map space reward Night Elf's efficient solo creeping and the ability to quickly pivot between contested resource nodes." },
   },
   {
     slug: "dragon-falls",
@@ -1435,6 +1456,7 @@ const baseMaps: Omit<MapGuide, "shops">[] = [
     expansionNotes: "Outer mines are plentiful, but each new base increases the burden on scouting and reinforcement timing.",
     availableItems: ["Boots of Speed", "Claws of Attack +6", "Periapt of Vitality", "Ancient Janggo of Endurance", "Staff of Sanctuary", "Scroll of Town Portal", "Healing Salve", "Clarity Potion", "Dust of Appearance", "Goblin Zeppelin", "Orb of Lightning", "Orb of Frost", "Mask of Death", "Helm of Valor", "Robe of the Magi", "Khadgar's Gem of Health"],
     imageUrl: "/images/Maps/Dragon_Falls.png",
+    raceAdvantage: { race: "Human", reason: "Coordinated wave attacks suit Human's army composition; Sorceress slow and Breaker control reward disciplined engagement over individual skill." },
   },
   {
     slug: "ice-crown",
@@ -1444,6 +1466,7 @@ const baseMaps: Omit<MapGuide, "shops">[] = [
     expansionNotes: "With many mines and long travel paths, successful expansion play depends on map coverage more than static defense.",
     availableItems: ["Boots of Speed", "Claws of Attack +6", "Periapt of Vitality", "Ancient Janggo of Endurance", "Staff of Sanctuary", "Scroll of Town Portal", "Healing Salve", "Clarity Potion", "Dust of Appearance", "Goblin Zeppelin", "Orb of Lightning", "Orb of Frost", "Orb of Corruption", "Mask of Death", "Helm of Valor", "Robe of the Magi", "Khadgar's Gem of Health", "Ring of Regeneration"],
     imageUrl: "/images/Maps/Wc3_IceCrown.png",
+    raceAdvantage: { race: "Undead", reason: "The massive scale and long travel times reward Undead's ability to hold multiple bases with cheap tower defenses and summons across a wide front." },
   },
 ];
 
@@ -1982,6 +2005,215 @@ export const builds: Build[] = [
       { stepNumber: 4, supply: 42, timing: "6:10", instruction: "Use coil-nova and orb timing to force a fight before the opponent is fully stabilized." },
     ],
   },
+  {
+    slug: "human-footmen-paladin-beginner",
+    title: "Human Footmen Paladin",
+    raceName: "Human",
+    raceSlug: "human",
+    summary: "The most forgiving Human opening — mass footmen with Paladin healing lets you make mistakes and still win skirmishes while you learn militia timing.",
+    difficulty: "Easy",
+    strategyType: "Beginner Aggression",
+    steps: [
+      { stepNumber: 1, supply: 6, timing: "0:00", instruction: "Build an altar and barracks. Queue a Paladin and start producing footmen immediately." },
+      { stepNumber: 2, supply: 14, timing: "1:20", instruction: "Use militia to clear the closest creep camp. Keep peasants safe and return them to mining as soon as the camp is cleared." },
+      { stepNumber: 3, supply: 22, timing: "2:40", instruction: "Add a second barracks and keep queuing footmen. Use Holy Light to keep your Paladin and footmen topped up." },
+      { stepNumber: 4, supply: 34, timing: "4:30", instruction: "Move out with 6–8 footmen and Paladin. Look for exposed workers or an undefended base and apply pressure." },
+    ],
+  },
+  {
+    slug: "orc-grunt-blademaster-beginner",
+    title: "Orc Grunt Rush Blademaster",
+    raceName: "Orc",
+    raceSlug: "orc",
+    summary: "Build grunts, pick up Blademaster, and walk into the enemy base. Simple, direct, and teaches you how Orc wins fights in the early game.",
+    difficulty: "Easy",
+    strategyType: "Beginner Rush",
+    steps: [
+      { stepNumber: 1, supply: 5, timing: "0:00", instruction: "Build an altar and barracks. Queue a Blademaster and start producing grunts." },
+      { stepNumber: 2, supply: 12, timing: "1:15", instruction: "Use Blademaster to harass the enemy worker line while your grunts creep the nearest safe camp." },
+      { stepNumber: 3, supply: 20, timing: "2:30", instruction: "Add a second barracks. Keep producing grunts and activate Bloodlust from the voodoo lounge." },
+      { stepNumber: 4, supply: 30, timing: "4:00", instruction: "Push with 5–6 grunts and Blademaster. Wind Walk in first to disrupt, then engage with the full army." },
+    ],
+  },
+  {
+    slug: "undead-ghoul-dk-beginner",
+    title: "Undead Ghouls Death Knight",
+    raceName: "Undead",
+    raceSlug: "undead",
+    summary: "Build a crypt, mass ghouls, and creep with Death Knight. Unholy Aura gives your ghouls passive speed and regeneration — no complex mechanics required.",
+    difficulty: "Easy",
+    strategyType: "Beginner Mass",
+    steps: [
+      { stepNumber: 1, supply: 5, timing: "0:00", instruction: "Build a crypt and altar. Queue a Death Knight and start producing ghouls." },
+      { stepNumber: 2, supply: 14, timing: "1:20", instruction: "Creep the nearest camp with Death Knight leading. Use Coil reactively when a unit drops low." },
+      { stepNumber: 3, supply: 22, timing: "2:45", instruction: "Add a second crypt and keep building ghouls. Pick up Unholy Aura so all ghouls move and regen faster." },
+      { stepNumber: 4, supply: 34, timing: "4:20", instruction: "Move toward the enemy with 6–8 ghouls and Death Knight. Target workers first to cripple their economy." },
+    ],
+  },
+  {
+    slug: "night-elf-huntress-demon-hunter-beginner",
+    title: "Night Elf Huntresses Demon Hunter",
+    raceName: "Night Elf",
+    raceSlug: "night-elf",
+    summary: "Train huntresses, pick Demon Hunter, and use Mana Burn to disrupt casters. Huntresses are durable and self-sustaining — a solid first Night Elf build.",
+    difficulty: "Easy",
+    strategyType: "Beginner Control",
+    steps: [
+      { stepNumber: 1, supply: 5, timing: "0:00", instruction: "Build an Ancient of War and altar. Queue a Demon Hunter and start producing huntresses." },
+      { stepNumber: 2, supply: 14, timing: "1:20", instruction: "Creep nearby camps with Demon Hunter. Use Immolation only when fighting multiple enemies." },
+      { stepNumber: 3, supply: 22, timing: "2:40", instruction: "Add a second Ancient of War and keep producing huntresses. Use Mana Burn on enemy heroes whenever in range." },
+      { stepNumber: 4, supply: 34, timing: "4:30", instruction: "Attack with 6–8 huntresses and Demon Hunter. Focus the enemy hero first with Mana Burn before committing to a full fight." },
+    ],
+  },
+  {
+    slug: "human-mass-caster-very-hard",
+    title: "Human Mass Caster Spellbomb",
+    raceName: "Human",
+    raceSlug: "human",
+    summary: "A mechanically demanding Human build that requires precise spell sequencing — slow, storm bolt, polymorph, and purge all in the same fight window.",
+    difficulty: "Very Hard",
+    strategyType: "Spell Combo",
+    steps: [
+      { stepNumber: 1, supply: 6, timing: "0:00", instruction: "Open altar and barracks with Archmage. Scout the enemy creep path immediately to decide your route." },
+      { stepNumber: 2, supply: 24, timing: "2:20", instruction: "Fast-tech to arcane sanctum and start sorceresses. Use Brilliance Aura to sustain mana on multiple casters at once." },
+      { stepNumber: 3, supply: 36, timing: "4:45", instruction: "Add Mountain King for bolt. Practice slow-then-bolt on heroes in skirmishes before committing to a full fight." },
+      { stepNumber: 4, supply: 50, timing: "7:00", instruction: "Add Spell Breakers to feedback and dispel. Execute slow, polymorph, bolt, and purge in a single engagement to eliminate key targets instantly." },
+    ],
+  },
+  {
+    slug: "undead-mass-banshee-very-hard",
+    title: "Undead Mass Banshee Control",
+    raceName: "Undead",
+    raceSlug: "undead",
+    summary: "An extremely precise Undead strategy that uses Banshees to possess key enemy units mid-fight. One mistimed possess ends the game.",
+    difficulty: "Very Hard",
+    strategyType: "Possession Control",
+    steps: [
+      { stepNumber: 1, supply: 5, timing: "0:00", instruction: "Open crypt and slaughterhouse. Fast tech to tier two while keeping early fiend count high enough to survive aggression." },
+      { stepNumber: 2, supply: 22, timing: "2:10", instruction: "Build a temple of the damned and start Banshee production. Prepare anti-magic shells to protect Banshees from dispel." },
+      { stepNumber: 3, supply: 34, timing: "4:30", instruction: "Scout the enemy composition carefully. Identify which unit you will possess — dragons, abominations, or siege — before engaging." },
+      { stepNumber: 4, supply: 48, timing: "6:30", instruction: "Engage with fiends while Banshees hang back under anti-magic shell. Possess the highest-value target at the precise moment its bodyguards are occupied." },
+    ],
+  },
 ];
 
 export const favoriteBuilds = builds.slice(0, 3);
+
+export const buildings: Building[] = [
+  // Human
+  { name: "Town Hall", race: "human", description: "Primary base structure that trains Peasants and manages gold.", imageFile: "TownHall" },
+  { name: "Keep", race: "human", description: "Tier 2 upgrade that unlocks advanced buildings and units.", imageFile: "Keep" },
+  { name: "Castle", race: "human", description: "Tier 3 upgrade granting access to the full Human army roster.", imageFile: "Castle" },
+  { name: "Farm", race: "human", description: "Provides food supply for Human armies.", imageFile: "Farm" },
+  { name: "Barracks", race: "human", description: "Trains Footmen, Riflemen, Mortar Teams, and Knights.", imageFile: "HumanBarracks" },
+  { name: "Blacksmith", race: "human", description: "Researches weapon and armor upgrades for Human ground units.", imageFile: "Blacksmith" },
+  { name: "Lumber Mill", race: "human", description: "Researches lumber harvesting and unlocks tier two structures.", imageFile: "LumberMill" },
+  { name: "Scout Tower", race: "human", description: "Base defense tower that can upgrade into Guard, Cannon, or Arcane.", imageFile: "ScoutTower" },
+  { name: "Guard Tower", race: "human", description: "Ground-focused defense tower upgraded from Scout Tower.", imageFile: "GuardTower" },
+  { name: "Arcane Tower", race: "human", description: "Anti-magic defense tower that mana burns spellcasters.", imageFile: "ArcaneTower" },
+  { name: "Cannon Tower", race: "human", description: "Siege-capable tower that fires splash damage at ground units.", imageFile: "CannonTower" },
+  { name: "Workshop", race: "human", description: "Trains Flying Machines, Mortar Teams, and Siege Engines.", imageFile: "Workshop" },
+  { name: "Gryphon Aviary", race: "human", description: "Trains Gryphon Riders and Dragonhawk Riders.", imageFile: "GryphonAviary" },
+  { name: "Arcane Sanctum", race: "human", description: "Trains Priests, Sorceresses, and Spell Breakers.", imageFile: "ArcaneSanctum" },
+  { name: "Arcane Vault", race: "human", description: "Sells permanent and consumable items for Human heroes.", imageFile: "ArcaneVault" },
+  { name: "Altar of Kings", race: "human", description: "Summons and revives Human heroes.", imageFile: "AltarOfKings" },
+  // Orc
+  { name: "Great Hall", race: "orc", description: "Primary base that trains Peons and manages gold.", imageFile: "OrcGreatHall" },
+  { name: "Stronghold", race: "orc", description: "Tier 2 upgrade unlocking advanced Orc structures.", imageFile: "Stronghold" },
+  { name: "Fortress", race: "orc", description: "Tier 3 upgrade granting the full Orc army tech tree.", imageFile: "Fortress" },
+  { name: "Orc Burrow", race: "orc", description: "Provides food supply and acts as a defensive structure when burrowed.", imageFile: "OrcBurrow" },
+  { name: "War Mill", race: "orc", description: "Researches weapon and armor upgrades for Orc units.", imageFile: "WarMill" },
+  { name: "Barracks", race: "orc", description: "Trains Grunts, Headhunters, Raiders, and Troll Batriders.", imageFile: "Beastiary" },
+  { name: "Spirit Lodge", race: "orc", description: "Trains Shamans, Witch Doctors, and Spirit Walkers.", imageFile: "SpiritLodge" },
+  { name: "Watch Tower", race: "orc", description: "Defensive tower that protects Orc bases.", imageFile: "WatchTower" },
+  { name: "Goblin Laboratory", race: "orc", description: "Trains Goblin Sappers and Goblin Zeppelins.", imageFile: "GoblinLaboratory" },
+  { name: "Tauren Totem", race: "orc", description: "Trains Tauren warriors and researches upgrades.", imageFile: "TaurenTotem" },
+  { name: "Voodoo Lounge", race: "orc", description: "Sells items and consumables for Orc heroes.", imageFile: "VoodooLounge" },
+  { name: "Altar of Storms", race: "orc", description: "Summons and revives Orc heroes.", imageFile: "AltarOfStorms" },
+  // Undead
+  { name: "Necropolis", race: "undead", description: "Primary base that trains Acolytes and haunts gold mines.", imageFile: "Necropolis" },
+  { name: "Halls of the Dead", race: "undead", description: "Tier 2 upgrade unlocking advanced Undead structures.", imageFile: "HallsOfTheDead" },
+  { name: "Black Citadel", race: "undead", description: "Tier 3 upgrade giving access to the full Undead tech tree.", imageFile: "BlackCitadel" },
+  { name: "Ziggurat", race: "undead", description: "Provides food and can upgrade into a Spirit or Frost Tower.", imageFile: "Ziggurat" },
+  { name: "Spirit Tower", race: "undead", description: "Ranged defense tower upgraded from Ziggurat.", imageFile: "SpiritTower" },
+  { name: "Frost Tower", race: "undead", description: "Slow-debuff tower that snares attackers.", imageFile: "FrostTower" },
+  { name: "Crypt", race: "undead", description: "Trains Ghouls, Crypt Fiends, Gargoyles, and Abominations.", imageFile: "Crypt" },
+  { name: "Graveyard", race: "undead", description: "Researches weapon and armor upgrades for Undead units.", imageFile: "Graveyard" },
+  { name: "Temple of the Damned", race: "undead", description: "Trains Death Knights and Liches.", imageFile: "TempleOfTheDamned" },
+  { name: "Slaughterhouse", race: "undead", description: "Trains Abominations and researches upgrades.", imageFile: "Slaughterhouse" },
+  { name: "Boneyard", race: "undead", description: "Trains Frost Wyrms.", imageFile: "Boneyard" },
+  { name: "Altar of Darkness", race: "undead", description: "Summons and revives Undead heroes.", imageFile: "AltarOfDarkness" },
+  { name: "Tomb of Relics", race: "undead", description: "Sells permanent and consumable items for Undead heroes.", imageFile: "TombOfRelics" },
+  { name: "Sacrificial Pit", race: "undead", description: "Trains Banshees and converts them into Destroyers.", imageFile: "SacrificialPit" },
+  // Night Elf
+  { name: "Tree of Life", race: "night-elf", description: "Primary base that trains Wisps and harvests with ancient trees.", imageFile: "TreeOfLife" },
+  { name: "Tree of Ages", race: "night-elf", description: "Tier 2 upgrade unlocking advanced Night Elf structures.", imageFile: "TreeOfAges" },
+  { name: "Tree of Eternity", race: "night-elf", description: "Tier 3 upgrade giving the full Night Elf tech tree.", imageFile: "TreeOfEternity" },
+  { name: "Moon Well", race: "night-elf", description: "Provides food supply and regenerates mana and health during the day.", imageFile: "MoonWell" },
+  { name: "Ancient of War", race: "night-elf", description: "Trains Archers, Huntresses, and Glaive Throwers.", imageFile: "AncientOfWar" },
+  { name: "Ancient of Wind", race: "night-elf", description: "Trains Hippogryphs, Faerie Dragons, and Chimaeras.", imageFile: "AncientOfWind" },
+  { name: "Ancient of Lore", race: "night-elf", description: "Trains Druids of the Claw and Druids of the Talon.", imageFile: "AncientOfLore" },
+  { name: "Ancient of Wonders", race: "night-elf", description: "Sells items and consumables for Night Elf heroes.", imageFile: "AncientOfWonders" },
+  { name: "Ancient Protector", race: "night-elf", description: "Defensive tower that can uproot and move.", imageFile: "AncientProtector" },
+  { name: "Hunter's Hall", race: "night-elf", description: "Researches weapon, armor, and special Night Elf upgrades.", imageFile: "HuntersHall" },
+  { name: "Chimaera Roost", race: "night-elf", description: "Trains Chimaeras and researches Chimaera upgrades.", imageFile: "ChimaeraRoost" },
+  { name: "Altar of Elders", race: "night-elf", description: "Summons and revives Night Elf heroes.", imageFile: "AltarOfElders" },
+  // Neutral
+  { name: "Tavern", race: "neutral", description: "Allows any race to hire neutral Tavern heroes.", imageFile: "Tavern" },
+  { name: "Mercenary Camp", race: "neutral", description: "Hires neutral mercenary units available on many maps.", imageFile: "MercenaryCamp" },
+  { name: "Marketplace", race: "neutral", description: "Sells a rotating selection of powerful items.", imageFile: "Marketplace" },
+  { name: "Fountain of Health", race: "neutral", description: "Regenerates hit points for nearby friendly units.", imageFile: "FountainOfHealth" },
+  { name: "Fountain of Mana", race: "neutral", description: "Regenerates mana for nearby friendly units.", imageFile: "FountainOfMana" },
+];
+
+const ALL_RACE_SHOPS = ["human", "orc", "undead", "night-elf"];
+
+export const items: Item[] = [
+  { name: "Potion of Healing", category: "consumable", shops: ALL_RACE_SHOPS, description: "Restores hit points to the hero.", imageFile: "PotionOfHealing" },
+  { name: "Potion of Mana", category: "consumable", shops: ALL_RACE_SHOPS, description: "Restores mana to the hero.", imageFile: "PotionOfMana" },
+  { name: "Scroll of Town Portal", category: "consumable", shops: ALL_RACE_SHOPS, description: "Teleports the hero to a friendly town hall.", imageFile: "ScrollOfTownPortal" },
+  { name: "Staff of Sanctuary", category: "consumable", shops: ["human"], description: "Makes a target friendly unit temporarily invulnerable.", imageFile: "StaffOfPreservation" },
+  { name: "Orb of Fire", category: "permanent", shops: ["human"], description: "Adds a fiery attack that burns targets over time.", imageFile: "OrbOfFire" },
+  { name: "Healing Salve", category: "consumable", shops: ["orc"], description: "Regenerates hit points of a target unit over time.", imageFile: "PotionOfHealing" },
+  { name: "Orb of Lightning", category: "permanent", shops: ["orc"], description: "Adds chain lightning to the hero's attacks.", imageFile: "OrbOfLightning" },
+  { name: "Orb of Corruption", category: "permanent", shops: ["undead"], description: "Adds a corrosive attack that reduces the target's armor.", imageFile: "OrbOfCorruption" },
+  { name: "Staff of Preservation", category: "consumable", shops: ["night-elf"], description: "Teleports a target friendly unit to a safe location.", imageFile: "StaffOfPreservation" },
+  { name: "Orb of Venom", category: "permanent", shops: ["night-elf"], description: "Adds a venomous poison effect to the hero's attacks.", imageFile: "OrbOfVenom" },
+  { name: "Boots of Speed", category: "permanent", shops: ["goblin-merchant"], description: "Increases the hero's movement speed.", imageFile: "BootsOfSpeed" },
+  { name: "Circlet of Nobility", category: "permanent", shops: ["goblin-merchant", "creep-drop"], description: "Increases all attributes of the hero.", imageFile: "CircletOfNobility" },
+  { name: "Periapt of Vitality", category: "permanent", shops: ["goblin-merchant", "creep-drop"], description: "Increases the hero's maximum hit points.", imageFile: "PeriaptOfVitality" },
+  { name: "Potion of Invisibility", category: "consumable", shops: ["goblin-merchant"], description: "Renders the hero invisible for a short duration.", imageFile: "GreaterInvulnerabilityPotion" },
+  { name: "Potion of Lesser Invulnerability", category: "consumable", shops: ["goblin-merchant"], description: "Briefly makes the hero invulnerable.", imageFile: "GreaterInvulnerabilityPotion" },
+  { name: "Scroll of Healing", category: "consumable", shops: ["goblin-merchant"], description: "Heals nearby friendly units.", imageFile: "ScrollOfHealing" },
+  { name: "Scroll of Protection", category: "consumable", shops: ["goblin-merchant"], description: "Grants bonus armor to nearby friendly units.", imageFile: "ScrollOfProtection" },
+  { name: "Staff of Teleportation", category: "consumable", shops: ["goblin-merchant"], description: "Teleports the hero to a targeted location on the map.", imageFile: "StaffOfTeleportation" },
+  { name: "Claws of Attack +6", category: "permanent", shops: ["creep-drop"], description: "Increases the hero's attack damage. Drops from level 1 camps.", imageFile: "ClawsOfAttack" },
+  { name: "Claws of Attack +9", category: "permanent", shops: ["creep-drop"], description: "Increases the hero's attack damage. Drops from level 2 camps.", imageFile: "ClawsOfAttack" },
+  { name: "Gauntlets of Ogre Strength", category: "permanent", shops: ["creep-drop"], description: "Increases the hero's Strength.", imageFile: "GauntletsOfOgreStrength" },
+  { name: "Slippers of Agility", category: "permanent", shops: ["creep-drop"], description: "Increases the hero's Agility.", imageFile: "SlippersOfAgility" },
+  { name: "Mantle of Intelligence", category: "permanent", shops: ["creep-drop"], description: "Increases the hero's Intelligence.", imageFile: "MantleOfIntelligence" },
+  { name: "Ring of Protection", category: "permanent", shops: ["creep-drop"], description: "Increases the hero's armor.", imageFile: "RingOfProtection" },
+  { name: "Gloves of Haste", category: "permanent", shops: ["creep-drop"], description: "Increases the hero's attack speed.", imageFile: "GlovesOfHaste" },
+  { name: "Crystal Ball", category: "permanent", shops: ["creep-drop"], description: "Grants True Sight near the hero.", imageFile: "CrystalBall" },
+  { name: "Robe of the Magi", category: "permanent", shops: ["creep-drop"], description: "Increases the hero's Intelligence.", imageFile: "RobeOfTheMagi" },
+  { name: "Runed Bracers", category: "permanent", shops: ["creep-drop"], description: "Reduces magic damage taken.", imageFile: "RunedBracers" },
+  { name: "Sobi Mask", category: "permanent", shops: ["creep-drop"], description: "Increases mana regeneration.", imageFile: "SobiMask" },
+  { name: "Belt of Giant Strength", category: "permanent", shops: ["creep-drop"], description: "Increases the hero's Strength.", imageFile: "BeltOfGiantStrength" },
+  { name: "Boots of Quel'Thalas", category: "permanent", shops: ["creep-drop"], description: "Greatly increases movement speed.", imageFile: "BootsOfQuelThalas" },
+  { name: "Lion Horn of Stormwind", category: "permanent", shops: ["creep-drop"], description: "Armor aura for nearby friendly units.", imageFile: "LionHornOfStormwind" },
+  { name: "Ancient Janggo of Endurance", category: "permanent", shops: ["creep-drop"], description: "Speed and attack aura.", imageFile: "AncientJanggoOfEndurance" },
+  { name: "Helm of Valor", category: "permanent", shops: ["creep-drop"], description: "Strength and life regen.", imageFile: "HelmOfValor" },
+  { name: "Khadgar's Pipe of Insight", category: "permanent", shops: ["creep-drop"], description: "Mana regen aura for nearby friendly units.", imageFile: "KhadgarsPipeOfInsight" },
+  { name: "Medallion of Courage", category: "permanent", shops: ["creep-drop"], description: "Reduces armor of a target enemy.", imageFile: "MedallionOfCourage" },
+  { name: "Wand of Illusion", category: "consumable", shops: ["creep-drop"], description: "Creates illusions of a target unit.", imageFile: "WandOfIllusion" },
+  { name: "Scroll of the Beast", category: "consumable", shops: ["creep-drop"], description: "Increases attack damage of nearby units.", imageFile: "ScrollOfTheBeast" },
+  { name: "Wand of Mana Stealing", category: "consumable", shops: ["creep-drop"], description: "Drains mana from a target unit.", imageFile: "WandOfManaStealing" },
+  { name: "Potion of Greater Healing", category: "consumable", shops: ["creep-drop"], description: "Restores a large amount of hit points.", imageFile: "PotionOfGreaterHealing" },
+  { name: "Potion of Greater Mana", category: "consumable", shops: ["creep-drop"], description: "Restores a large amount of mana.", imageFile: "PotionOfGreaterMana" },
+  { name: "Greater Invulnerability Potion", category: "consumable", shops: ["creep-drop"], description: "Makes the hero temporarily invulnerable.", imageFile: "GreaterInvulnerabilityPotion" },
+  { name: "Tome of Strength", category: "tome", shops: [], description: "Permanently increases the hero's Strength by 1.", imageFile: "TomeOfStrength" },
+  { name: "Tome of Agility", category: "tome", shops: [], description: "Permanently increases the hero's Agility by 1.", imageFile: "TomeOfAgility" },
+  { name: "Tome of Intelligence", category: "tome", shops: [], description: "Permanently increases the hero's Intelligence by 1.", imageFile: "TomeOfIntelligence" },
+  { name: "Tome of Experience", category: "tome", shops: [], description: "Grants the hero bonus experience points.", imageFile: "TomeOfExperience" },
+  { name: "Tome of Retraining", category: "tome", shops: ["goblin-merchant"], description: "Allows the hero to reassign all spent skill points.", imageFile: "TomeOfRetraining" },
+];

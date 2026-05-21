@@ -14,6 +14,7 @@ export async function GET(request: NextRequest) {
       race: searchParams.get("race") ?? undefined,
       matchup: searchParams.get("matchup") ?? undefined,
       search: searchParams.get("search") ?? undefined,
+      difficulty: searchParams.get("difficulty") ?? undefined,
     }),
   );
 }

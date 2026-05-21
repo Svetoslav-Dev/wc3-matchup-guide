@@ -17,7 +17,11 @@ export async function createUserBuildAction(formData: FormData) {
   });
 
   if (!parsed.success) {
-    throw new Error("Invalid build submission.");
+    const missing = parsed.error.issues
+      .map((i) => i.path.join("."))
+      .filter(Boolean)
+      .join(", ");
+    redirect(`/builds/submit?status=validation-error&fields=${encodeURIComponent(missing)}`);
   }
 
   const build = await createBuild({
@@ -26,7 +30,7 @@ export async function createUserBuildAction(formData: FormData) {
   });
 
   if (!build) {
-    throw new Error("Build submission failed.");
+    redirect("/builds/submit?status=server-error");
   }
 
   revalidatePath("/builds");

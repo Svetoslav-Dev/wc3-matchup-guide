@@ -1,3 +1,18 @@
+export type Building = {
+  name: string;
+  race: string;
+  description: string;
+  imageFile: string;
+};
+
+export type Item = {
+  name: string;
+  category: "permanent" | "consumable" | "tome";
+  shops: string[];
+  description: string;
+  imageFile: string;
+};
+
 export type Race = {
   slug: string;
   name: string;
@@ -54,6 +69,7 @@ export type MapGuide = {
   availableItems: string[];
   shops: string[];
   imageUrl?: string | null;
+  raceAdvantage?: { race: string; reason: string } | null;
 };
 
 export type Matchup = {
@@ -106,6 +122,7 @@ export type BuildFilters = {
   race?: string;
   matchup?: string;
   search?: string;
+  difficulty?: string;
 };
 
 export type UserRole = "user" | "admin";

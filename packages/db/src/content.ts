@@ -1,4 +1,4 @@
-import { and, asc, count, desc, eq, ilike, inArray, or } from "drizzle-orm";
+import { and, asc, count, desc, eq, ilike, inArray, or, sql } from "drizzle-orm";
 import type {
   AdminBuildInput,
   AdminBuildListItem,
@@ -195,7 +195,13 @@ export const listRaces = async (page = 1, pageSize = 20): Promise<ListResponse<R
   const data = await db
     .select()
     .from(races)
-    .orderBy(asc(races.name))
+    .orderBy(sql`CASE ${races.slug}
+      WHEN 'human'     THEN 1
+      WHEN 'orc'       THEN 2
+      WHEN 'night-elf' THEN 3
+      WHEN 'undead'    THEN 4
+      ELSE 5
+    END`)
     .limit(pageSize)
     .offset((page - 1) * pageSize);
 
@@ -276,13 +282,10 @@ export const findUnitBySlug = async (slug: string) => {
 
 export const listMaps = async (page = 1, pageSize = 20): Promise<ListResponse<MapGuide>> => {
   const db = getDb();
-  const total = await db.$count(maps);
-  const data = await db
-    .select()
-    .from(maps)
-    .orderBy(asc(maps.name))
-    .limit(pageSize)
-    .offset((page - 1) * pageSize);
+  const [total, data] = await Promise.all([
+    db.$count(maps),
+    db.select().from(maps).orderBy(asc(maps.name)).limit(pageSize).offset((page - 1) * pageSize),
+  ]);
 
   return {
     data: data.map(enrichMap),
@@ -344,57 +347,34 @@ export const listBuilds = async (filters: BuildFilters = {}): Promise<ListRespon
   const pageSize = filters.pageSize ?? 20;
   const search = filters.search?.trim();
 
-  const raceIds =
-    filters.race
-      ? (
-          await db
-            .select({ id: races.id })
-            .from(races)
-            .where(eq(races.slug, filters.race))
-        ).map((record) => record.id)
-      : undefined;
-
-  const matchupIds =
-    filters.matchup
-      ? (
-          await db
-            .select({ id: matchups.id })
-            .from(matchups)
-            .where(eq(matchups.slug, filters.matchup))
-        ).map((record) => record.id)
-      : undefined;
-
-  if ((filters.race && raceIds?.length === 0) || (filters.matchup && matchupIds?.length === 0)) {
-    return {
-      data: [],
-      ...toPaginationMeta(page, pageSize, 0),
-    };
-  }
-
+  // Inline subqueries — no extra round-trips for race/matchup ID lookups
   const conditions = [
     eq(builds.isPublished, true),
-    filters.race && raceIds ? inArray(builds.raceId, raceIds) : undefined,
-    filters.matchup && matchupIds ? inArray(builds.matchupId, matchupIds) : undefined,
+    filters.race
+      ? inArray(builds.raceId, db.select({ id: races.id }).from(races).where(eq(races.slug, filters.race)))
+      : undefined,
+    filters.matchup
+      ? inArray(builds.matchupId, db.select({ id: matchups.id }).from(matchups).where(eq(matchups.slug, filters.matchup)))
+      : undefined,
+    filters.difficulty ? eq(builds.difficulty, filters.difficulty) : undefined,
     search ? buildSearchCondition(search) : undefined,
   ].filter((condition): condition is NonNullable<typeof condition> => Boolean(condition));
 
   const where = conditions.length > 0 ? and(...conditions) : undefined;
-  const totalRows = await db
-    .select({ value: count() })
-    .from(builds)
-    .where(where);
-  const total = totalRows[0]?.value ?? 0;
 
-  const data = await db.query.builds.findMany({
-    where,
-    with: {
-      race: true,
-      matchup: true,
-    },
-    orderBy: asc(builds.title),
-    limit: pageSize,
-    offset: (page - 1) * pageSize,
-  });
+  // Count and data in parallel — one fewer sequential round-trip
+  const [totalRows, data] = await Promise.all([
+    db.select({ value: count() }).from(builds).where(where),
+    db.query.builds.findMany({
+      where,
+      with: { race: true, matchup: true },
+      orderBy: asc(builds.title),
+      limit: pageSize,
+      offset: (page - 1) * pageSize,
+    }),
+  ]);
+
+  const total = totalRows[0]?.value ?? 0;
 
   return {
     data: data.map((build) => enrichBuild(build, build.race.name, build.race.slug, build.matchup?.title)),

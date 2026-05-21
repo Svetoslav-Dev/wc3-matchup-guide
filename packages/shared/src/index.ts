@@ -1,7 +1,7 @@
 export * from "./types";
 export * from "./data";
 
-import { builds, heroes, maps, matchups, races, units } from "./data";
+import { buildings, builds, heroes, items, maps, matchups, races, units } from "./data";
 import type { Build, BuildFilters, ListResponse, PaginationMeta } from "./types";
 
 export const getRaceBySlug = (slug: string) => races.find((race) => race.slug === slug);
@@ -10,6 +10,9 @@ export const getUnitBySlug = (slug: string) => units.find((unit) => unit.slug ==
 export const getMapBySlug = (slug: string) => maps.find((map) => map.slug === slug);
 export const getMatchupBySlug = (slug: string) => matchups.find((matchup) => matchup.slug === slug);
 export const getBuildBySlug = (slug: string) => builds.find((build) => build.slug === slug);
+export const getBuildingsByRace = (race: string) => buildings.filter((b) => b.race === race);
+export const getItemsByShop = (shop: string) => items.filter((i) => i.shops.includes(shop));
+export const getItemsByCategory = (category: string) => items.filter((i) => i.category === category);
 
 const normalizeSearch = (value: string) => value.trim().toLowerCase();
 
@@ -48,6 +51,10 @@ export const filterBuilds = (items: Build[], filters: BuildFilters = {}) => {
     }
 
     if (filters.matchup && build.matchupSlug !== filters.matchup) {
+      return false;
+    }
+
+    if (filters.difficulty && build.difficulty !== filters.difficulty) {
       return false;
     }
 
