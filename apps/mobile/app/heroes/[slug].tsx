@@ -1,6 +1,6 @@
 import { useLocalSearchParams } from "expo-router";
-import { Text, View } from "react-native";
-import { GhostBadge, PageIntro, PageTitle, SectionLabel } from "../../components/mobile-ui";
+import { Image, StyleSheet, Text, View } from "react-native";
+import { GhostBadge, PageTitle, SectionLabel } from "../../components/mobile-ui";
 import { ScreenShell } from "../../components/screen-shell";
 import { useHeroContent } from "../../lib/live-content";
 import { colors } from "../../lib/theme";
@@ -29,8 +29,15 @@ export default function HeroDetailScreen() {
   return (
     <ScreenShell>
       <SectionLabel>{hero.raceName}</SectionLabel>
-      <PageTitle>{hero.name}</PageTitle>
-      <PageIntro>{hero.description}</PageIntro>
+      <View style={styles.header}>
+        {hero.imageUrl ? (
+          <Image source={{ uri: hero.imageUrl }} style={styles.portrait} />
+        ) : null}
+        <View style={styles.headerText}>
+          <Text style={styles.name}>{hero.name}</Text>
+          <Text style={styles.description}>{hero.description}</Text>
+        </View>
+      </View>
       {loading ? <Text style={{ color: colors.muted }}>Refreshing hero guide…</Text> : null}
 
       <View style={panelStyle}>
@@ -73,3 +80,32 @@ export default function HeroDetailScreen() {
     </ScreenShell>
   );
 }
+
+const styles = StyleSheet.create({
+  header: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    gap: 14,
+  },
+  portrait: {
+    width: 72,
+    height: 72,
+    borderRadius: 10,
+    flexShrink: 0,
+  },
+  headerText: {
+    flex: 1,
+    gap: 6,
+  },
+  name: {
+    color: colors.text,
+    fontSize: 26,
+    fontWeight: "800",
+    lineHeight: 30,
+  },
+  description: {
+    color: colors.muted,
+    fontSize: 14,
+    lineHeight: 20,
+  },
+});

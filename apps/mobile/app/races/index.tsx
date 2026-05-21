@@ -1,161 +1,29 @@
-import { useState } from "react";
-import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import { ScreenShell } from "../../components/screen-shell";
-import { GhostBadge, ListCard, PageIntro, PageTitle, SectionLabel } from "../../components/mobile-ui";
+import { PageIntro, PageTitle, RaceCard, SectionLabel } from "../../components/mobile-ui";
 import { useRacesContent } from "../../lib/live-content";
 import { colors } from "../../lib/theme";
+import { Text } from "react-native";
 
 export default function RacesScreen() {
-  const [search, setSearch] = useState("");
-  const [focusFilter, setFocusFilter] = useState<string>("all");
   const { data: races, loading } = useRacesContent();
-  const normalizedSearch = search.trim().toLowerCase();
-  const focusOptions = [
-    { id: "all", label: "All Styles" },
-    { id: "macro", label: "Macro" },
-    { id: "pressure", label: "Pressure" },
-    { id: "mobility", label: "Mobility" },
-    { id: "timing", label: "Timing" },
-  ];
-  const filteredRaces = races.filter((race) => {
-    const haystack = [
-      race.name,
-      race.identity,
-      race.description,
-      race.ladderFocus,
-      ...race.signatureHeroes,
-      ...race.strengths,
-    ]
-      .join(" ")
-      .toLowerCase();
-
-    const matchesSearch =
-      normalizedSearch.length === 0 || haystack.includes(normalizedSearch);
-    const matchesFocus =
-      focusFilter === "all" || race.ladderFocus.toLowerCase().includes(focusFilter);
-
-    return matchesSearch && matchesFocus;
-  });
+  const playableRaces = races.filter((r) => r.slug !== "neutral");
 
   return (
     <ScreenShell>
-      <SectionLabel>Race Guides</SectionLabel>
-      <PageTitle>Four identities, four decision trees.</PageTitle>
+      <PageTitle>Pick your poison.</PageTitle>
       <PageIntro>
-        The mobile client emphasizes quick recognition: race identity, ladder focus, and signature heroes.
+        Want to spam footmen and feel righteous? Play Human. Prefer grunts and screaming into the mic? Orc. Enjoy watching your enemy's army melt before you even show up? Undead. Like trees, bears, and winning by doing absolutely nothing wrong? Night Elf.{"\n\n"}Seriously though — pick the race whose win condition clicks with how you think. If you like economic pressure and timings, go Human or Orc. If you prefer patience and comebacks, Undead or Night Elf reward the long game. No race is free — they all have hard matchups.
       </PageIntro>
-      {loading ? <Text style={{ color: colors.muted }}>Loading race guides…</Text> : null}
-      <View style={styles.filterPanel}>
-        <Text style={styles.filterLabel}>Search races</Text>
-        <TextInput
-          autoCapitalize="none"
-          onChangeText={setSearch}
-          placeholder="Search by race, strengths, or heroes"
-          placeholderTextColor={colors.muted}
-          style={styles.searchInput}
-          value={search}
-        />
-        <View style={styles.chipRow}>
-          {focusOptions.map((focus) => {
-            const active = focus.id === focusFilter;
-
-            return (
-              <Pressable
-                key={focus.id}
-                onPress={() => setFocusFilter(focus.id)}
-                style={[styles.chip, active ? styles.chipActive : null]}
-              >
-                <Text style={[styles.chipText, active ? styles.chipTextActive : null]}>
-                  {focus.label}
-                </Text>
-              </Pressable>
-            );
-          })}
-        </View>
-      </View>
-      <GhostBadge>
-        {filteredRaces.length} result{filteredRaces.length === 1 ? "" : "s"}
-      </GhostBadge>
-      {filteredRaces.length === 0 ? (
-        <View style={styles.emptyPanel}>
-          <Text style={styles.emptyTitle}>No race matches this filter.</Text>
-          <Text style={styles.emptyCopy}>Try clearing the search or switching to a broader focus style.</Text>
-        </View>
-      ) : null}
-      {filteredRaces.map((race) => (
-        <ListCard
+      <SectionLabel>Races</SectionLabel>
+      {loading ? <Text style={{ color: colors.muted }}>Loading races…</Text> : null}
+      {playableRaces.map((race) => (
+        <RaceCard
           key={race.slug}
-          eyebrow={race.badge}
-          title={race.name}
-          description={race.identity}
-          href={`/races/${race.slug}`}
+          slug={race.slug}
+          identity={race.identity}
+          badge={race.badge}
         />
       ))}
     </ScreenShell>
   );
 }
-
-const styles = StyleSheet.create({
-  filterPanel: {
-    backgroundColor: colors.panel,
-    borderColor: colors.line,
-    borderWidth: 1,
-    borderRadius: 18,
-    padding: 16,
-    gap: 12,
-  },
-  filterLabel: {
-    color: colors.text,
-    fontWeight: "700",
-  },
-  searchInput: {
-    color: colors.text,
-    backgroundColor: colors.bgSoft,
-    borderColor: colors.line,
-    borderWidth: 1,
-    borderRadius: 12,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-  },
-  chipRow: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 10,
-  },
-  chip: {
-    borderColor: colors.line,
-    borderWidth: 1,
-    borderRadius: 999,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    backgroundColor: colors.bgSoft,
-  },
-  chipActive: {
-    borderColor: colors.gold,
-    backgroundColor: colors.goldSoft,
-  },
-  chipText: {
-    color: colors.muted,
-    fontWeight: "700",
-  },
-  chipTextActive: {
-    color: colors.gold,
-  },
-  emptyPanel: {
-    backgroundColor: colors.panel,
-    borderColor: colors.line,
-    borderWidth: 1,
-    borderRadius: 18,
-    padding: 16,
-    gap: 8,
-  },
-  emptyTitle: {
-    color: colors.text,
-    fontSize: 18,
-    fontWeight: "700",
-  },
-  emptyCopy: {
-    color: colors.muted,
-    lineHeight: 22,
-  },
-});

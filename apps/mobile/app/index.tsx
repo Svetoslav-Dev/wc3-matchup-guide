@@ -1,7 +1,6 @@
-import { Link, Stack } from "expo-router";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { ScreenShell } from "../components/screen-shell";
-import { GhostBadge, ListCard, PageIntro, PageTitle, SectionLabel, StatRow } from "../components/mobile-ui";
+import { BuildCard, GhostBadge, MatchupCard, PageIntro, PageTitle, SectionLabel, StatRow } from "../components/mobile-ui";
 import { useHomeContent } from "../lib/live-content";
 import { colors } from "../lib/theme";
 
@@ -10,43 +9,15 @@ export default function HomeScreen() {
 
   return (
     <ScreenShell>
-      <Stack.Screen options={{ title: "Warcraft III Guide" }} />
+
       <SectionLabel>Mobile Companion</SectionLabel>
       <PageTitle>Warcraft III study in your pocket.</PageTitle>
       <PageIntro>
         Browse races, matchups, and build orders from a compact Expo client designed around quick ladder reference.
       </PageIntro>
 
-      <View style={styles.actions}>
-        <Link href="/races" asChild>
-          <Pressable style={styles.primaryAction}>
-            <Text style={styles.primaryActionText}>Race Guides</Text>
-          </Pressable>
-        </Link>
-        <Link href="/builds" asChild>
-          <Pressable style={styles.secondaryAction}>
-            <Text style={styles.secondaryActionText}>Build Orders</Text>
-          </Pressable>
-        </Link>
-        <Link href="/heroes" asChild>
-          <Pressable style={styles.secondaryAction}>
-            <Text style={styles.secondaryActionText}>Hero Guides</Text>
-          </Pressable>
-        </Link>
-        <Link href="/units" asChild>
-          <Pressable style={styles.secondaryAction}>
-            <Text style={styles.secondaryActionText}>Units</Text>
-          </Pressable>
-        </Link>
-        <Link href="/maps" asChild>
-          <Pressable style={styles.secondaryAction}>
-            <Text style={styles.secondaryActionText}>Maps</Text>
-          </Pressable>
-        </Link>
-      </View>
-
       <View style={styles.grid}>
-        <StatRow label="Races" value={stats.races} />
+        <StatRow label="Playable Races" value={stats.races} />
         <StatRow label="Builds" value={stats.builds} />
         <StatRow label="Matchups" value={stats.matchups} />
         <StatRow label="Heroes" value={stats.heroes} />
@@ -59,12 +30,11 @@ export default function HomeScreen() {
         matchups.find((m) => m.slug === "undead-vs-orc"),
         matchups.find((m) => m.slug === "night-elf-vs-undead"),
       ].filter(Boolean).map((matchup) => (
-        <ListCard
+        <MatchupCard
           key={matchup!.slug}
-          eyebrow={matchup!.difficulty}
-          title={matchup!.title}
-          description={matchup!.summary}
-          href={`/matchups/${matchup!.slug}`}
+          slug={matchup!.slug}
+          difficulty={matchup!.difficulty}
+          summary={matchup!.summary}
         />
       ))}
 
@@ -75,23 +45,24 @@ export default function HomeScreen() {
         matchups.find((m) => m.slug === "undead-vs-night-elf"),
         matchups.find((m) => m.slug === "night-elf-vs-human"),
       ].filter(Boolean).map((matchup) => (
-        <ListCard
+        <MatchupCard
           key={matchup!.slug}
-          eyebrow={matchup!.difficulty}
-          title={matchup!.title}
-          description={matchup!.summary}
-          href={`/matchups/${matchup!.slug}`}
+          slug={matchup!.slug}
+          difficulty={matchup!.difficulty}
+          summary={matchup!.summary}
         />
       ))}
 
       <GhostBadge>Build Routes</GhostBadge>
       {builds.slice(0, 2).map((build) => (
-        <ListCard
+        <BuildCard
           key={build.slug}
-          eyebrow={`${build.raceName} · ${build.strategyType}`}
+          slug={build.slug}
+          raceSlug={build.raceSlug}
+          raceName={build.raceName}
+          difficulty={build.difficulty}
           title={build.title}
-          description={build.summary}
-          href={`/builds/${build.slug}`}
+          summary={build.summary}
         />
       ))}
     </ScreenShell>
@@ -99,32 +70,6 @@ export default function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
-  actions: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 12,
-  },
-  primaryAction: {
-    backgroundColor: colors.gold,
-    borderRadius: 999,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-  },
-  primaryActionText: {
-    color: colors.bg,
-    fontWeight: "800",
-  },
-  secondaryAction: {
-    borderColor: colors.line,
-    borderWidth: 1,
-    borderRadius: 999,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-  },
-  secondaryActionText: {
-    color: colors.text,
-    fontWeight: "700",
-  },
   grid: {
     gap: 12,
   },

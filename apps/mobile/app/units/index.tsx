@@ -1,20 +1,22 @@
 import { useState } from "react";
-import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import { Image, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
+import { useRouter } from "expo-router";
 import { ScreenShell } from "../../components/screen-shell";
-import { GhostBadge, ListCard, PageIntro, PageTitle, SectionLabel } from "../../components/mobile-ui";
+import { GhostBadge, SectionLabel } from "../../components/mobile-ui";
 import { useUnitsContent } from "../../lib/live-content";
 import { colors } from "../../lib/theme";
 
 const raceFilters = [
-  { slug: "all", label: "All" },
-  { slug: "Human", label: "Human" },
-  { slug: "Orc", label: "Orc" },
-  { slug: "Undead", label: "Undead" },
+  { slug: "all",       label: "All" },
+  { slug: "Human",     label: "Human" },
+  { slug: "Orc",       label: "Orc" },
+  { slug: "Undead",    label: "Undead" },
   { slug: "Night Elf", label: "Night Elf" },
-  { slug: "Neutral", label: "Neutral" },
+  { slug: "Neutral",   label: "Neutral" },
 ];
 
 export default function UnitsScreen() {
+  const router = useRouter();
   const [search, setSearch] = useState("");
   const [raceFilter, setRaceFilter] = useState("all");
   const { data: units, loading } = useUnitsContent();
@@ -30,12 +32,9 @@ export default function UnitsScreen() {
 
   return (
     <ScreenShell>
-      <SectionLabel>Unit Library</SectionLabel>
-      <PageTitle>Core units define timing, control, and counters.</PageTitle>
-      <PageIntro>Browse units by race or search by name and type.</PageIntro>
+      <SectionLabel>Units</SectionLabel>
       {loading ? <Text style={{ color: colors.muted }}>Loading units…</Text> : null}
       <View style={styles.filterPanel}>
-        <Text style={styles.filterLabel}>Search units</Text>
         <TextInput
           autoCapitalize="none"
           onChangeText={setSearch}
@@ -44,36 +43,45 @@ export default function UnitsScreen() {
           style={styles.searchInput}
           value={search}
         />
-        <View style={styles.chipRow}>
-          {raceFilters.map(({ slug, label }) => {
-            const active = slug === raceFilter;
-            return (
-              <Pressable
-                key={slug}
-                onPress={() => setRaceFilter(slug)}
-                style={[styles.chip, active ? styles.chipActive : null]}
-              >
-                <Text style={[styles.chipText, active ? styles.chipTextActive : null]}>{label}</Text>
-              </Pressable>
-            );
-          })}
-        </View>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+          <View style={styles.chipRow}>
+            {raceFilters.map(({ slug, label }) => {
+              const active = slug === raceFilter;
+              return (
+                <Pressable
+                  key={slug}
+                  onPress={() => setRaceFilter(slug)}
+                  style={[styles.chip, active ? styles.chipActive : null]}
+                >
+                  <Text style={[styles.chipText, active ? styles.chipTextActive : null]}>{label}</Text>
+                </Pressable>
+              );
+            })}
+          </View>
+        </ScrollView>
       </View>
-      <GhostBadge>{filtered.length} result{filtered.length === 1 ? "" : "s"}</GhostBadge>
-      {filtered.length === 0 ? (
-        <View style={styles.emptyPanel}>
-          <Text style={styles.emptyTitle}>No units match this filter.</Text>
-          <Text style={styles.emptyCopy}>Try clearing the search or switching to another race.</Text>
-        </View>
-      ) : null}
+      <GhostBadge>{filtered.length} unit{filtered.length === 1 ? "" : "s"}</GhostBadge>
       {filtered.map((unit) => (
-        <ListCard
+        <Pressable
           key={unit.slug}
-          eyebrow={`${unit.raceName} · ${unit.tier} · ${unit.unitType}`}
-          title={unit.name}
-          description={unit.description}
-          href={`/units/${unit.slug}`}
-        />
+          onPress={() => router.push(`/units/${unit.slug}` as never)}
+          style={({ hovered, pressed }) => [
+            styles.card,
+            (hovered || pressed) ? styles.cardHovered : null,
+          ]}
+        >
+          <View style={styles.cardRow}>
+            <Image
+              source={{ uri: unit.imageUrl ?? "/images/placeholder.svg" }}
+              style={styles.unitImg}
+            />
+            <View style={styles.cardText}>
+              <Text style={styles.racePill}>{unit.raceName} · {unit.unitType}</Text>
+              <Text style={styles.name}>{unit.name}</Text>
+              <Text style={styles.description} numberOfLines={2}>{unit.description}</Text>
+            </View>
+          </View>
+        </Pressable>
       ))}
     </ScreenShell>
   );
@@ -88,7 +96,6 @@ const styles = StyleSheet.create({
     padding: 16,
     gap: 12,
   },
-  filterLabel: { color: colors.text, fontWeight: "700" },
   searchInput: {
     color: colors.text,
     backgroundColor: colors.bgSoft,
@@ -98,7 +105,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     paddingVertical: 12,
   },
-  chipRow: { flexDirection: "row", flexWrap: "wrap", gap: 10 },
+  chipRow: { flexDirection: "row", gap: 8 },
   chip: {
     borderColor: colors.line,
     borderWidth: 1,
@@ -108,16 +115,20 @@ const styles = StyleSheet.create({
     backgroundColor: colors.bgSoft,
   },
   chipActive: { borderColor: colors.gold, backgroundColor: colors.goldSoft },
-  chipText: { color: colors.muted, fontWeight: "700" },
+  chipText: { color: colors.muted, fontWeight: "700", fontSize: 13 },
   chipTextActive: { color: colors.gold },
-  emptyPanel: {
+  card: {
     backgroundColor: colors.panel,
     borderColor: colors.line,
     borderWidth: 1,
-    borderRadius: 18,
-    padding: 16,
-    gap: 8,
+    borderRadius: 16,
+    padding: 12,
   },
-  emptyTitle: { color: colors.text, fontSize: 18, fontWeight: "700" },
-  emptyCopy: { color: colors.muted, lineHeight: 22 },
+  cardHovered: { backgroundColor: colors.bgSoft },
+  cardRow: { flexDirection: "row", alignItems: "center", gap: 12 },
+  unitImg: { width: 52, height: 52, borderRadius: 8 },
+  cardText: { flex: 1, gap: 3 },
+  racePill: { color: colors.gold, fontSize: 11, fontWeight: "700", textTransform: "uppercase" },
+  name: { color: colors.text, fontSize: 15, fontWeight: "700" },
+  description: { color: colors.muted, fontSize: 13, lineHeight: 18 },
 });

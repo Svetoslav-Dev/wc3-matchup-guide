@@ -89,7 +89,7 @@ export function useHomeContent() {
     matchups: matchups.data,
     builds: builds.data,
     stats: {
-      races: races.data.length,
+      races: races.data.filter((r) => r.slug !== "neutral").length,
       builds: builds.data.length || mobileStats.builds,
       matchups: matchups.data.length,
       heroes: mobileStats.heroes,

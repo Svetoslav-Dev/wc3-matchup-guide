@@ -1,24 +1,41 @@
 import { useState } from "react";
 import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import { ScreenShell } from "../../components/screen-shell";
-import { GhostBadge, ListCard, PageIntro, PageTitle, SectionLabel } from "../../components/mobile-ui";
+import { GhostBadge, MatchupCard, PageIntro, PageTitle, SectionLabel } from "../../components/mobile-ui";
 import { useMatchupsContent } from "../../lib/live-content";
 import { colors } from "../../lib/theme";
+
+const NORMALIZE_DIFFICULTY: Record<string, string> = {
+  "Easy":            "Easy",
+  "Medium":          "Medium",
+  "Hard":            "Hard",
+  "Very Hard":       "Very Hard",
+  "Technical":       "Medium",
+  "Demanding":       "Hard",
+  "High pressure":   "Hard",
+  "Tight margins":   "Hard",
+  "Execution heavy": "Hard",
+  "Sharp timing":    "Hard",
+  "Punishing":       "Very Hard",
+  "Volatile":        "Very Hard",
+  "Timing critical": "Hard",
+  "Razor-thin":      "Very Hard",
+};
 
 export default function MatchupsScreen() {
   const [search, setSearch] = useState("");
   const [difficultyFilter, setDifficultyFilter] = useState<string>("all");
   const { data: matchups, loading } = useMatchupsContent();
   const normalizedSearch = search.trim().toLowerCase();
-  const difficultyOptions = ["all", ...Array.from(new Set(matchups.map((matchup) => matchup.difficulty)))];
+  const difficultyOptions = ["all", "Easy", "Medium", "Hard", "Very Hard"];
   const filteredMatchups = matchups.filter((matchup) => {
+    const normalized = NORMALIZE_DIFFICULTY[matchup.difficulty] ?? matchup.difficulty;
     const matchesDifficulty =
-      difficultyFilter === "all" || matchup.difficulty === difficultyFilter;
+      difficultyFilter === "all" || normalized === difficultyFilter;
     const matchesSearch =
       normalizedSearch.length === 0 ||
       matchup.title.toLowerCase().includes(normalizedSearch) ||
       matchup.summary.toLowerCase().includes(normalizedSearch);
-
     return matchesDifficulty && matchesSearch;
   });
 
@@ -43,7 +60,6 @@ export default function MatchupsScreen() {
         <View style={styles.chipRow}>
           {difficultyOptions.map((difficulty) => {
             const active = difficulty === difficultyFilter;
-
             return (
               <Pressable
                 key={difficulty}
@@ -68,12 +84,11 @@ export default function MatchupsScreen() {
         </View>
       ) : null}
       {filteredMatchups.map((matchup) => (
-        <ListCard
+        <MatchupCard
           key={matchup.slug}
-          eyebrow={matchup.difficulty}
-          title={matchup.title}
-          description={matchup.summary}
-          href={`/matchups/${matchup.slug}`}
+          slug={matchup.slug}
+          difficulty={matchup.difficulty}
+          summary={matchup.summary}
         />
       ))}
     </ScreenShell>

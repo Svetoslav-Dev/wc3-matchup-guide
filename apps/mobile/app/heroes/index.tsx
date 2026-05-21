@@ -1,16 +1,27 @@
 import { useState } from "react";
-import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import { Image, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
+import { useRouter } from "expo-router";
 import { ScreenShell } from "../../components/screen-shell";
-import { GhostBadge, ListCard, PageIntro, PageTitle, SectionLabel } from "../../components/mobile-ui";
+import { GhostBadge, SectionLabel } from "../../components/mobile-ui";
 import { useHeroesContent } from "../../lib/live-content";
 import { colors } from "../../lib/theme";
 
+const RACE_OPTIONS = [
+  { slug: "all",       label: "All" },
+  { slug: "Human",     label: "Human" },
+  { slug: "Orc",       label: "Orc" },
+  { slug: "Undead",    label: "Undead" },
+  { slug: "Night Elf", label: "Night Elf" },
+  { slug: "Neutral",   label: "Neutral" },
+];
+
 export default function HeroesScreen() {
+  const router = useRouter();
   const [search, setSearch] = useState("");
-  const [raceFilter, setRaceFilter] = useState<string>("all");
+  const [raceFilter, setRaceFilter] = useState("all");
   const { data: heroes, loading } = useHeroesContent();
   const normalizedSearch = search.trim().toLowerCase();
-  const raceOptions = ["all", ...Array.from(new Set(heroes.map((hero) => hero.raceName)))];
+
   const filteredHeroes = heroes.filter((hero) => {
     const matchesRace = raceFilter === "all" || hero.raceName === raceFilter;
     const matchesSearch =
@@ -19,20 +30,14 @@ export default function HeroesScreen() {
         .join(" ")
         .toLowerCase()
         .includes(normalizedSearch);
-
     return matchesRace && matchesSearch;
   });
 
   return (
     <ScreenShell>
-      <SectionLabel>Hero Guides</SectionLabel>
-      <PageTitle>Core heroes and their pressure points.</PageTitle>
-      <PageIntro>
-        Hero pages focus on role clarity, primary attribute, and the tools that define each race’s strongest openings and transitions.
-      </PageIntro>
-      {loading ? <Text style={{ color: colors.muted }}>Loading hero guides…</Text> : null}
+      <SectionLabel>Heroes</SectionLabel>
+      {loading ? <Text style={{ color: colors.muted }}>Loading heroes…</Text> : null}
       <View style={styles.filterPanel}>
-        <Text style={styles.filterLabel}>Search heroes</Text>
         <TextInput
           autoCapitalize="none"
           onChangeText={setSearch}
@@ -41,41 +46,45 @@ export default function HeroesScreen() {
           style={styles.searchInput}
           value={search}
         />
-        <View style={styles.chipRow}>
-          {raceOptions.map((race) => {
-            const active = race === raceFilter;
-
-            return (
-              <Pressable
-                key={race}
-                onPress={() => setRaceFilter(race)}
-                style={[styles.chip, active ? styles.chipActive : null]}
-              >
-                <Text style={[styles.chipText, active ? styles.chipTextActive : null]}>
-                  {race === "all" ? "All Races" : race}
-                </Text>
-              </Pressable>
-            );
-          })}
-        </View>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+          <View style={styles.chipRow}>
+            {RACE_OPTIONS.map(({ slug, label }) => {
+              const active = slug === raceFilter;
+              return (
+                <Pressable
+                  key={slug}
+                  onPress={() => setRaceFilter(slug)}
+                  style={[styles.chip, active ? styles.chipActive : null]}
+                >
+                  <Text style={[styles.chipText, active ? styles.chipTextActive : null]}>{label}</Text>
+                </Pressable>
+              );
+            })}
+          </View>
+        </ScrollView>
       </View>
-      <GhostBadge>
-        {filteredHeroes.length} result{filteredHeroes.length === 1 ? "" : "s"}
-      </GhostBadge>
-      {filteredHeroes.length === 0 ? (
-        <View style={styles.emptyPanel}>
-          <Text style={styles.emptyTitle}>No hero matches this filter.</Text>
-          <Text style={styles.emptyCopy}>Try clearing the search or switching to another race.</Text>
-        </View>
-      ) : null}
+      <GhostBadge>{filteredHeroes.length} hero{filteredHeroes.length === 1 ? "" : "es"}</GhostBadge>
       {filteredHeroes.map((hero) => (
-        <ListCard
+        <Pressable
           key={hero.slug}
-          eyebrow={`${hero.raceName} · ${hero.role}`}
-          title={hero.name}
-          description={hero.description}
-          href={`/heroes/${hero.slug}`}
-        />
+          onPress={() => router.push(`/heroes/${hero.slug}` as never)}
+          style={({ hovered, pressed }) => [
+            styles.card,
+            (hovered || pressed) ? styles.cardHovered : null,
+          ]}
+        >
+          <View style={styles.cardRow}>
+            <Image
+              source={{ uri: hero.imageUrl ?? "/images/placeholder.svg" }}
+              style={styles.heroImg}
+            />
+            <View style={styles.cardText}>
+              <Text style={styles.racePill}>{hero.raceName} · {hero.role}</Text>
+              <Text style={styles.name}>{hero.name}</Text>
+              <Text style={styles.description} numberOfLines={2}>{hero.description}</Text>
+            </View>
+          </View>
+        </Pressable>
       ))}
     </ScreenShell>
   );
@@ -90,10 +99,6 @@ const styles = StyleSheet.create({
     padding: 16,
     gap: 12,
   },
-  filterLabel: {
-    color: colors.text,
-    fontWeight: "700",
-  },
   searchInput: {
     color: colors.text,
     backgroundColor: colors.bgSoft,
@@ -103,11 +108,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     paddingVertical: 12,
   },
-  chipRow: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 10,
-  },
+  chipRow: { flexDirection: "row", gap: 8 },
   chip: {
     borderColor: colors.line,
     borderWidth: 1,
@@ -116,32 +117,21 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     backgroundColor: colors.bgSoft,
   },
-  chipActive: {
-    borderColor: colors.gold,
-    backgroundColor: colors.goldSoft,
-  },
-  chipText: {
-    color: colors.muted,
-    fontWeight: "700",
-  },
-  chipTextActive: {
-    color: colors.gold,
-  },
-  emptyPanel: {
+  chipActive: { borderColor: colors.gold, backgroundColor: colors.goldSoft },
+  chipText: { color: colors.muted, fontWeight: "700", fontSize: 13 },
+  chipTextActive: { color: colors.gold },
+  card: {
     backgroundColor: colors.panel,
     borderColor: colors.line,
     borderWidth: 1,
-    borderRadius: 18,
-    padding: 16,
-    gap: 8,
+    borderRadius: 16,
+    padding: 12,
   },
-  emptyTitle: {
-    color: colors.text,
-    fontSize: 18,
-    fontWeight: "700",
-  },
-  emptyCopy: {
-    color: colors.muted,
-    lineHeight: 22,
-  },
+  cardHovered: { backgroundColor: colors.bgSoft },
+  cardRow: { flexDirection: "row", alignItems: "center", gap: 12 },
+  heroImg: { width: 52, height: 52, borderRadius: 8 },
+  cardText: { flex: 1, gap: 3 },
+  racePill: { color: colors.gold, fontSize: 11, fontWeight: "700", textTransform: "uppercase" },
+  name: { color: colors.text, fontSize: 15, fontWeight: "700" },
+  description: { color: colors.muted, fontSize: 13, lineHeight: 18 },
 });

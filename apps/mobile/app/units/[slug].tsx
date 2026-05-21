@@ -1,6 +1,6 @@
 import { useLocalSearchParams } from "expo-router";
-import { Text, View } from "react-native";
-import { GhostBadge, PageIntro, PageTitle, SectionLabel } from "../../components/mobile-ui";
+import { Image, StyleSheet, Text, View } from "react-native";
+import { GhostBadge, PageTitle, SectionLabel } from "../../components/mobile-ui";
 import { ScreenShell } from "../../components/screen-shell";
 import { useUnitContent } from "../../lib/live-content";
 import { colors } from "../../lib/theme";
@@ -29,8 +29,15 @@ export default function UnitDetailScreen() {
   return (
     <ScreenShell>
       <SectionLabel>{unit.raceName}</SectionLabel>
-      <PageTitle>{unit.name}</PageTitle>
-      <PageIntro>{unit.description}</PageIntro>
+      <View style={styles.header}>
+        {unit.imageUrl ? (
+          <Image source={{ uri: unit.imageUrl }} style={styles.portrait} />
+        ) : null}
+        <View style={styles.headerText}>
+          <Text style={styles.name}>{unit.name}</Text>
+          <Text style={styles.description}>{unit.description}</Text>
+        </View>
+      </View>
       {loading ? <Text style={{ color: colors.muted }}>Refreshing unit guide…</Text> : null}
 
       <View style={panelStyle}>
@@ -61,3 +68,32 @@ export default function UnitDetailScreen() {
     </ScreenShell>
   );
 }
+
+const styles = StyleSheet.create({
+  header: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    gap: 14,
+  },
+  portrait: {
+    width: 72,
+    height: 72,
+    borderRadius: 10,
+    flexShrink: 0,
+  },
+  headerText: {
+    flex: 1,
+    gap: 6,
+  },
+  name: {
+    color: colors.text,
+    fontSize: 26,
+    fontWeight: "800",
+    lineHeight: 30,
+  },
+  description: {
+    color: colors.muted,
+    fontSize: 14,
+    lineHeight: 20,
+  },
+});

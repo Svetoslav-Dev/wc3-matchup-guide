@@ -1,18 +1,19 @@
 import { useState } from "react";
-import { Link, usePathname } from "expo-router";
+import { usePathname, useRouter } from "expo-router";
 import { Modal, Pressable, StyleSheet, Text, View } from "react-native";
 import { colors } from "../lib/theme";
+import { useAuth } from "../lib/auth-context";
 
-const navItems = [
-  { href: "/", label: "Home" },
+const BASE_NAV_ITEMS = [
+  { href: "/", label: "Homepage" },
   { href: "/races", label: "Races" },
+  { href: "/heroes", label: "Heroes" },
   { href: "/units", label: "Units" },
+  { href: "/buildings", label: "Buildings" },
+  { href: "/items", label: "Items" },
   { href: "/maps", label: "Maps" },
   { href: "/matchups", label: "Matchups" },
   { href: "/builds", label: "Builds" },
-  { href: "/heroes", label: "Heroes" },
-  { href: "/favorites", label: "Favorites" },
-  { href: "/profile", label: "Profile" },
 ];
 
 const isActiveRoute = (pathname: string, href: string) =>
@@ -20,7 +21,14 @@ const isActiveRoute = (pathname: string, href: string) =>
 
 export function MobileNav() {
   const pathname = usePathname();
+  const router = useRouter();
+  const { user } = useAuth();
   const [open, setOpen] = useState(false);
+
+  const navItems = user
+    ? [...BASE_NAV_ITEMS, { href: "/favorites", label: "Favorites" }]
+    : BASE_NAV_ITEMS;
+
   const current = navItems.find((item) => isActiveRoute(pathname, item.href));
 
   return (
@@ -42,17 +50,20 @@ export function MobileNav() {
               const active = isActiveRoute(pathname, item.href);
 
               return (
-                <Link key={item.href} href={item.href as never} asChild>
-                  <Pressable
-                    onPress={() => setOpen(false)}
-                    style={[styles.item, active ? styles.itemActive : null]}
-                  >
-                    <Text style={[styles.itemLabel, active ? styles.itemLabelActive : null]}>
-                      {item.label}
-                    </Text>
-                    {active ? <Text style={styles.activeDot}>●</Text> : null}
-                  </Pressable>
-                </Link>
+                <Pressable
+                  key={item.href}
+                  onPress={() => { setOpen(false); router.push(item.href as never); }}
+                  style={({ hovered, pressed }) => [
+                    styles.item,
+                    active ? styles.itemActive : null,
+                    !active && (hovered || pressed) ? styles.itemHovered : null,
+                  ]}
+                >
+                  <Text style={[styles.itemLabel, active ? styles.itemLabelActive : null]}>
+                    {item.label}
+                  </Text>
+                  {active ? <Text style={styles.activeDot}>●</Text> : null}
+                </Pressable>
               );
             })}
           </View>
@@ -65,9 +76,6 @@ export function MobileNav() {
 const styles = StyleSheet.create({
   shell: {
     flexShrink: 0,
-    paddingHorizontal: 20,
-    paddingTop: 10,
-    paddingBottom: 8,
   },
   trigger: {
     alignSelf: "flex-start",
@@ -102,6 +110,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 18,
     overflow: "hidden",
+    maxWidth: 320,
+    alignSelf: "flex-end",
+    width: "70%",
   },
   item: {
     flexDirection: "row",
@@ -114,6 +125,9 @@ const styles = StyleSheet.create({
   },
   itemActive: {
     backgroundColor: colors.goldSoft,
+  },
+  itemHovered: {
+    backgroundColor: colors.bgSoft,
   },
   itemLabel: {
     color: colors.muted,
