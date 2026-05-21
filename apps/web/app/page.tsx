@@ -106,7 +106,7 @@ export default async function HomePage() {
             track your favorite plans from one dark fantasy strategy hub.
           </p>
           <div className="hero-actions">
-            <Link href="/builds" className="button">
+            <Link href="/builds" className="button button--ghost">
               Explore Builds
             </Link>
             <Link href="/matchups" className="button button--ghost">
@@ -255,7 +255,7 @@ export default async function HomePage() {
               <p>{bestMatchupReasons[matchup.slug] ?? matchup.summary}</p>
               <div className="card__footer">
                 <div className="list-meta">
-                  <span>Key strength: {matchup.heroChoices[0]}</span>
+                  <span>🗝️ Key strength: {matchup.heroChoices[0]}</span>
                 </div>
                 <div className="card__footer-action card__footer-action--center">
                   <Link href={`/matchups/${matchup.slug}`} className="button button--ghost">

@@ -152,6 +152,69 @@ textarea {
   color: var(--text);
 }
 
+/* Shared filter panel — matches mobile builds filter design */
+.filter-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1.1rem 1.25rem;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: linear-gradient(180deg, rgba(17,24,36,0.92), rgba(11,14,20,0.92));
+}
+
+.filter-panel__group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.filter-panel__label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.filter-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.filter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.65rem 1.3rem;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--bg-soft);
+  color: var(--muted);
+  font-size: 0.925rem;
+  font-weight: 700;
+  transition: background 150ms ease, color 150ms ease, border-color 150ms ease;
+}
+
+.filter-chip:hover {
+  background: rgba(255,255,255,0.05);
+  color: var(--text);
+}
+
+.filter-chip--active {
+  border-color: var(--gold);
+  background: var(--gold-soft);
+  color: var(--gold);
+}
+
+.filter-chip__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
 .filter-btn--active {
   background: var(--gold-soft);
   color: var(--gold);
@@ -314,10 +377,30 @@ textarea {
   font-weight: 700;
 }
 
+.button--sm {
+  padding: 0.45rem 0.85rem;
+  font-size: 0.8rem;
+}
+
 .button--ghost {
   background: transparent;
   border-color: var(--line);
   color: var(--text);
+  transition: background 160ms ease, color 160ms ease, border-color 160ms ease, transform 120ms ease;
+}
+
+.button--ghost:hover {
+  background: var(--gold-soft);
+  border-color: var(--gold);
+  color: var(--gold);
+  transform: translateY(-1px);
+}
+
+.button--ghost:active {
+  background: var(--gold);
+  border-color: var(--gold);
+  color: #0a0d12;
+  transform: translateY(0);
 }
 
 .button--active {
@@ -331,11 +414,13 @@ textarea {
   border-color: #4ade80;
   color: #4ade80;
   font-weight: 600;
+  transition: background 160ms ease, color 160ms ease, border-color 160ms ease, transform 120ms ease;
 }
 
 .button--edit:hover {
   background: #4ade80;
   color: #0a0f0a;
+  transform: translateY(-1px);
 }
 
 .button--danger {
@@ -343,28 +428,32 @@ textarea {
   border-color: #f87171;
   color: #f87171;
   font-weight: 600;
+  transition: background 160ms ease, color 160ms ease, border-color 160ms ease, transform 120ms ease;
 }
 
 .button--danger:hover {
   background: #f87171;
   color: #0a0f0a;
+  transform: translateY(-1px);
 }
 
 .button--view {
   background: transparent;
-  border-color: #a87c30;
-  color: #a87c30;
+  border-color: #ca8a04;
+  color: #ca8a04;
   font-weight: 600;
+  transition: background 160ms ease, color 160ms ease, border-color 160ms ease, transform 120ms ease;
 }
 
 .button--view:hover {
-  background: #a87c30;
+  background: #facc15;
+  border-color: #facc15;
   color: #0a0f0a;
+  transform: translateY(-1px);
 }
 
 .admin-view-btn {
   font-weight: 600;
-  transition: background 160ms ease, color 160ms ease, border-color 160ms ease;
 }
 
 .admin-view-btn:hover {
@@ -612,9 +701,16 @@ textarea {
   margin-top: 0;
 }
 
+.form-grid .form-panel h2 {
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 0.25rem;
+}
+
 .chip-row {
   grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
 }
+
 
 .pill {
   width: fit-content;
@@ -882,7 +978,14 @@ textarea {
 
 .field {
   display: grid;
-  gap: 0.45rem;
+  gap: 0.65rem;
+}
+
+.form-grid .form-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1.4rem;
+  padding: 1.75rem;
 }
 
 .field input {
@@ -926,6 +1029,108 @@ textarea {
 
 .inline-actions form {
   margin: 0;
+}
+
+.build-card {
+  border-top: 2px solid var(--gold);
+  gap: 0.85rem;
+}
+
+.build-card__header {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.9rem;
+}
+
+.build-card__race-img {
+  flex-shrink: 0;
+  border-radius: 10px;
+  margin-top: 0.1rem;
+}
+
+.build-card__header-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.build-card__tags {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.build-card__strategy {
+  font-size: 0.75rem;
+  opacity: 0.85;
+}
+
+.build-card__title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  line-height: 1.3;
+  margin: 0;
+  color: var(--text);
+}
+
+.build-card__summary {
+  color: var(--muted);
+  font-size: 0.875rem;
+  line-height: 1.6;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--line);
+  margin: 0;
+}
+
+.build-card__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: auto;
+  padding-top: 0.25rem;
+}
+
+.build-matchup-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.build-matchup-row__name {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.build-matchup-row__vs {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--muted);
+  padding: 0 0.1rem;
+}
+
+.attr-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  border: 1px solid;
+  background: transparent;
+}
+
+.submit-error-msg {
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  border: 1px solid rgba(248, 113, 113, 0.4);
+  background: rgba(248, 113, 113, 0.08);
+  color: #f87171;
+  line-height: 1.6;
 }
 
 .status-banner {
@@ -1089,6 +1294,25 @@ textarea {
   gap: 0.5rem;
 }
 
+.matchup-card {
+  border-top: 2px solid var(--gold);
+}
+
+.matchup-card__pills {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.matchup-card__summary {
+  color: var(--muted);
+  line-height: 1.65;
+  font-size: 0.9rem;
+  padding-top: 0.25rem;
+  border-top: 1px solid var(--line);
+}
+
 .matchup-card-head {
   display: flex;
   align-items: center;
@@ -1134,21 +1358,25 @@ textarea {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.75rem;
+  gap: 1rem;
+  padding: 0.5rem 0;
 }
 
 .matchup-vs__label {
-  font-size: 0.8rem;
-  font-weight: 600;
+  font-size: 0.75rem;
+  font-weight: 700;
   color: var(--muted);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  padding: 0 0.25rem;
+  letter-spacing: 0.1em;
+  padding: 0.3rem 0.6rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  flex-shrink: 0;
 }
 
 .matchup-vs__race {
-  font-size: 0.9rem;
-  font-weight: 600;
+  font-size: 0.95rem;
+  font-weight: 700;
   color: var(--text);
 }
 
@@ -1156,8 +1384,8 @@ textarea {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.3rem;
-  min-width: 0;
+  gap: 0.4rem;
+  flex: 1;
 }
 
 .spell-list {

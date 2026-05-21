@@ -6,12 +6,7 @@ import { createUserBuildAction, deleteUserBuildAction } from "../user-actions";
 import { DifficultyBadge } from "../../../components/difficulty-badge";
 
 type Props = {
-  searchParams?: Promise<{ status?: string }>;
-};
-
-const statusMessages: Record<string, string> = {
-  submitted: "Build submitted as a draft. You can remove it at any time from this page.",
-  removed: "Your build submission was removed.",
+  searchParams?: Promise<{ status?: string; fields?: string }>;
 };
 
 export default async function SubmitBuildPage({ searchParams }: Props) {
@@ -55,7 +50,21 @@ export default async function SubmitBuildPage({ searchParams }: Props) {
     listBuildSubmissionsForUser(user.id),
   ]);
   const visibleRaces = raceResult.data.filter((race) => race.slug !== "neutral");
-  const statusMessage = params.status ? statusMessages[params.status] : undefined;
+
+  const FIELD_LABELS: Record<string, string> = {
+    title: "Title", slug: "URL Identifier", summary: "Summary",
+    difficulty: "Difficulty", strategyType: "Strategy Type", body: "Body",
+  };
+  const missingFields = params.fields
+    ? params.fields.split(",").map((f) => FIELD_LABELS[f.trim()] ?? f.trim()).join(", ")
+    : null;
+
+  const statusMessage =
+    params.status === "submitted" ? { text: "Build submitted as a draft. You can remove it at any time from this page.", isError: false }
+    : params.status === "removed"  ? { text: "Your build submission was removed.", isError: false }
+    : params.status === "validation-error" ? { text: `Please fill in all required fields${missingFields ? `: ${missingFields}` : ""}.`, isError: true }
+    : params.status === "server-error"     ? { text: "Something went wrong saving your build. Please try again.", isError: true }
+    : null;
 
   return (
     <div className="page-shell page-stack">
@@ -63,9 +72,18 @@ export default async function SubmitBuildPage({ searchParams }: Props) {
         <p className="section-label">Build Submission</p>
         <h1 className="page-title">Submit your own build order.</h1>
         <p className="page-intro">
-          Submissions are saved as drafts under your account. Steps format: <code>step | supply | timing | instruction</code>.
+          Fill in the metadata on the left and the guide content on the right. Your build is saved as a draft and only you can see it until an admin publishes it.
         </p>
-        {statusMessage ? <p className="muted">{statusMessage}</p> : null}
+        <p className="page-intro">
+          For <strong>Build Steps</strong> use one line per step in this format:<br />
+          <code>1 | 12 | 1:30 | Build barracks and queue footmen</code><br />
+          <span style={{ fontSize: "0.85em" }}>( step number | food supply | timestamp | what to do )</span>
+        </p>
+        {statusMessage ? (
+          <p className={statusMessage.isError ? "submit-error-msg" : "muted"}>
+            {statusMessage.text}
+          </p>
+        ) : null}
       </div>
       <form action={createUserBuildAction} className="form-grid" id="submit-build">
         <section className="form-panel">
@@ -96,7 +114,7 @@ export default async function SubmitBuildPage({ searchParams }: Props) {
             <input id="title" name="title" type="text" placeholder="Human Fast Expand Into Casters" />
           </div>
           <div className="field">
-            <label htmlFor="slug">Slug</label>
+            <label htmlFor="slug">URL Identifier (slug)</label>
             <input id="slug" name="slug" type="text" placeholder="human-fast-expand-into-casters" />
           </div>
           <div className="field">
@@ -126,8 +144,8 @@ export default async function SubmitBuildPage({ searchParams }: Props) {
               placeholder={"1 | 5 | 0:00 | Queue peasants and send the scout.\n2 | 18 | 1:35 | Start the expansion and secure the camp."}
             />
           </div>
-          <div className="inline-actions">
-            <button className="button" type="submit">Submit Build</button>
+          <div style={{ marginTop: "0.5rem", display: "flex", justifyContent: "center" }}>
+            <button className="button button--ghost" type="submit">Submit Build</button>
           </div>
         </section>
       </form>

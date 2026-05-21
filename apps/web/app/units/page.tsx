@@ -12,9 +12,11 @@ export default async function UnitsPage() {
     "night-elf": "Mobile skirmishers, bear frontlines, and anti-magic control from Night Elf tech paths.",
     neutral: "Mercenary camp hireables and neutral support options available to any race on the map.",
   };
+  const DISPLAY_NAME: Record<string, string> = { neutral: "Mercenaries" };
   const categories = categoryOrder
     .map((slug) => races.data.find((race) => race.slug === slug))
-    .filter((race): race is NonNullable<typeof race> => Boolean(race));
+    .filter((race): race is NonNullable<typeof race> => Boolean(race))
+    .map((race) => ({ ...race, name: DISPLAY_NAME[race.slug] ?? race.name }));
 
   return (
     <div className="page-shell page-stack">

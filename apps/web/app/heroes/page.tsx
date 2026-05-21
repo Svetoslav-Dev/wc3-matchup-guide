@@ -2,6 +2,28 @@ import Link from "next/link";
 import { listHeroes } from "../../lib/content";
 import { GameImage } from "../../components/game-image";
 
+const ATTR_ICON: Record<string, string> = {
+  Strength:     "⚔️",
+  Agility:      "🏹",
+  Intelligence: "🔮",
+};
+
+const ATTR_COLOR: Record<string, string> = {
+  Strength:     "#f87171",
+  Agility:      "#4ade80",
+  Intelligence: "#818cf8",
+};
+
+function PrimaryAttribute({ value }: { value: string }) {
+  const icon  = ATTR_ICON[value]  ?? "◆";
+  const color = ATTR_COLOR[value] ?? "var(--muted)";
+  return (
+    <span className="attr-badge" style={{ color, borderColor: color }}>
+      {icon} {value}
+    </span>
+  );
+}
+
 export default async function HeroesPage() {
   const result = await listHeroes(1, 64);
   const categoryOrder = ["Human", "Orc", "Undead", "Night Elf", "Tavern"];
@@ -59,7 +81,8 @@ export default async function HeroesPage() {
                 <p>{hero.description}</p>
                 <div className="card__footer">
                   <div className="list-meta">
-                    <span>{hero.primaryAttribute}</span>
+                    <span className="muted" style={{ fontSize: "0.8rem" }}>Primary attribute:</span>
+                    <PrimaryAttribute value={hero.primaryAttribute} />
                   </div>
                   <Link href={`/heroes/${hero.slug}`} className="button button--ghost">
                     View Hero Guide

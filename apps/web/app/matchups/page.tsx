@@ -68,19 +68,22 @@ export default async function MatchupsPage({ searchParams }: Props) {
         </p>
       </div>
 
-      <div className="chip-row">
-        <Link href="/matchups" className={`button button--ghost${!activeRace ? " button--active" : ""}`}>
-          All
-        </Link>
-        {raceFilters.map((race) => (
-          <Link
-            key={race.slug}
-            href={`/matchups?race=${race.slug}`}
-            className={`button button--ghost${activeRace?.slug === race.slug ? " button--active" : ""}`}
-          >
-            {race.label}
-          </Link>
-        ))}
+      <div className="filter-panel">
+        <div className="filter-panel__group">
+          <span className="filter-panel__label">Race</span>
+          <div className="filter-chip-row">
+            <Link href="/matchups" className={`filter-chip${!activeRace ? " filter-chip--active" : ""}`}>All</Link>
+            {raceFilters.map((race) => (
+              <Link
+                key={race.slug}
+                href={`/matchups?race=${race.slug}`}
+                className={`filter-chip${activeRace?.slug === race.slug ? " filter-chip--active" : ""}`}
+              >
+                {race.label}
+              </Link>
+            ))}
+          </div>
+        </div>
       </div>
 
       <div className="list-grid">
@@ -88,30 +91,29 @@ export default async function MatchupsPage({ searchParams }: Props) {
           const { nameA, nameB, slugA, slugB } = parseMatchup(matchup.title);
           const diff = matchupDifficulty[matchup.slug];
           return (
-            <article key={matchup.slug} className="card">
-              <div className="matchup-card-head">
-                <div className="matchup-card-head__info">
-                  <p className="pill pill--race">{getPerspectiveRace(matchup.title)}</p>
-                  {diff ? <p className="pill"><DifficultyBadge value={diff} /></p> : null}
+            <article key={matchup.slug} className="card matchup-card">
+              <div className="matchup-card__pills">
+                <p className="pill pill--race">{getPerspectiveRace(matchup.title)}</p>
+                {diff ? <span className="pill"><DifficultyBadge value={diff} /></span> : null}
+              </div>
+
+              <div className="matchup-vs">
+                <div className="matchup-vs__side">
+                  <GameImage src={raceImageSrc(slugA)} alt={nameA} className="game-image--icon" width={72} height={72} />
+                  <span className="matchup-vs__race">{nameA}</span>
                 </div>
-                <div className="matchup-vs">
-                  <div className="matchup-vs__side">
-                    <GameImage src={raceImageSrc(slugA)} alt={nameA} className="game-image--icon" width={64} height={64} />
-                    <span className="matchup-vs__race">{nameA}</span>
-                  </div>
-                  <span className="matchup-vs__label">vs</span>
-                  <div className="matchup-vs__side">
-                    <GameImage src={raceImageSrc(slugB)} alt={nameB} className="game-image--icon" width={64} height={64} />
-                    <span className="matchup-vs__race">{nameB}</span>
-                  </div>
+                <span className="matchup-vs__label">vs</span>
+                <div className="matchup-vs__side">
+                  <GameImage src={raceImageSrc(slugB)} alt={nameB} className="game-image--icon" width={72} height={72} />
+                  <span className="matchup-vs__race">{nameB}</span>
                 </div>
               </div>
 
-              <p>{matchup.summary}</p>
+              <p className="matchup-card__summary">{matchup.summary}</p>
 
               <div className="card__footer">
                 <div className="list-meta">
-                  <span>Hero focus: {matchup.heroChoices.join(", ")}</span>
+                  <span>⚔️ Hero focus: {matchup.heroChoices.join(", ")}</span>
                 </div>
                 <div className="card__footer-action card__footer-action--center">
                   <Link href={`/matchups/${matchup.slug}`} className="button button--ghost">

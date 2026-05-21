@@ -3,11 +3,12 @@ import { GameImage } from "../../components/game-image";
 import { buildings } from "../../lib/static-content";
 
 const raceFilters = [
-  { slug: "human", label: "Human" },
-  { slug: "orc", label: "Orc" },
-  { slug: "undead", label: "Undead" },
+  { slug: "all",       label: "All" },
+  { slug: "human",     label: "Human" },
+  { slug: "orc",       label: "Orc" },
+  { slug: "undead",    label: "Undead" },
   { slug: "night-elf", label: "Night Elf" },
-  { slug: "neutral", label: "Neutral" },
+  { slug: "neutral",   label: "Neutral" },
 ];
 
 type Props = {
@@ -16,8 +17,8 @@ type Props = {
 
 export default async function BuildingsPage({ searchParams }: Props) {
   const params = (await searchParams) ?? {};
-  const activeRace = params.race ?? "human";
-  const visible = buildings.filter((b) => b.race === activeRace);
+  const activeRace = params.race ?? "all";
+  const visible = activeRace === "all" ? buildings : buildings.filter((b) => b.race === activeRace);
 
   return (
     <div className="page-shell page-stack">
@@ -30,17 +31,22 @@ export default async function BuildingsPage({ searchParams }: Props) {
         </p>
       </div>
 
-      <nav className="filter-bar" aria-label="Race filter">
-        {raceFilters.map((f) => (
-          <Link
-            key={f.slug}
-            href={`/buildings?race=${f.slug}`}
-            className={`filter-btn${activeRace === f.slug ? " filter-btn--active" : ""}`}
-          >
-            {f.label}
-          </Link>
-        ))}
-      </nav>
+      <div className="filter-panel">
+        <div className="filter-panel__group">
+          <span className="filter-panel__label">Race</span>
+          <div className="filter-chip-row">
+            {raceFilters.map((f) => (
+              <Link
+                key={f.slug}
+                href={f.slug === "all" ? "/buildings" : `/buildings?race=${f.slug}`}
+                className={`filter-chip${activeRace === f.slug ? " filter-chip--active" : ""}`}
+              >
+                {f.label}
+              </Link>
+            ))}
+          </div>
+        </div>
+      </div>
 
       <div className="icon-grid">
         {visible.map((building) => (

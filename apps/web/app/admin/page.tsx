@@ -36,6 +36,20 @@ const statusMessages: Record<string, string> = {
   "item-deleted":     "Item deleted.",
 };
 
+const buildingViewHref = (race: string) => `/buildings?race=${race}`;
+
+const itemViewHref = (shops: string[], category: string) => {
+  const preferredShop = shops.find((shop) =>
+    ["human", "orc", "undead", "night-elf", "goblin-merchant", "creep-drop", "tome"].includes(shop),
+  );
+
+  if (preferredShop) {
+    return `/items?tab=${preferredShop}`;
+  }
+
+  return category === "tome" ? "/items?tab=tome" : "/items";
+};
+
 type Props = {
   searchParams?: Promise<{ status?: string }>;
 };
@@ -94,7 +108,7 @@ export default async function AdminPage({ searchParams }: Props) {
   return (
     <div className="page-shell page-stack">
       <div className="section-head">
-        <h1 className="page-title admin-chosen-title">You are the chosen one - do what you must.</h1>
+        <h1 className="page-title admin-chosen-title">You have the power</h1>
       </div>
 
       {statusMessage ? <p className="status-banner">{statusMessage}</p> : null}
@@ -142,6 +156,7 @@ export default async function AdminPage({ searchParams }: Props) {
               </div>
               <div className="inline-actions">
                 <Link href={`/admin/builds/${build.slug}/edit`} className="button button--edit">Edit</Link>
+                <Link href={`/builds/${build.slug}`} className="button button--view">View</Link>
                 <form action={deleteBuildAction}>
                   <input type="hidden" name="buildId" value={String(build.id)} />
                   <button className="button button--danger" type="submit">Del</button>
@@ -167,6 +182,7 @@ export default async function AdminPage({ searchParams }: Props) {
               </div>
               <div className="inline-actions">
                 <Link href={`/admin/matchups/${matchup.slug}/edit`} className="button button--edit">Edit</Link>
+                <Link href={`/matchups/${matchup.slug}`} className="button button--view">View</Link>
                 <form action={deleteMatchupAction}>
                   <input type="hidden" name="matchupId" value={String(matchup.id)} />
                   <button className="button button--danger" type="submit">Del</button>
@@ -192,6 +208,7 @@ export default async function AdminPage({ searchParams }: Props) {
               </div>
               <div className="inline-actions">
                 <Link href={`/admin/heroes/${hero.slug}/edit`} className="button button--edit">Edit</Link>
+                <Link href={`/heroes/${hero.slug}`} className="button button--view">View</Link>
                 <form action={deleteHeroAction}>
                   <input type="hidden" name="heroId" value={String(hero.id)} />
                   <button className="button button--danger" type="submit">Del</button>
@@ -217,6 +234,7 @@ export default async function AdminPage({ searchParams }: Props) {
               </div>
               <div className="inline-actions">
                 <Link href={`/admin/units/${unit.slug}/edit`} className="button button--edit">Edit</Link>
+                <Link href={`/units/${unit.slug}`} className="button button--view">View</Link>
                 <form action={deleteUnitAction}>
                   <input type="hidden" name="unitId" value={String(unit.id)} />
                   <button className="button button--danger" type="submit">Del</button>
@@ -238,6 +256,7 @@ export default async function AdminPage({ searchParams }: Props) {
               </div>
               <div className="inline-actions">
                 <Link href={`/admin/maps/${map.slug}/edit`} className="button button--edit">Edit</Link>
+                <Link href={`/maps/${map.slug}`} className="button button--view">View</Link>
                 <form action={deleteMapAction}>
                   <input type="hidden" name="mapId" value={String(map.id)} />
                   <button className="button button--danger" type="submit">Del</button>
@@ -259,6 +278,7 @@ export default async function AdminPage({ searchParams }: Props) {
               </div>
               <div className="inline-actions">
                 <Link href={`/admin/races/${race.slug}/edit`} className="button button--edit">Edit</Link>
+                <Link href={`/races/${race.slug}`} className="button button--view">View</Link>
                 <form action={deleteRaceAction}>
                   <input type="hidden" name="raceId" value={String(race.id)} />
                   <button className="button button--danger" type="submit">Del</button>
@@ -281,6 +301,7 @@ export default async function AdminPage({ searchParams }: Props) {
               </div>
               <div className="inline-actions">
                 <Link href={`/admin/buildings/${building.id}/edit`} className="button button--edit">Edit</Link>
+                <Link href={buildingViewHref(building.race)} className="button button--view">View</Link>
                 <form action={deleteBuildingAction}>
                   <input type="hidden" name="buildingId" value={String(building.id)} />
                   <button className="button button--danger" type="submit">Del</button>
@@ -303,6 +324,7 @@ export default async function AdminPage({ searchParams }: Props) {
               </div>
               <div className="inline-actions">
                 <Link href={`/admin/items/${item.id}/edit`} className="button button--edit">Edit</Link>
+                <Link href={itemViewHref(item.shops, item.category)} className="button button--view">View</Link>
                 <form action={deleteItemAction}>
                   <input type="hidden" name="itemId" value={String(item.id)} />
                   <button className="button button--danger" type="submit">Del</button>

@@ -8,6 +8,14 @@ import type { Build, ListResponse } from "@warcraft3-guide-hub/shared";
 import { GameImage } from "./game-image";
 import { saveFavoriteAction, removeFavoriteAction } from "../app/builds/[slug]/favorite-actions";
 
+const RACE_ICONS: Record<string, string> = {
+  Human:     "Humans_Icon.png",
+  Orc:       "Orcs_Icon.png",
+  Undead:    "Undead_Icon.png",
+  "Night Elf": "Night_Elves_Icon.png",
+};
+const raceIcon = (name: string) => RACE_ICONS[name] ?? "Neutral.png";
+
 const HeartIcon = ({ filled }: { filled?: boolean }) => (
   <svg width="18" height="18" viewBox="0 0 24 24" fill={filled ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
     <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
@@ -19,22 +27,24 @@ type Props = {
   race?: string;
   matchup?: string;
   search?: string;
+  difficulty?: string;
   favoriteSlugs?: string[];
 };
 
 const PAGE_SIZE_OPTIONS = [20, 50, 100];
 
-async function fetchBuilds(page: number, pageSize: number, race?: string, matchup?: string, search?: string): Promise<ListResponse<Build>> {
+async function fetchBuilds(page: number, pageSize: number, race?: string, matchup?: string, search?: string, difficulty?: string): Promise<ListResponse<Build>> {
   const params = new URLSearchParams({ page: String(page), pageSize: String(pageSize) });
   if (race) params.set("race", race);
   if (matchup) params.set("matchup", matchup);
   if (search) params.set("search", search);
+  if (difficulty) params.set("difficulty", difficulty);
   const res = await fetch(`/api/builds?${params}`);
   if (!res.ok) throw new Error("Failed to fetch builds");
   return res.json();
 }
 
-export function BuildList({ initialResult, race, matchup, search, favoriteSlugs = [] }: Props) {
+export function BuildList({ initialResult, race, matchup, search, difficulty, favoriteSlugs = [] }: Props) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -84,7 +94,7 @@ export function BuildList({ initialResult, race, matchup, search, favoriteSlugs 
   const loadMore = async () => {
     setLoading(true);
     try {
-      const result = await fetchBuilds(page + 1, pageSize, race, matchup, search);
+      const result = await fetchBuilds(page + 1, pageSize, race, matchup, search, difficulty);
       setBuilds((prev) => [...prev, ...result.data]);
       setTotal(result.total);
       setPage((p) => p + 1);
@@ -98,7 +108,7 @@ export function BuildList({ initialResult, race, matchup, search, favoriteSlugs 
     setLoading(true);
     setPageSize(newSize);
     try {
-      const result = await fetchBuilds(1, newSize, race, matchup, search);
+      const result = await fetchBuilds(1, newSize, race, matchup, search, difficulty);
       setBuilds(result.data);
       setTotal(result.total);
       setPage(1);
@@ -119,7 +129,7 @@ export function BuildList({ initialResult, race, matchup, search, favoriteSlugs 
           }}
         >
           <label className="builds-search__label" htmlFor="build-title-search">
-            Search by title
+            <strong>Search by title</strong>
           </label>
           <input
             id="build-title-search"
@@ -134,7 +144,7 @@ export function BuildList({ initialResult, race, matchup, search, favoriteSlugs 
           </button>
         </form>
         <div className="builds-page-size">
-          <span className="muted">Per page:</span>
+          <strong className="muted">Per page:</strong>
           {PAGE_SIZE_OPTIONS.map((size) => (
             <button
               key={size}
@@ -149,7 +159,7 @@ export function BuildList({ initialResult, race, matchup, search, favoriteSlugs 
       </div>
       <div className="list-grid">
         {builds.map((build) => (
-          <article key={build.slug} className="card">
+          <article key={build.slug} className="card build-card">
             <button
               className={`heart-btn${favSet.has(build.slug) ? " heart-btn--filled" : ""}`}
               type="button"
@@ -158,24 +168,43 @@ export function BuildList({ initialResult, race, matchup, search, favoriteSlugs 
             >
               <HeartIcon filled={favSet.has(build.slug)} />
             </button>
-            <div className="list-meta">
+
+            <div className="build-card__header">
               <GameImage
-                src={build.raceImageUrl ?? `/images/Races/${build.raceSlug}.jpg`}
+                src={build.raceImageUrl ?? `/images/Races/${raceIcon(build.raceName)}`}
                 alt={build.raceName}
-                className="game-image--icon"
-                width={64}
-                height={64}
+                className="game-image--icon build-card__race-img"
+                width={48}
+                height={48}
               />
-              <p className="pill pill--race">{build.raceName}</p>
-              <p className="pill">{build.strategyType}</p>
-            </div>
-            <h2>{build.title}</h2>
-            <p>{build.summary}</p>
-            <div className="card__footer">
-              <div className="list-meta">
-                <span>Difficulty: <DifficultyBadge value={build.difficulty} /></span>
-                {build.bestAgainst ? <span>Best against: {build.bestAgainst}</span> : null}
+              <div className="build-card__header-body">
+                <div className="build-card__tags">
+                  {build.bestAgainst && build.bestAgainst !== build.raceName ? (
+                    <span className="build-matchup-row">
+                      <span className="build-matchup-row__name">{build.raceName}</span>
+                      <span className="build-matchup-row__vs">vs</span>
+                      <GameImage
+                        src={`/images/Races/${raceIcon(build.bestAgainst)}`}
+                        alt={build.bestAgainst}
+                        className="game-image--icon"
+                        width={16}
+                        height={16}
+                      />
+                      <span className="build-matchup-row__name">{build.bestAgainst}</span>
+                    </span>
+                  ) : (
+                    <span className="pill pill--race">{build.raceName}</span>
+                  )}
+                  <span className="pill build-card__strategy">{build.strategyType}</span>
+                </div>
+                <h2 className="build-card__title">{build.title}</h2>
               </div>
+            </div>
+
+            <p className="build-card__summary">{build.summary}</p>
+
+            <div className="build-card__footer">
+              <DifficultyBadge value={build.difficulty} />
               <Link href={`/builds/${build.slug}`} className="button button--ghost">
                 Open Build
               </Link>

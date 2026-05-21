@@ -1,5 +1,4 @@
-import { BuildFilterBar } from "../../components/build-filter-bar";
-import { BuildList } from "../../components/build-list";
+import { BuildsClient } from "../../components/builds-client";
 import { hasDatabaseUrl } from "@warcraft3-guide-hub/db";
 import { getSessionUser } from "../../lib/auth";
 import { listBuilds, listFavoriteBuildsForUser } from "../../lib/content";
@@ -10,19 +9,27 @@ type Props = {
     matchup?: string;
     search?: string;
     page?: string;
+    difficulty?: string;
   }>;
 };
 
 export default async function BuildsPage({ searchParams }: Props) {
   const params = (await searchParams) ?? {};
   const page = params.page ? Number.parseInt(params.page, 10) : 1;
-  const [result, sessionUser] = await Promise.all([
-    listBuilds({ race: params.race, matchup: params.matchup, search: params.search, page, pageSize: 20 }),
-    getSessionUser(),
+
+  // Start session lookup immediately; chain favorites off it so it starts
+  // as soon as the session resolves rather than waiting for builds too.
+  const sessionUserPromise = getSessionUser();
+  const favoritesPromise = sessionUserPromise.then((user) =>
+    user && hasDatabaseUrl()
+      ? listFavoriteBuildsForUser(user.id).then((favs) => favs.map((f) => f.build.slug))
+      : Promise.resolve([] as string[]),
+  );
+
+  const [result, favoriteSlugs] = await Promise.all([
+    listBuilds({ race: params.race, matchup: params.matchup, search: params.search, difficulty: params.difficulty, page, pageSize: 20 }),
+    favoritesPromise,
   ]);
-  const favoriteSlugs = sessionUser && hasDatabaseUrl()
-    ? (await listFavoriteBuildsForUser(sessionUser.id)).map((f) => f.build.slug)
-    : [];
 
   return (
     <div className="page-shell page-stack">
@@ -34,13 +41,11 @@ export default async function BuildsPage({ searchParams }: Props) {
           read like plans instead of raw lists.
         </p>
       </div>
-      <BuildFilterBar activeRace={params.race} activeMatchup={params.matchup} />
-      <BuildList
-        key={`${params.race ?? ""}-${params.matchup ?? ""}-${params.search ?? ""}`}
+      <BuildsClient
         initialResult={result}
-        race={params.race}
-        matchup={params.matchup}
-        search={params.search}
+        initialRace={params.race}
+        initialDifficulty={params.difficulty}
+        initialSearch={params.search}
         favoriteSlugs={favoriteSlugs}
       />
     </div>
