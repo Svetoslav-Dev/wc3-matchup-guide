@@ -28,6 +28,7 @@ import {
   listBuildSubmissionsForUser as listDatabaseBuildSubmissionsForUser,
   listFavoriteBuildsForUser as listDatabaseFavoriteBuildsForUser,
   listBuilds as listDatabaseBuilds,
+  getTopBuildPerRace as getDatabaseTopBuildPerRace,
   listHeroes as listDatabaseHeroes,
   listMaps as listDatabaseMaps,
   listMatchups as listDatabaseMatchups,
@@ -165,6 +166,9 @@ export const removeFavoriteBuildForUser = async (userId: number, favoriteId: num
 
 export const deleteBuildForUser = async (userId: number, buildId: number) =>
   hasDatabaseUrl() ? deleteDatabaseBuildForUser(userId, buildId) : null;
+
+export const getTopBuildPerRace = async (raceSlugs: string[]) =>
+  hasDatabaseUrl() ? getDatabaseTopBuildPerRace(raceSlugs) : [];
 
 export const getHomeStats = async () =>
   hasDatabaseUrl()

@@ -201,13 +201,14 @@ export function BuildList({ initialResult, race, matchup, search, difficulty, fa
               </div>
             </div>
 
-            <p className="build-card__summary">{build.summary}</p>
-
-            <div className="build-card__footer">
-              <DifficultyBadge value={build.difficulty} />
-              <Link href={`/builds/${build.slug}`} className="button button--ghost">
-                Open Build
-              </Link>
+            <div className="build-card__body">
+              <p className="build-card__summary">{build.summary}</p>
+              <div className="build-card__footer">
+                <DifficultyBadge value={build.difficulty} />
+                <Link href={`/builds/${build.slug}`} className="button button--ghost button--sm">
+                  Open Build
+                </Link>
+              </div>
             </div>
           </article>
         ))}

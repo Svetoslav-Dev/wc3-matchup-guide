@@ -1,6 +1,8 @@
 import Link from "next/link";
-import { listMatchups, listRaces, listBuilds, getHomeStats } from "../lib/content";
+import { listMatchups, listRaces, getTopBuildPerRace, getHomeStats } from "../lib/content";
 import { fetchMatchupWinRates } from "../lib/w3c-stats";
+
+export const revalidate = 3600;
 import { GameImage } from "../components/game-image";
 import { DifficultyBadge } from "../components/difficulty-badge";
 
@@ -71,19 +73,13 @@ const bestMatchupReasons: Record<string, string> = {
 };
 
 export default async function HomePage() {
-  const [stats, raceResult, allMatchups, humanBuilds, orcBuilds, undeadBuilds, nightElfBuilds, winRates] = await Promise.all([
+  const [stats, raceResult, allMatchups, topBuilds, winRates] = await Promise.all([
     getHomeStats(),
     listRaces(1, 20),
     listMatchups(1, 50),
-    listBuilds({ race: "human", pageSize: 1 }),
-    listBuilds({ race: "orc", pageSize: 1 }),
-    listBuilds({ race: "undead", pageSize: 1 }),
-    listBuilds({ race: "night-elf", pageSize: 1 }),
+    getTopBuildPerRace(raceOrder),
     fetchMatchupWinRates(),
   ]);
-  const topBuilds = [humanBuilds, orcBuilds, undeadBuilds, nightElfBuilds]
-    .map((result) => result.data[0])
-    .filter((b): b is NonNullable<typeof b> => Boolean(b));
   const featuredRaces = raceOrder
     .map((slug) => raceResult.data.find((race) => race.slug === slug))
     .filter((race): race is NonNullable<typeof race> => Boolean(race));

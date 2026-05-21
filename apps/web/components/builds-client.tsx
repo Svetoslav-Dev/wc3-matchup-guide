@@ -63,7 +63,7 @@ export function BuildsClient({ initialResult, initialRace, initialDifficulty, in
   const handleDifficultyChange = (d?: string) => applyFilters(race, d);
 
   return (
-    <div style={{ opacity: isPending ? 0.6 : 1, transition: "opacity 150ms ease" }}>
+    <div style={{ opacity: isPending ? 0.6 : 1, transition: "opacity 150ms ease" }} className="builds-layout">
       <BuildFilterBar
         activeRace={race}
         activeDifficulty={difficulty}

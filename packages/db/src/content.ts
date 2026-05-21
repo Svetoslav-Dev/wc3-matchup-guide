@@ -191,19 +191,19 @@ const enrichBuild = (
 
 export const listRaces = async (page = 1, pageSize = 20): Promise<ListResponse<Race>> => {
   const db = getDb();
-  const total = await db.$count(races);
-  const data = await db
-    .select()
-    .from(races)
-    .orderBy(sql`CASE ${races.slug}
-      WHEN 'human'     THEN 1
-      WHEN 'orc'       THEN 2
-      WHEN 'night-elf' THEN 3
-      WHEN 'undead'    THEN 4
-      ELSE 5
-    END`)
-    .limit(pageSize)
-    .offset((page - 1) * pageSize);
+  const [total, data] = await Promise.all([
+    db.$count(races),
+    db.select().from(races)
+      .orderBy(sql`CASE ${races.slug}
+        WHEN 'human'     THEN 1
+        WHEN 'orc'       THEN 2
+        WHEN 'night-elf' THEN 3
+        WHEN 'undead'    THEN 4
+        ELSE 5
+      END`)
+      .limit(pageSize)
+      .offset((page - 1) * pageSize),
+  ]);
 
   return {
     data: data.map(enrichRace),
@@ -411,6 +411,26 @@ export const findBuildBySlug = async (slug: string) => {
       instruction: step.instruction,
     })),
   );
+};
+
+// Single parallel fetch — replaces 4×listBuilds (8 queries) with 4 findFirst (no COUNT).
+export const getTopBuildPerRace = async (raceSlugs: string[]): Promise<Build[]> => {
+  const db = getDb();
+  const results = await Promise.all(
+    raceSlugs.map((raceSlug) =>
+      db.query.builds.findFirst({
+        where: and(
+          eq(builds.isPublished, true),
+          inArray(builds.raceId, db.select({ id: races.id }).from(races).where(eq(races.slug, raceSlug))),
+        ),
+        with: { race: true, matchup: true },
+        orderBy: asc(builds.title),
+      }),
+    ),
+  );
+  return results
+    .filter((b): b is NonNullable<typeof b> => Boolean(b))
+    .map((b) => enrichBuild(b, b.race.name, b.race.slug, b.matchup?.title));
 };
 
 export const getContentStats = async () => {

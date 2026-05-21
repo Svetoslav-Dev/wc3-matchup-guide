@@ -2,6 +2,8 @@ import Link from "next/link";
 import { listRaces } from "../../lib/content";
 import { GameImage } from "../../components/game-image";
 
+export const revalidate = 3600;
+
 export default async function RacesPage() {
   const result = await listRaces(1, 20);
   const playableRaces = result.data.filter((race) => race.slug !== "neutral");

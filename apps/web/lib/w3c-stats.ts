@@ -30,26 +30,34 @@ type MmrRangeEntry = {
 
 export type MatchupWinRates = Record<string, number>;
 
+// Module-level cache — the raw response is ~10 MB which exceeds Next.js's 2 MB
+// fetch-cache limit, so we cache the tiny processed result (8 numbers) ourselves.
+let _cached: MatchupWinRates | null = null;
+let _expiresAt = 0;
+const TTL_MS = 60 * 60 * 1000; // 1 hour
+
 export async function fetchMatchupWinRates(): Promise<MatchupWinRates> {
+  if (_cached && Date.now() < _expiresAt) return _cached;
+
   try {
     const res = await fetch(
       "https://website-backend.w3champions.com/api/w3c-stats/map-race-wins",
-      { next: { revalidate: 3600 } },
+      { cache: "no-store" },
     );
-    if (!res.ok) return {};
+    if (!res.ok) return _cached ?? {};
 
     const data: MmrRangeEntry[] = await res.json();
 
     const overall = data.find((entry) => entry.mmrRange === 0);
-    if (!overall) return {};
+    if (!overall) return _cached ?? {};
 
     const patches = Object.keys(overall.patchToStatsPerModes).sort();
     const latestPatch = patches[patches.length - 1];
-    if (!latestPatch) return {};
+    if (!latestPatch) return _cached ?? {};
 
     const maps = overall.patchToStatsPerModes[latestPatch];
     const overallMap = maps?.find((m) => m.mapName === "Overall") ?? maps?.[0];
-    if (!overallMap) return {};
+    if (!overallMap) return _cached ?? {};
 
     const result: MatchupWinRates = {};
 
@@ -68,8 +76,10 @@ export async function fetchMatchupWinRates(): Promise<MatchupWinRates> {
       }
     }
 
+    _cached = result;
+    _expiresAt = Date.now() + TTL_MS;
     return result;
   } catch {
-    return {};
+    return _cached ?? {};
   }
 }
