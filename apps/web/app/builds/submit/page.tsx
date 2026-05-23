@@ -1,12 +1,12 @@
 import Link from "next/link";
 import { hasDatabaseUrl } from "@warcraft3-guide-hub/db";
 import { getSessionUser } from "../../../lib/auth";
-import { listBuildSubmissionsForUser, listMatchups, listRaces } from "../../../lib/content";
-import { createUserBuildAction, deleteUserBuildAction } from "../user-actions";
-import { DifficultyBadge } from "../../../components/difficulty-badge";
+import { formatBuildStepsInput } from "../../../lib/admin-forms";
+import { getUserBuildById, listMatchups, listRaces } from "../../../lib/content";
+import { createUserBuildAction, updateUserBuildAction } from "../user-actions";
 
 type Props = {
-  searchParams?: Promise<{ status?: string; fields?: string }>;
+  searchParams?: Promise<{ status?: string; fields?: string; edit?: string }>;
 };
 
 export default async function SubmitBuildPage({ searchParams }: Props) {
@@ -44,40 +44,59 @@ export default async function SubmitBuildPage({ searchParams }: Props) {
   }
 
   const params = (await searchParams) ?? {};
-  const [raceResult, matchupResult, submissions] = await Promise.all([
+  const editBuildId = params.edit ? Number.parseInt(params.edit, 10) : null;
+
+  const [raceResult, matchupResult, editBuild] = await Promise.all([
     listRaces(1, 20),
     listMatchups(1, 50),
-    listBuildSubmissionsForUser(user.id),
+    editBuildId ? getUserBuildById(user.id, editBuildId) : Promise.resolve(null),
   ]);
+
   const visibleRaces = raceResult.data.filter((race) => race.slug !== "neutral");
 
   const FIELD_LABELS: Record<string, string> = {
     title: "Title", slug: "URL Identifier", summary: "Summary",
     difficulty: "Difficulty", strategyType: "Strategy Type", body: "Body",
+    stepsInput: "Build Steps",
   };
   const missingFields = params.fields
     ? params.fields.split(",").map((f) => FIELD_LABELS[f.trim()] ?? f.trim()).join(", ")
     : null;
 
   const statusMessage =
-    params.status === "submitted" ? { text: "Build submitted as a draft. You can remove it at any time from this page.", isError: false }
+    params.status === "submitted" ? { text: "Build submitted. It will appear on the public page once published by an admin.", isError: false }
+    : params.status === "updated"  ? { text: "Build updated successfully.", isError: false }
     : params.status === "removed"  ? { text: "Your build submission was removed.", isError: false }
     : params.status === "validation-error" ? { text: `Please fill in all required fields${missingFields ? `: ${missingFields}` : ""}.`, isError: true }
     : params.status === "server-error"     ? { text: "Something went wrong saving your build. Please try again.", isError: true }
     : null;
 
+  const isEditing = !!editBuild;
+  const formAction = isEditing ? updateUserBuildAction : createUserBuildAction;
+
   return (
     <div className="page-shell page-stack">
       <div className="section-head">
         <p className="section-label">Build Submission</p>
-        <h1 className="page-title">Submit your own build order.</h1>
+        <h1 className="page-title">
+          {isEditing ? `Editing: ${editBuild.title}` : "Submit your own build order."}
+        </h1>
+        {!isEditing && (
+          <p className="page-intro">
+            Fill in the metadata on the left and the guide content on the right. You can save as a draft or publish immediately.
+          </p>
+        )}
         <p className="page-intro">
-          Fill in the metadata on the left and the guide content on the right. Your build is saved as a draft and only you can see it until an admin publishes it.
-        </p>
-        <p className="page-intro">
-          For <strong>Build Steps</strong> use one line per step in this format:<br />
-          <code>1 | 12 | 1:30 | Build barracks and queue footmen</code><br />
-          <span style={{ fontSize: "0.85em" }}>( step number | food supply | timestamp | what to do )</span>
+          For <strong>Build Steps</strong> use one line per step:<br />
+          <code>
+            <span title="Step number">#</span>
+            {" 1 | "}
+            <span title="Food supply">🍖</span>
+            {" 12 | "}
+            <span title="Timestamp">⏱</span>
+            {" 1:30 | Build barracks and queue footmen"}
+          </code><br />
+          <span style={{ fontSize: "0.85em" }}>( # step | 🍖 food | ⏱ time | instruction )</span>
         </p>
         {statusMessage ? (
           <p className={statusMessage.isError ? "submit-error-msg" : "muted"}>
@@ -85,102 +104,83 @@ export default async function SubmitBuildPage({ searchParams }: Props) {
           </p>
         ) : null}
       </div>
-      <form action={createUserBuildAction} className="form-grid" id="submit-build">
+
+      <form action={formAction} className="form-grid" id="submit-build">
+        {isEditing && <input type="hidden" name="buildId" value={editBuild.id} />}
         <section className="form-panel">
           <h2>Core Metadata</h2>
           <div className="field">
             <label htmlFor="raceSlug">Race</label>
-            <select id="raceSlug" name="raceSlug" defaultValue={visibleRaces[0]?.slug}>
+            <select id="raceSlug" name="raceSlug" defaultValue={editBuild?.raceSlug ?? visibleRaces[0]?.slug}>
               {visibleRaces.map((race) => (
-                <option key={race.slug} value={race.slug}>
-                  {race.name}
-                </option>
+                <option key={race.slug} value={race.slug}>{race.name}</option>
               ))}
             </select>
           </div>
           <div className="field">
             <label htmlFor="matchupSlug">Matchup</label>
-            <select id="matchupSlug" name="matchupSlug" defaultValue="">
+            <select id="matchupSlug" name="matchupSlug" defaultValue={editBuild?.matchupSlug ?? ""}>
               <option value="">None</option>
               {matchupResult.data.map((matchup) => (
-                <option key={matchup.slug} value={matchup.slug}>
-                  {matchup.title}
-                </option>
+                <option key={matchup.slug} value={matchup.slug}>{matchup.title}</option>
               ))}
             </select>
           </div>
           <div className="field">
             <label htmlFor="title">Title</label>
-            <input id="title" name="title" type="text" placeholder="Human Fast Expand Into Casters" />
+            <input id="title" name="title" type="text" defaultValue={editBuild?.title ?? ""} placeholder="Human Fast Expand Into Casters" />
           </div>
           <div className="field">
             <label htmlFor="slug">URL Identifier (slug)</label>
-            <input id="slug" name="slug" type="text" placeholder="human-fast-expand-into-casters" />
+            <input id="slug" name="slug" type="text" defaultValue={editBuild?.slug ?? ""} placeholder="human-fast-expand-into-casters" />
           </div>
           <div className="field">
             <label htmlFor="difficulty">Difficulty</label>
-            <input id="difficulty" name="difficulty" type="text" placeholder="Intermediate" />
+            <select id="difficulty" name="difficulty" defaultValue={editBuild?.difficulty ?? "Medium"}>
+              <option value="Easy">Easy</option>
+              <option value="Medium">Medium</option>
+              <option value="Hard">Hard</option>
+              <option value="Very Hard">Very Hard</option>
+            </select>
           </div>
           <div className="field">
             <label htmlFor="strategyType">Strategy type</label>
-            <input id="strategyType" name="strategyType" type="text" placeholder="Macro Expansion" />
+            <input id="strategyType" name="strategyType" type="text" defaultValue={editBuild?.strategyType ?? ""} placeholder="Macro Expansion" />
           </div>
         </section>
         <section className="form-panel">
           <h2>Guide Content</h2>
           <div className="field">
             <label htmlFor="summary">Summary</label>
-            <textarea id="summary" name="summary" placeholder="Explain what the build is trying to achieve and when to use it." />
+            <textarea id="summary" name="summary" defaultValue={editBuild?.summary ?? ""} placeholder="Explain what the build is trying to achieve and when to use it." />
           </div>
           <div className="field">
             <label htmlFor="body">Body</label>
-            <textarea id="body" name="body" placeholder="Write the complete build guide body here." />
+            <textarea id="body" name="body" defaultValue={editBuild?.body ?? ""} placeholder="Write the complete build guide body here." />
           </div>
           <div className="field">
             <label htmlFor="stepsInput">Build steps</label>
             <textarea
               id="stepsInput"
               name="stepsInput"
+              defaultValue={editBuild ? formatBuildStepsInput(editBuild.steps) : ""}
               placeholder={"1 | 5 | 0:00 | Queue peasants and send the scout.\n2 | 18 | 1:35 | Start the expansion and secure the camp."}
             />
           </div>
-          <div style={{ marginTop: "0.5rem", display: "flex", justifyContent: "center" }}>
-            <button className="button button--ghost" type="submit">Submit Build</button>
+          <div style={{ marginTop: "0.5rem", display: "flex", gap: "0.75rem", justifyContent: "center" }}>
+            <button className="button button--ghost" name="publishMode" value="draft" type="submit">
+              {isEditing ? "Save Changes" : "Save as Draft"}
+            </button>
+            <button className="button button--publish" name="publishMode" value="publish" type="submit">
+              Publish Now
+            </button>
+            {isEditing && (
+              <Link href="/builds/submit" className="button button--cancel">Cancel</Link>
+            )}
           </div>
         </section>
       </form>
 
-      <section className="section" id="submitted-builds">
-        {submissions.length > 0 ? (
-          <div className="list-grid">
-            {submissions.map((build) => (
-              <article key={build.id} className="card">
-                <p className="pill">{build.isPublished ? "Published" : "Draft"}</p>
-                <h3>{build.title}</h3>
-                <p>{build.summary}</p>
-                <div className="list-meta">
-                  <span>{build.raceName}</span>
-                  <DifficultyBadge value={build.difficulty} />
-                  <span>{build.strategyType}</span>
-                </div>
-                <div className="card__footer">
-                  {build.isPublished ? (
-                    <Link href={`/builds/${build.slug}`} className="button button--ghost">
-                      View Build
-                    </Link>
-                  ) : (
-                    <span className="muted">Draft builds stay off the public builds page until published by an admin.</span>
-                  )}
-                  <form action={deleteUserBuildAction}>
-                    <input type="hidden" name="buildId" value={String(build.id)} />
-                    <button className="button button--ghost" type="submit">Remove Build</button>
-                  </form>
-                </div>
-              </article>
-            ))}
-          </div>
-        ) : null}
-      </section>
     </div>
   );
 }
