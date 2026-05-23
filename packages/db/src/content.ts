@@ -1,4 +1,4 @@
-import { and, asc, count, desc, eq, ilike, inArray, or, sql } from "drizzle-orm";
+import { and, asc, count, desc, eq, ilike, inArray, isNull, or, sql } from "drizzle-orm";
 import type {
   AdminBuildInput,
   AdminBuildListItem,
@@ -192,8 +192,9 @@ const enrichBuild = (
 export const listRaces = async (page = 1, pageSize = 20): Promise<ListResponse<Race>> => {
   const db = getDb();
   const [total, data] = await Promise.all([
-    db.$count(races),
+    db.$count(races, isNull(races.deletedAt)),
     db.select().from(races)
+      .where(isNull(races.deletedAt))
       .orderBy(sql`CASE ${races.slug}
         WHEN 'human'     THEN 1
         WHEN 'orc'       THEN 2
@@ -214,7 +215,7 @@ export const listRaces = async (page = 1, pageSize = 20): Promise<ListResponse<R
 export const findRaceBySlug = async (slug: string) => {
   const db = getDb();
   const race = await db.query.races.findFirst({
-    where: eq(races.slug, slug),
+    where: and(eq(races.slug, slug), isNull(races.deletedAt)),
   });
 
   return race ? enrichRace(race) : undefined;
@@ -222,11 +223,12 @@ export const findRaceBySlug = async (slug: string) => {
 
 export const listHeroes = async (page = 1, pageSize = 20): Promise<ListResponse<Hero>> => {
   const db = getDb();
-  const total = await db.$count(heroes);
+  const total = await db.$count(heroes, isNull(heroes.deletedAt));
   const data = await db.query.heroes.findMany({
     with: {
       race: true,
     },
+    where: isNull(heroes.deletedAt),
     orderBy: asc(heroes.name),
     limit: pageSize,
     offset: (page - 1) * pageSize,
@@ -241,7 +243,7 @@ export const listHeroes = async (page = 1, pageSize = 20): Promise<ListResponse<
 export const findHeroBySlug = async (slug: string) => {
   const db = getDb();
   const hero = await db.query.heroes.findFirst({
-    where: eq(heroes.slug, slug),
+    where: and(eq(heroes.slug, slug), isNull(heroes.deletedAt)),
     with: {
       race: true,
     },
@@ -252,11 +254,12 @@ export const findHeroBySlug = async (slug: string) => {
 
 export const listUnits = async (page = 1, pageSize = 20): Promise<ListResponse<Unit>> => {
   const db = getDb();
-  const total = await db.$count(units);
+  const total = await db.$count(units, isNull(units.deletedAt));
   const data = await db.query.units.findMany({
     with: {
       race: true,
     },
+    where: isNull(units.deletedAt),
     orderBy: asc(units.name),
     limit: pageSize,
     offset: (page - 1) * pageSize,
@@ -271,7 +274,7 @@ export const listUnits = async (page = 1, pageSize = 20): Promise<ListResponse<U
 export const findUnitBySlug = async (slug: string) => {
   const db = getDb();
   const unit = await db.query.units.findFirst({
-    where: eq(units.slug, slug),
+    where: and(eq(units.slug, slug), isNull(units.deletedAt)),
     with: {
       race: true,
     },
@@ -283,8 +286,8 @@ export const findUnitBySlug = async (slug: string) => {
 export const listMaps = async (page = 1, pageSize = 20): Promise<ListResponse<MapGuide>> => {
   const db = getDb();
   const [total, data] = await Promise.all([
-    db.$count(maps),
-    db.select().from(maps).orderBy(asc(maps.name)).limit(pageSize).offset((page - 1) * pageSize),
+    db.$count(maps, isNull(maps.deletedAt)),
+    db.select().from(maps).where(isNull(maps.deletedAt)).orderBy(asc(maps.name)).limit(pageSize).offset((page - 1) * pageSize),
   ]);
 
   return {
@@ -296,7 +299,7 @@ export const listMaps = async (page = 1, pageSize = 20): Promise<ListResponse<Ma
 export const findMapBySlug = async (slug: string) => {
   const db = getDb();
   const map = await db.query.maps.findFirst({
-    where: eq(maps.slug, slug),
+    where: and(eq(maps.slug, slug), isNull(maps.deletedAt)),
   });
 
   return map ? enrichMap(map) : undefined;
@@ -304,12 +307,13 @@ export const findMapBySlug = async (slug: string) => {
 
 export const listMatchups = async (page = 1, pageSize = 20): Promise<ListResponse<Matchup>> => {
   const db = getDb();
-  const total = await db.$count(matchups);
+  const total = await db.$count(matchups, isNull(matchups.deletedAt));
   const data = await db.query.matchups.findMany({
     with: {
       raceA: true,
       raceB: true,
     },
+    where: isNull(matchups.deletedAt),
     orderBy: asc(matchups.title),
     limit: pageSize,
     offset: (page - 1) * pageSize,
@@ -321,10 +325,20 @@ export const listMatchups = async (page = 1, pageSize = 20): Promise<ListRespons
   };
 };
 
+export const findMatchupsBySlugs = async (slugList: string[]): Promise<Matchup[]> => {
+  if (slugList.length === 0) return [];
+  const db = getDb();
+  const data = await db.query.matchups.findMany({
+    where: and(inArray(matchups.slug, slugList), isNull(matchups.deletedAt)),
+    with: { raceA: true, raceB: true },
+  });
+  return data.map((m) => enrichMatchup(m, m.raceA.name, m.raceB.name));
+};
+
 export const findMatchupBySlug = async (slug: string) => {
   const db = getDb();
   const matchup = await db.query.matchups.findFirst({
-    where: eq(matchups.slug, slug),
+    where: and(eq(matchups.slug, slug), isNull(matchups.deletedAt)),
     with: {
       raceA: true,
       raceB: true,
@@ -350,6 +364,7 @@ export const listBuilds = async (filters: BuildFilters = {}): Promise<ListRespon
   // Inline subqueries — no extra round-trips for race/matchup ID lookups
   const conditions = [
     eq(builds.isPublished, true),
+    isNull(builds.deletedAt),
     filters.race
       ? inArray(builds.raceId, db.select({ id: races.id }).from(races).where(eq(races.slug, filters.race)))
       : undefined,
@@ -368,7 +383,17 @@ export const listBuilds = async (filters: BuildFilters = {}): Promise<ListRespon
     db.query.builds.findMany({
       where,
       with: { race: true, matchup: true },
-      orderBy: asc(builds.title),
+      orderBy: filters.difficulty
+        ? asc(builds.title)
+        : [
+            sql`CASE ${builds.difficulty}
+              WHEN 'Easy'      THEN 1
+              WHEN 'Medium'    THEN 2
+              WHEN 'Hard'      THEN 3
+              WHEN 'Very Hard' THEN 4
+              ELSE 5 END`,
+            asc(builds.title),
+          ],
       limit: pageSize,
       offset: (page - 1) * pageSize,
     }),
@@ -385,7 +410,7 @@ export const listBuilds = async (filters: BuildFilters = {}): Promise<ListRespon
 export const findBuildBySlug = async (slug: string) => {
   const db = getDb();
   const build = await db.query.builds.findFirst({
-    where: and(eq(builds.slug, slug), eq(builds.isPublished, true)),
+    where: and(eq(builds.slug, slug), eq(builds.isPublished, true), isNull(builds.deletedAt)),
     with: {
       race: true,
       matchup: true,
@@ -421,6 +446,7 @@ export const getTopBuildPerRace = async (raceSlugs: string[]): Promise<Build[]> 
       db.query.builds.findFirst({
         where: and(
           eq(builds.isPublished, true),
+          isNull(builds.deletedAt),
           inArray(builds.raceId, db.select({ id: races.id }).from(races).where(eq(races.slug, raceSlug))),
         ),
         with: { race: true, matchup: true },
@@ -436,16 +462,30 @@ export const getTopBuildPerRace = async (raceSlugs: string[]): Promise<Build[]> 
 export const getContentStats = async () => {
   const db = getDb();
 
-  const [raceTotal, heroTotal, unitTotal, mapTotal, matchupTotal, buildTotal, buildingTotal, itemTotal] = await Promise.all([
-    db.$count(races),
-    db.$count(heroes),
-    db.$count(units),
-    db.$count(maps),
-    db.$count(matchups),
-    db.$count(builds),
-    db.$count(buildingsTable),
-    db.$count(gameItems),
-  ]);
+  // Single round trip replaces 8 parallel COUNTs
+  const [row] = await db.execute<{
+    race_total: string; hero_total: string; unit_total: string; map_total: string;
+    matchup_total: string; build_total: string; building_total: string; item_total: string;
+  }>(sql`
+    SELECT
+      (SELECT COUNT(*) FROM races      WHERE deleted_at IS NULL)                           AS race_total,
+      (SELECT COUNT(*) FROM heroes     WHERE deleted_at IS NULL)                           AS hero_total,
+      (SELECT COUNT(*) FROM units      WHERE deleted_at IS NULL)                           AS unit_total,
+      (SELECT COUNT(*) FROM maps       WHERE deleted_at IS NULL)                           AS map_total,
+      (SELECT COUNT(*) FROM matchups   WHERE deleted_at IS NULL)                           AS matchup_total,
+      (SELECT COUNT(*) FROM builds     WHERE is_published = true AND deleted_at IS NULL)   AS build_total,
+      (SELECT COUNT(*) FROM buildings  WHERE deleted_at IS NULL)                           AS building_total,
+      (SELECT COUNT(*) FROM game_items WHERE deleted_at IS NULL)                           AS item_total
+  `);
+
+  const raceTotal     = Number(row.race_total);
+  const heroTotal     = Number(row.hero_total);
+  const unitTotal     = Number(row.unit_total);
+  const mapTotal      = Number(row.map_total);
+  const matchupTotal  = Number(row.matchup_total);
+  const buildTotal    = Number(row.build_total);
+  const buildingTotal = Number(row.building_total);
+  const itemTotal     = Number(row.item_total);
 
   return {
     raceTotal,
@@ -662,18 +702,17 @@ export const updateBuild = async (
 
 export const deleteBuild = async (id: number) => {
   const db = getDb();
-  const [removed] = await db.delete(builds).where(eq(builds.id, id)).returning();
+  const [removed] = await db.update(builds).set({ deletedAt: new Date() }).where(eq(builds.id, id)).returning();
   return removed ?? null;
 };
 
 export const listBuildSubmissionsForUser = async (userId: number): Promise<UserBuildSubmission[]> => {
   const db = getDb();
   const records = await db.query.builds.findMany({
-    where: eq(builds.createdByUserId, userId),
-    with: {
-      race: true,
-    },
+    where: and(eq(builds.createdByUserId, userId), isNull(builds.deletedAt)),
+    with: { race: true },
     orderBy: desc(builds.createdAt),
+    limit: 100,
   });
 
   return records.map((build) => ({
@@ -689,10 +728,42 @@ export const listBuildSubmissionsForUser = async (userId: number): Promise<UserB
   }));
 };
 
+export const getUserBuildById = async (userId: number, buildId: number): Promise<AdminBuildRecord | null> => {
+  const db = getDb();
+  const build = await db.query.builds.findFirst({
+    where: and(eq(builds.id, buildId), eq(builds.createdByUserId, userId), isNull(builds.deletedAt)),
+    with: {
+      race: true,
+      matchup: true,
+      steps: { orderBy: asc(buildSteps.stepNumber) },
+    },
+  });
+  if (!build) return null;
+  return {
+    id: build.id,
+    raceSlug: build.race.slug,
+    matchupSlug: build.matchup?.slug ?? null,
+    title: build.title,
+    slug: build.slug,
+    summary: build.summary,
+    difficulty: build.difficulty,
+    strategyType: build.strategyType,
+    body: build.body,
+    isPublished: build.isPublished,
+    steps: build.steps.map((step) => ({
+      stepNumber: step.stepNumber,
+      supply: step.supply,
+      timing: step.timing,
+      instruction: step.instruction,
+    })),
+  };
+};
+
 export const deleteBuildForUser = async (userId: number, buildId: number) => {
   const db = getDb();
   const [removed] = await db
-    .delete(builds)
+    .update(builds)
+    .set({ deletedAt: new Date() })
     .where(and(eq(builds.id, buildId), eq(builds.createdByUserId, userId)))
     .returning();
 
@@ -761,7 +832,7 @@ export const updateMatchup = async (
 
 export const deleteMatchup = async (id: number) => {
   const db = getDb();
-  const [removed] = await db.delete(matchups).where(eq(matchups.id, id)).returning();
+  const [removed] = await db.update(matchups).set({ deletedAt: new Date() }).where(eq(matchups.id, id)).returning();
   return removed ?? null;
 };
 
@@ -816,7 +887,7 @@ export const updateHero = async (id: number, input: AdminHeroInput) => {
 
 export const deleteHero = async (id: number) => {
   const db = getDb();
-  const [removed] = await db.delete(heroes).where(eq(heroes.id, id)).returning();
+  const [removed] = await db.update(heroes).set({ deletedAt: new Date() }).where(eq(heroes.id, id)).returning();
   return removed ?? null;
 };
 
@@ -873,7 +944,7 @@ export const updateUnit = async (id: number, input: AdminUnitInput) => {
 
 export const deleteUnit = async (id: number) => {
   const db = getDb();
-  const [removed] = await db.delete(units).where(eq(units.id, id)).returning();
+  const [removed] = await db.update(units).set({ deletedAt: new Date() }).where(eq(units.id, id)).returning();
   return removed ?? null;
 };
 
@@ -922,7 +993,7 @@ export const updateMap = async (id: number, input: AdminMapInput) => {
 
 export const deleteMap = async (id: number) => {
   const db = getDb();
-  const [removed] = await db.delete(maps).where(eq(maps.id, id)).returning();
+  const [removed] = await db.update(maps).set({ deletedAt: new Date() }).where(eq(maps.id, id)).returning();
   return removed ?? null;
 };
 
@@ -971,7 +1042,7 @@ export const updateRace = async (id: number, input: AdminRaceInput) => {
 
 export const deleteRace = async (id: number) => {
   const db = getDb();
-  const [removed] = await db.delete(races).where(eq(races.id, id)).returning();
+  const [removed] = await db.update(races).set({ deletedAt: new Date() }).where(eq(races.id, id)).returning();
   return removed ?? null;
 };
 
@@ -1012,13 +1083,18 @@ export const getAdminBuildBySlug = async (slug: string): Promise<AdminBuildRecor
   };
 };
 
-export const listAdminBuilds = async (limit = 12, search?: string): Promise<AdminBuildListItem[]> => {
+export const listAdminBuilds = async (limit = 12, search?: string, race?: string, difficulty?: string): Promise<AdminBuildListItem[]> => {
   const db = getDb();
+  const conditions = [
+    isNull(builds.deletedAt),
+    search ? ilike(builds.title, `%${search}%`) : undefined,
+    race ? inArray(builds.raceId, db.select({ id: races.id }).from(races).where(eq(races.slug, race))) : undefined,
+    difficulty ? eq(builds.difficulty, difficulty) : undefined,
+  ].filter((c): c is NonNullable<typeof c> => Boolean(c));
+
   const records = await db.query.builds.findMany({
-    with: {
-      race: true,
-    },
-    where: search ? ilike(builds.title, `%${search}%`) : undefined,
+    with: { race: true },
+    where: and(...conditions),
     orderBy: asc(builds.title),
     limit,
   });
@@ -1071,7 +1147,7 @@ export const listAdminMatchups = async (limit = 12, search?: string): Promise<Ad
       raceA: true,
       raceB: true,
     },
-    where: search ? ilike(matchups.title, `%${search}%`) : undefined,
+    where: search ? and(isNull(matchups.deletedAt), ilike(matchups.title, `%${search}%`)) : isNull(matchups.deletedAt),
     orderBy: asc(matchups.title),
     limit,
   });
@@ -1112,13 +1188,16 @@ export const getAdminHeroBySlug = async (slug: string): Promise<AdminHeroRecord 
   };
 };
 
-export const listAdminHeroes = async (limit = 12, search?: string): Promise<AdminHeroListItem[]> => {
+export const listAdminHeroes = async (limit = 12, search?: string, race?: string): Promise<AdminHeroListItem[]> => {
   const db = getDb();
+  const conditions = [
+    isNull(heroes.deletedAt),
+    search ? ilike(heroes.name, `%${search}%`) : undefined,
+    race ? inArray(heroes.raceId, db.select({ id: races.id }).from(races).where(eq(races.slug, race))) : undefined,
+  ].filter((c): c is NonNullable<typeof c> => Boolean(c));
   const records = await db.query.heroes.findMany({
-    with: {
-      race: true,
-    },
-    where: search ? ilike(heroes.name, `%${search}%`) : undefined,
+    with: { race: true },
+    where: and(...conditions),
     orderBy: asc(heroes.name),
     limit,
   });
@@ -1167,7 +1246,7 @@ export const listAdminUnits = async (limit = 12, search?: string): Promise<Admin
     with: {
       race: true,
     },
-    where: search ? ilike(units.name, `%${search}%`) : undefined,
+    where: search ? and(isNull(units.deletedAt), ilike(units.name, `%${search}%`)) : isNull(units.deletedAt),
     orderBy: asc(units.name),
     limit,
   });
@@ -1209,7 +1288,7 @@ export const listAdminMaps = async (limit = 12, search?: string): Promise<AdminM
   const records = await db
     .select()
     .from(maps)
-    .where(search ? ilike(maps.name, `%${search}%`) : undefined)
+    .where(search ? and(isNull(maps.deletedAt), ilike(maps.name, `%${search}%`)) : isNull(maps.deletedAt))
     .orderBy(asc(maps.name))
     .limit(limit);
 
@@ -1247,7 +1326,7 @@ export const listAdminRaces = async (limit = 12, search?: string): Promise<Admin
   const records = await db
     .select()
     .from(races)
-    .where(search ? ilike(races.name, `%${search}%`) : undefined)
+    .where(search ? and(isNull(races.deletedAt), ilike(races.name, `%${search}%`)) : isNull(races.deletedAt))
     .orderBy(asc(races.name))
     .limit(limit);
 
@@ -1311,12 +1390,17 @@ export const sanitizeUser = (user: typeof users.$inferSelect): AuthUser => toAut
 
 // ── Buildings ─────────────────────────────────────────────────────────────────
 
-export const listAdminBuildings = async (limit = 12, search?: string): Promise<AdminBuildingListItem[]> => {
+export const listAdminBuildings = async (limit = 12, search?: string, race?: string): Promise<AdminBuildingListItem[]> => {
   const db = getDb();
+  const conditions = [
+    isNull(buildingsTable.deletedAt),
+    search ? ilike(buildingsTable.name, `%${search}%`) : undefined,
+    race ? eq(buildingsTable.race, race) : undefined,
+  ].filter((c): c is NonNullable<typeof c> => Boolean(c));
   const records = await db
     .select()
     .from(buildingsTable)
-    .where(search ? ilike(buildingsTable.name, `%${search}%`) : undefined)
+    .where(and(...conditions))
     .orderBy(asc(buildingsTable.name))
     .limit(limit);
   return records.map((b) => ({ id: b.id, name: b.name, race: b.race, imageFile: b.imageFile }));
@@ -1343,7 +1427,7 @@ export const updateBuilding = async (id: number, input: AdminBuildingInput) => {
 
 export const deleteBuilding = async (id: number) => {
   const db = getDb();
-  const [removed] = await db.delete(buildingsTable).where(eq(buildingsTable.id, id)).returning();
+  const [removed] = await db.update(buildingsTable).set({ deletedAt: new Date() }).where(eq(buildingsTable.id, id)).returning();
   return removed ?? null;
 };
 
@@ -1354,7 +1438,7 @@ export const listAdminItems = async (limit = 12, search?: string): Promise<Admin
   const records = await db
     .select()
     .from(gameItems)
-    .where(search ? ilike(gameItems.name, `%${search}%`) : undefined)
+    .where(search ? and(isNull(gameItems.deletedAt), ilike(gameItems.name, `%${search}%`)) : isNull(gameItems.deletedAt))
     .orderBy(asc(gameItems.name))
     .limit(limit);
   return records.map((i) => ({
@@ -1400,6 +1484,6 @@ export const updateItem = async (id: number, input: AdminItemInput) => {
 
 export const deleteItem = async (id: number) => {
   const db = getDb();
-  const [removed] = await db.delete(gameItems).where(eq(gameItems.id, id)).returning();
+  const [removed] = await db.update(gameItems).set({ deletedAt: new Date() }).where(eq(gameItems.id, id)).returning();
   return removed ?? null;
 };
