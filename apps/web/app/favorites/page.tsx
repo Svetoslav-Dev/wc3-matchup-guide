@@ -65,22 +65,24 @@ export default async function FavoritesPage() {
                     <HeartSvg />
                   </button>
                 </form>
-                <div className="list-meta">
+                <div className="fav-card__meta">
                   <GameImage
                     src={build.raceImageUrl ?? `/images/Races/${build.raceSlug}.jpg`}
                     alt={build.raceName}
-                    className="game-image--icon"
-                    width={48}
-                    height={48}
+                    className="game-image--icon fav-card__icon"
+                    width={40}
+                    height={40}
                   />
-                  <p className="pill pill--race">{build.raceName}</p>
-                  <p className="pill">{build.strategyType}</p>
+                  <div className="fav-card__tags">
+                    <span className="pill pill--race">{build.raceName}</span>
+                    <span className="pill">{build.strategyType}</span>
+                  </div>
                 </div>
-                <h2>{build.title}</h2>
+                <h2 className="fav-card__title">{build.title}</h2>
                 <p>{build.summary}</p>
-                <div className="card__footer">
-                  <span>Difficulty: <DifficultyBadge value={build.difficulty} /></span>
-                  <Link href={`/builds/${build.slug}`} className="button button--ghost">
+                <div className="card__footer" style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                  <DifficultyBadge value={build.difficulty} />
+                  <Link href={`/builds/${build.slug}`} className="button button--ghost button--sm">
                     Open Build
                   </Link>
                 </div>

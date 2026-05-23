@@ -135,35 +135,41 @@ export default async function UnitDetailPage({ params }: Props) {
 
   return (
     <div className="page-shell page-stack">
-      <div className="section-head">
-        <p className="section-label">{unit.raceName}</p>
-        <h1 className="page-title">{unit.name}</h1>
-        <p className="page-intro">{unit.description}</p>
-      </div>
-      <div className="detail-grid">
-        <div className="image-panel">
+      <div className="unit-hero">
+        <div className="image-panel image-panel--unit">
           <GameImage
             src={unit.imageUrl ?? `/images/units/${unit.slug}.jpg`}
             alt={unit.name}
+            width={160}
+            height={160}
           />
         </div>
-        <article className="detail-panel">
-          <h2>Role</h2>
-          <p>{unit.unitType}</p>
-          <div className="list-meta">
-            <span>{unit.tier}</span>
-            <span className="cost-chip" aria-label={`${unit.food} food`}>
-              <span className="cost-chip__icon" aria-hidden="true">🍖</span>
-              <span>{unit.food}</span>
-            </span>
-            <span className="cost-chip" aria-label={`${unit.gold} gold`}>
-              <span className="cost-chip__icon" aria-hidden="true">🪙</span>
-              <span>{unit.gold}</span>
-            </span>
-            <span className="cost-chip" aria-label={`${unit.lumber} lumber`}>
-              <span className="cost-chip__icon" aria-hidden="true">🪵</span>
-              <span>{unit.lumber}</span>
-            </span>
+        <div className="unit-hero__text">
+          <p className="section-label">{unit.raceName}</p>
+          <h1 className="page-title">{unit.name}</h1>
+          <p className="page-intro">{unit.description}</p>
+        </div>
+      </div>
+      <div className="unit-detail-grid">
+        <article className="detail-panel unit-stats-card">
+          <p className="section-label">Stats</p>
+          <div className="unit-stats-card__badges">
+            <span className="pill">{unit.unitType}</span>
+            <span className="pill">{unit.tier}</span>
+          </div>
+          <div className="unit-stats-card__costs">
+            <div className="unit-stat-row">
+              <span className="unit-stat-row__label">🍖 Food</span>
+              <span className="unit-stat-row__value">{unit.food}</span>
+            </div>
+            <div className="unit-stat-row">
+              <span className="unit-stat-row__label">🪙 Gold</span>
+              <span className="unit-stat-row__value">{unit.gold}</span>
+            </div>
+            <div className="unit-stat-row">
+              <span className="unit-stat-row__label">🪵 Lumber</span>
+              <span className="unit-stat-row__value">{unit.lumber}</span>
+            </div>
           </div>
         </article>
         <article className="detail-panel">

@@ -26,6 +26,7 @@ export default async function MapDetailPage({ params }: Props) {
         <GameImage
           src={map.imageUrl ?? `/images/maps/${map.slug}.jpg`}
           alt={map.name}
+          className="game-image game-image--contain"
         />
       </div>
       <div className="detail-grid">

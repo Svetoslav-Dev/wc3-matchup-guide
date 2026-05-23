@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { DifficultyBadge } from "./difficulty-badge";
@@ -51,6 +51,14 @@ export function BuildList({ initialResult, race, matchup, search, difficulty, fa
   const [builds, setBuilds] = useState(initialResult.data);
   const [total, setTotal] = useState(initialResult.total);
   const [page, setPage] = useState(1);
+
+  // When the parent resolves a new filtered result, sync local state.
+  // initialResult reference only changes after setResult() in BuildsClient.
+  useEffect(() => {
+    setBuilds(initialResult.data);
+    setTotal(initialResult.total);
+    setPage(1);
+  }, [initialResult]);
   const [pageSize, setPageSize] = useState(20);
   const [loading, setLoading] = useState(false);
   const [searchValue, setSearchValue] = useState(search ?? "");
@@ -170,30 +178,39 @@ export function BuildList({ initialResult, race, matchup, search, difficulty, fa
             </button>
 
             <div className="build-card__header">
-              <GameImage
-                src={build.raceImageUrl ?? `/images/Races/${raceIcon(build.raceName)}`}
-                alt={build.raceName}
-                className="game-image--icon build-card__race-img"
-                width={48}
-                height={48}
-              />
               <div className="build-card__header-body">
                 <div className="build-card__tags">
                   {build.bestAgainst && build.bestAgainst !== build.raceName ? (
-                    <span className="build-matchup-row">
-                      <span className="build-matchup-row__name">{build.raceName}</span>
-                      <span className="build-matchup-row__vs">vs</span>
+                    <span className="flex items-center gap-2">
+                      <GameImage
+                        src={build.raceImageUrl ?? `/images/Races/${raceIcon(build.raceName)}`}
+                        alt={build.raceName}
+                        className="w-8 h-8 rounded-[8px] shrink-0 object-cover shadow-md"
+                        width={32}
+                        height={32}
+                      />
+                      <span className="text-[0.8rem] font-bold text-text leading-none">{build.raceName}</span>
+                      <span className="text-[0.65rem] font-bold text-muted opacity-60 px-0.5">vs</span>
                       <GameImage
                         src={`/images/Races/${raceIcon(build.bestAgainst)}`}
                         alt={build.bestAgainst}
-                        className="game-image--icon"
-                        width={16}
-                        height={16}
+                        className="w-8 h-8 rounded-[8px] shrink-0 object-cover shadow-md"
+                        width={32}
+                        height={32}
                       />
-                      <span className="build-matchup-row__name">{build.bestAgainst}</span>
+                      <span className="text-[0.8rem] font-bold text-text leading-none">{build.bestAgainst}</span>
                     </span>
                   ) : (
-                    <span className="pill pill--race">{build.raceName}</span>
+                    <span className="flex items-center gap-2">
+                      <GameImage
+                        src={build.raceImageUrl ?? `/images/Races/${raceIcon(build.raceName)}`}
+                        alt={build.raceName}
+                        className="w-8 h-8 rounded-[8px] shrink-0 object-cover shadow-md"
+                        width={32}
+                        height={32}
+                      />
+                      <span className="text-[0.8rem] font-bold text-text leading-none">{build.raceName}</span>
+                    </span>
                   )}
                   <span className="pill build-card__strategy">{build.strategyType}</span>
                 </div>

@@ -73,7 +73,7 @@ export function AuthModalLauncher() {
         <Link href={buildHref(pathname, searchParams, "login")} className="button button--ghost">
           Log In
         </Link>
-        <Link href={buildHref(pathname, searchParams, "register")} className="button">
+        <Link href={buildHref(pathname, searchParams, "register")} className="button button--ghost">
           Register
         </Link>
       </div>

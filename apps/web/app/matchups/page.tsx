@@ -79,6 +79,13 @@ export default async function MatchupsPage({ searchParams }: Props) {
                 href={`/matchups?race=${race.slug}`}
                 className={`filter-chip${activeRace?.slug === race.slug ? " filter-chip--active" : ""}`}
               >
+                <GameImage
+                  src={raceImageSrc(race.slug)}
+                  alt={race.label}
+                  className="admin-filter-icon"
+                  width={16}
+                  height={16}
+                />
                 {race.label}
               </Link>
             ))}
@@ -92,34 +99,41 @@ export default async function MatchupsPage({ searchParams }: Props) {
           const diff = matchupDifficulty[matchup.slug];
           return (
             <article key={matchup.slug} className="card matchup-card">
-              <div className="matchup-card__pills">
-                <p className="pill pill--race">{getPerspectiveRace(matchup.title)}</p>
-                {diff ? <span className="pill"><DifficultyBadge value={diff} /></span> : null}
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2 flex-1 min-w-0">
+                  <GameImage
+                    src={raceImageSrc(slugA)}
+                    alt={nameA}
+                    className="w-10 h-10 rounded-[8px] shrink-0 object-cover shadow-md"
+                    width={40}
+                    height={40}
+                  />
+                  <span className="text-[0.88rem] font-bold text-text leading-none">{nameA}</span>
+                </div>
+                <span className="text-[0.65rem] font-bold text-muted uppercase tracking-widest px-1 shrink-0 opacity-60">vs</span>
+                <div className="flex items-center gap-2 flex-1 min-w-0 justify-end">
+                  <span className="text-[0.88rem] font-bold text-text leading-none">{nameB}</span>
+                  <GameImage
+                    src={raceImageSrc(slugB)}
+                    alt={nameB}
+                    className="w-10 h-10 rounded-[8px] shrink-0 object-cover shadow-md"
+                    width={40}
+                    height={40}
+                  />
+                </div>
               </div>
 
-              <div className="matchup-vs">
-                <div className="matchup-vs__side">
-                  <GameImage src={raceImageSrc(slugA)} alt={nameA} className="game-image--icon" width={72} height={72} />
-                  <span className="matchup-vs__race">{nameA}</span>
-                </div>
-                <span className="matchup-vs__label">vs</span>
-                <div className="matchup-vs__side">
-                  <GameImage src={raceImageSrc(slugB)} alt={nameB} className="game-image--icon" width={72} height={72} />
-                  <span className="matchup-vs__race">{nameB}</span>
-                </div>
-              </div>
+              {diff ? <div><DifficultyBadge value={diff} /></div> : null}
 
               <p className="matchup-card__summary">{matchup.summary}</p>
 
               <div className="card__footer">
-                <div className="list-meta">
-                  <span>⚔️ Hero focus: {matchup.heroChoices.join(", ")}</span>
-                </div>
-                <div className="card__footer-action card__footer-action--center">
-                  <Link href={`/matchups/${matchup.slug}`} className="button button--ghost">
-                    View Matchup Plan
-                  </Link>
-                </div>
+                <p className="text-muted m-0 leading-snug" style={{ fontSize: "0.8rem" }}>
+                  Hero focus: {matchup.heroChoices.join(", ")}
+                </p>
+                <Link href={`/matchups/${matchup.slug}`} className="button button--ghost button--sm">
+                  View Plan
+                </Link>
               </div>
             </article>
           );

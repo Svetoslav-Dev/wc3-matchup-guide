@@ -20,33 +20,68 @@ export default async function EditAdminBuildingPage({ params }: Props) {
 
   return (
     <div className="page-shell page-stack">
-      <div className="section-head">
-        <p className="section-label">God Panel · Buildings</p>
-        <h1 className="page-title">Edit {building.name}</h1>
+      <div className="admin-page-head">
+        <div>
+          <p className="section-label">God Panel · Buildings</p>
+          <h1 className="page-title">Edit {building.name}</h1>
+        </div>
+        <div className="admin-page-head__actions">
+          <a href="/admin/buildings" className="button button--ghost button--sm">← Back</a>
+        </div>
       </div>
-      <form action={updateBuildingAction} className="form-grid" encType="multipart/form-data">
+
+      <form action={updateBuildingAction} className="admin-edit-form" encType="multipart/form-data">
         <input type="hidden" name="buildingId" value={building.id} />
-        <section className="form-panel">
-          <h2>Details</h2>
-          <div className="field"><label htmlFor="name">Name</label><input id="name" name="name" type="text" defaultValue={building.name} /></div>
-          <div className="field">
-            <label htmlFor="race">Race</label>
-            <select id="race" name="race" defaultValue={building.race}>
-              {raceOptions.map((r) => <option key={r} value={r}>{r}</option>)}
-            </select>
+
+        <div className="admin-edit-form__body">
+          <div className="admin-edit-form__fields">
+            <div className="field">
+              <label htmlFor="name">Name</label>
+              <input id="name" name="name" type="text" defaultValue={building.name} />
+            </div>
+            <div className="field">
+              <label htmlFor="race">Race</label>
+              <select id="race" name="race" defaultValue={building.race}>
+                {raceOptions.map((r) => <option key={r} value={r}>{r}</option>)}
+              </select>
+            </div>
+            <div className="field">
+              <label htmlFor="imageFile">Image filename <span className="admin-edit-form__hint">(without extension)</span></label>
+              <input id="imageFile" name="imageFile" type="text" defaultValue={building.imageFile} placeholder="TownHall" />
+            </div>
+            <div className="field">
+              <label htmlFor="description">Description</label>
+              <textarea id="description" name="description" defaultValue={building.description} />
+            </div>
           </div>
-          <div className="field"><label htmlFor="imageFile">Image file (without extension)</label><input id="imageFile" name="imageFile" type="text" defaultValue={building.imageFile} placeholder="TownHall" /></div>
-          <div className="field">
-            <label htmlFor="imageUpload">Image (saves to /images/Buildings/)</label>
-            {building.imageFile ? <Image src={`/images/Buildings/${building.imageFile}.png`} alt={building.name} className="admin-img-preview" width={80} height={80} /> : null}
-            <input id="imageUpload" name="imageUpload" type="file" accept="image/*" />
+
+          <div className="admin-edit-form__sidebar">
+            <div className="admin-edit-form__preview-card">
+              <p className="section-label">Image Preview</p>
+              {building.imageFile ? (
+                <Image
+                  src={`/images/Buildings/${building.imageFile}.png`}
+                  alt={building.name}
+                  width={120}
+                  height={120}
+                  style={{ objectFit: "contain" }}
+                  className="admin-edit-form__preview-img"
+                />
+              ) : (
+                <div className="admin-edit-form__preview-empty">No image set</div>
+              )}
+              <div className="field">
+                <label htmlFor="imageUpload">Replace image</label>
+                <input id="imageUpload" name="imageUpload" type="file" accept="image/*" />
+              </div>
+            </div>
           </div>
-          <div className="field"><label htmlFor="description">Description</label><textarea id="description" name="description" defaultValue={building.description} /></div>
-          <div className="inline-actions">
-            <button className="button" type="submit">Save Building</button>
-            <a href="/admin/buildings" className="button button--ghost">Cancel</a>
-          </div>
-        </section>
+        </div>
+
+        <div className="admin-edit-form__footer">
+          <button className="button button--ghost" type="submit">Save Building</button>
+          <a href="/admin/buildings" className="button button--cancel">Cancel</a>
+        </div>
       </form>
     </div>
   );

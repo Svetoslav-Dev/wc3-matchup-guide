@@ -4,6 +4,8 @@ import { hasDatabaseUrl } from "@warcraft3-guide-hub/db";
 import { getSessionUser } from "../../../lib/auth";
 import { listAdminMatchups } from "../../../lib/content";
 import { deleteMatchupAction } from "../actions";
+import { DifficultyBadge } from "../../../components/difficulty-badge";
+import { ConfirmDelete } from "../../../components/confirm-delete";
 
 type Props = { searchParams?: Promise<{ q?: string }> };
 
@@ -16,39 +18,41 @@ export default async function AdminMatchupsPage({ searchParams }: Props) {
 
   return (
     <div className="page-shell page-stack">
-      <div className="section-head">
-        <p className="section-label">God Panel · Matchups</p>
-        <h1 className="page-title">All Matchups</h1>
+      <div className="admin-page-head">
+        <div>
+          <p className="section-label">God Panel · Matchups</p>
+          <h1 className="page-title">All Matchups</h1>
+        </div>
+        <div className="admin-page-head__actions">
+          <Link href="/admin" className="button button--ghost button--sm">← Back</Link>
+          <Link href="/admin/matchups/new" className="button button--ghost button--sm">+ New Matchup</Link>
+        </div>
       </div>
-      <div className="inline-actions">
-        <Link href="/admin" className="button button--ghost">← Back</Link>
-        <Link href="/admin/matchups/new" className="button button--ghost">New Matchup</Link>
+
+      <div className="admin-toolbar">
+        <form className="admin-toolbar__search" method="get">
+          <input className="admin-toolbar__input" name="q" defaultValue={q ?? ""} placeholder="Search matchups by title…" autoComplete="off" />
+          <button className="button button--ghost button--sm" type="submit">Search</button>
+        </form>
+        <p className="admin-toolbar__count">{records.length} result{records.length !== 1 ? "s" : ""}</p>
       </div>
-      <form className="admin-search" method="get">
-        <input
-          className="admin-search__input"
-          name="q"
-          defaultValue={q ?? ""}
-          placeholder="Search by title…"
-          autoComplete="off"
-        />
-        <button className="button button--ghost" type="submit">Search</button>
-        {q ? <Link href="/admin/matchups" className="button button--ghost">Clear</Link> : null}
-      </form>
-      <p className="muted">{records.length} result{records.length !== 1 ? "s" : ""}</p>
-      <div className="page-stack">
+
+      <div className="admin-list">
         {records.map((matchup) => (
-          <article key={matchup.slug} className="admin-card">
-            <h3>{matchup.title}</h3>
-            <p>{matchup.difficulty}</p>
-            <p className="muted">{matchup.raceASlug} vs {matchup.raceBSlug}</p>
+          <article key={matchup.slug} className="admin-list-row">
+            <div className="admin-list-row__info">
+              <p className="admin-list-row__name">{matchup.title}</p>
+              <div className="admin-card-meta">
+                <span className="pill pill--race">{matchup.raceASlug}</span>
+                <span className="muted" style={{ fontSize: "0.78rem" }}>vs</span>
+                <span className="pill pill--race">{matchup.raceBSlug}</span>
+                <DifficultyBadge value={matchup.difficulty} />
+              </div>
+            </div>
             <div className="inline-actions">
-              <Link href={`/admin/matchups/${matchup.slug}/edit`} className="button button--edit">Edit</Link>
-              <Link href={`/matchups/${matchup.slug}`} className="button button--view">View</Link>
-              <form action={deleteMatchupAction}>
-                <input type="hidden" name="matchupId" value={String(matchup.id)} />
-                <button className="button button--danger" type="submit">Delete</button>
-              </form>
+              <Link href={`/admin/matchups/${matchup.slug}/edit`} className="button button--edit button--sm">Edit</Link>
+              <Link href={`/matchups/${matchup.slug}`} className="button button--view button--sm">View</Link>
+              <ConfirmDelete action={deleteMatchupAction} itemName={matchup.title} hiddenFields={{ matchupId: String(matchup.id) }} />
             </div>
           </article>
         ))}

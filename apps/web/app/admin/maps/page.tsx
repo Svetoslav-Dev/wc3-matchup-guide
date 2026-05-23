@@ -5,6 +5,7 @@ import { hasDatabaseUrl } from "@warcraft3-guide-hub/db";
 import { getSessionUser } from "../../../lib/auth";
 import { listAdminMaps } from "../../../lib/content";
 import { deleteMapAction } from "../actions";
+import { ConfirmDelete } from "../../../components/confirm-delete";
 
 type Props = { searchParams?: Promise<{ q?: string }> };
 
@@ -17,21 +18,26 @@ export default async function AdminMapsPage({ searchParams }: Props) {
 
   return (
     <div className="page-shell page-stack">
-      <div className="section-head">
-        <p className="section-label">God Panel · Maps</p>
-        <h1 className="page-title">All Maps</h1>
+      <div className="admin-page-head">
+        <div>
+          <p className="section-label">God Panel · Maps</p>
+          <h1 className="page-title">All Maps</h1>
+        </div>
+        <div className="admin-page-head__actions">
+          <Link href="/admin" className="button button--ghost button--sm">← Back</Link>
+          <Link href="/admin/maps/new" className="button button--ghost button--sm">+ New Map</Link>
+        </div>
       </div>
-      <div className="inline-actions">
-        <Link href="/admin" className="button button--ghost">← Back</Link>
-        <Link href="/admin/maps/new" className="button button--ghost">New Map</Link>
+
+      <div className="admin-toolbar">
+        <form className="admin-toolbar__search" method="get">
+          <input className="admin-toolbar__input" name="q" defaultValue={q ?? ""} placeholder="Search maps by name…" autoComplete="off" />
+          <button className="button button--ghost button--sm" type="submit">Search</button>
+        </form>
+        <p className="admin-toolbar__count">{records.length} result{records.length !== 1 ? "s" : ""}</p>
       </div>
-      <form className="admin-search" method="get">
-        <input className="admin-search__input" name="q" defaultValue={q ?? ""} placeholder="Search by name…" autoComplete="off" />
-        <button className="button button--ghost" type="submit">Search</button>
-        {q ? <Link href="/admin/maps" className="button button--ghost">Clear</Link> : null}
-      </form>
-      <p className="muted">{records.length} result{records.length !== 1 ? "s" : ""}</p>
-      <div className="page-stack">
+
+      <div className="admin-list">
         {records.map((map) => (
           <article key={map.slug} className="admin-list-row">
             <div className="admin-list-row__img">
@@ -41,14 +47,12 @@ export default async function AdminMapsPage({ searchParams }: Props) {
             </div>
             <div className="admin-list-row__info">
               <p className="admin-list-row__name">{map.name}</p>
+              <span className="muted" style={{ fontSize: "0.78rem" }}>{map.slug}</span>
             </div>
             <div className="inline-actions">
-              <Link href={`/admin/maps/${map.slug}/edit`} className="button button--edit">Edit</Link>
-              <Link href={`/maps/${map.slug}`} className="button button--view">View</Link>
-              <form action={deleteMapAction}>
-                <input type="hidden" name="mapId" value={String(map.id)} />
-                <button className="button button--danger" type="submit">Delete</button>
-              </form>
+              <Link href={`/admin/maps/${map.slug}/edit`} className="button button--edit button--sm">Edit</Link>
+              <Link href={`/maps/${map.slug}`} className="button button--view button--sm">View</Link>
+              <ConfirmDelete action={deleteMapAction} itemName={map.name} hiddenFields={{ mapId: String(map.id) }} />
             </div>
           </article>
         ))}

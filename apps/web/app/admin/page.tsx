@@ -22,6 +22,7 @@ import {
   listAdminUnits,
 } from "../../lib/content";
 import { deleteBuildingAction, deleteItemAction } from "./actions";
+import { ConfirmDelete } from "../../components/confirm-delete";
 
 const RECENT_LIMIT = 6;
 
@@ -157,10 +158,7 @@ export default async function AdminPage({ searchParams }: Props) {
               <div className="inline-actions">
                 <Link href={`/admin/builds/${build.slug}/edit`} className="button button--edit">Edit</Link>
                 <Link href={`/builds/${build.slug}`} className="button button--view">View</Link>
-                <form action={deleteBuildAction}>
-                  <input type="hidden" name="buildId" value={String(build.id)} />
-                  <button className="button button--danger" type="submit">Del</button>
-                </form>
+                <ConfirmDelete action={deleteBuildAction} itemName={build.title} hiddenFields={{ buildId: String(build.id) }} />
               </div>
             </div>
           ))}
@@ -183,10 +181,7 @@ export default async function AdminPage({ searchParams }: Props) {
               <div className="inline-actions">
                 <Link href={`/admin/matchups/${matchup.slug}/edit`} className="button button--edit">Edit</Link>
                 <Link href={`/matchups/${matchup.slug}`} className="button button--view">View</Link>
-                <form action={deleteMatchupAction}>
-                  <input type="hidden" name="matchupId" value={String(matchup.id)} />
-                  <button className="button button--danger" type="submit">Del</button>
-                </form>
+                <ConfirmDelete action={deleteMatchupAction} itemName={matchup.title} hiddenFields={{ matchupId: String(matchup.id) }} />
               </div>
             </div>
           ))}
@@ -209,10 +204,7 @@ export default async function AdminPage({ searchParams }: Props) {
               <div className="inline-actions">
                 <Link href={`/admin/heroes/${hero.slug}/edit`} className="button button--edit">Edit</Link>
                 <Link href={`/heroes/${hero.slug}`} className="button button--view">View</Link>
-                <form action={deleteHeroAction}>
-                  <input type="hidden" name="heroId" value={String(hero.id)} />
-                  <button className="button button--danger" type="submit">Del</button>
-                </form>
+                <ConfirmDelete action={deleteHeroAction} itemName={hero.name} hiddenFields={{ heroId: String(hero.id) }} />
               </div>
             </div>
           ))}
@@ -235,10 +227,7 @@ export default async function AdminPage({ searchParams }: Props) {
               <div className="inline-actions">
                 <Link href={`/admin/units/${unit.slug}/edit`} className="button button--edit">Edit</Link>
                 <Link href={`/units/${unit.slug}`} className="button button--view">View</Link>
-                <form action={deleteUnitAction}>
-                  <input type="hidden" name="unitId" value={String(unit.id)} />
-                  <button className="button button--danger" type="submit">Del</button>
-                </form>
+                <ConfirmDelete action={deleteUnitAction} itemName={unit.name} hiddenFields={{ unitId: String(unit.id) }} />
               </div>
             </div>
           ))}
@@ -257,10 +246,7 @@ export default async function AdminPage({ searchParams }: Props) {
               <div className="inline-actions">
                 <Link href={`/admin/maps/${map.slug}/edit`} className="button button--edit">Edit</Link>
                 <Link href={`/maps/${map.slug}`} className="button button--view">View</Link>
-                <form action={deleteMapAction}>
-                  <input type="hidden" name="mapId" value={String(map.id)} />
-                  <button className="button button--danger" type="submit">Del</button>
-                </form>
+                <ConfirmDelete action={deleteMapAction} itemName={map.name} hiddenFields={{ mapId: String(map.id) }} />
               </div>
             </div>
           ))}
@@ -279,10 +265,7 @@ export default async function AdminPage({ searchParams }: Props) {
               <div className="inline-actions">
                 <Link href={`/admin/races/${race.slug}/edit`} className="button button--edit">Edit</Link>
                 <Link href={`/races/${race.slug}`} className="button button--view">View</Link>
-                <form action={deleteRaceAction}>
-                  <input type="hidden" name="raceId" value={String(race.id)} />
-                  <button className="button button--danger" type="submit">Del</button>
-                </form>
+                <ConfirmDelete action={deleteRaceAction} itemName={race.name} hiddenFields={{ raceId: String(race.id) }} />
               </div>
             </div>
           ))}
@@ -302,10 +285,7 @@ export default async function AdminPage({ searchParams }: Props) {
               <div className="inline-actions">
                 <Link href={`/admin/buildings/${building.id}/edit`} className="button button--edit">Edit</Link>
                 <Link href={buildingViewHref(building.race)} className="button button--view">View</Link>
-                <form action={deleteBuildingAction}>
-                  <input type="hidden" name="buildingId" value={String(building.id)} />
-                  <button className="button button--danger" type="submit">Del</button>
-                </form>
+                <ConfirmDelete action={deleteBuildingAction} itemName={building.name} hiddenFields={{ buildingId: String(building.id) }} />
               </div>
             </div>
           ))}
@@ -325,10 +305,7 @@ export default async function AdminPage({ searchParams }: Props) {
               <div className="inline-actions">
                 <Link href={`/admin/items/${item.id}/edit`} className="button button--edit">Edit</Link>
                 <Link href={itemViewHref(item.shops, item.category)} className="button button--view">View</Link>
-                <form action={deleteItemAction}>
-                  <input type="hidden" name="itemId" value={String(item.id)} />
-                  <button className="button button--danger" type="submit">Del</button>
-                </form>
+                <ConfirmDelete action={deleteItemAction} itemName={item.name} hiddenFields={{ itemId: String(item.id) }} />
               </div>
             </div>
           ))}

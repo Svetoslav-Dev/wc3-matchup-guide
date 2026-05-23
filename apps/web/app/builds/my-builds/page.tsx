@@ -4,6 +4,7 @@ import { getSessionUser } from "../../../lib/auth";
 import { listBuildSubmissionsForUser } from "../../../lib/content";
 import { deleteUserBuildAction } from "../user-actions";
 import { DifficultyBadge } from "../../../components/difficulty-badge";
+import { ConfirmDelete } from "../../../components/confirm-delete";
 
 export default async function MyBuildsPage() {
   if (!hasDatabaseUrl() || !process.env.JWT_SECRET) {
@@ -49,7 +50,7 @@ export default async function MyBuildsPage() {
           visible to everyone.
         </p>
         <div className="hero-actions">
-          <Link href="/builds/submit" className="button">Submit a New Build</Link>
+          <Link href="/builds/submit" className="button button--ghost">Submit a New Build</Link>
         </div>
       </div>
 
@@ -61,32 +62,40 @@ export default async function MyBuildsPage() {
         <div className="list-grid">
           {submissions.map((build) => (
             <article key={build.id} className="card">
-              <div className="list-meta">
-                <span className={`pill${build.isPublished ? "" : " pill--draft"}`}>
-                  {build.isPublished ? "Published" : "Draft"}
-                </span>
-                <span className="pill pill--race">{build.raceName}</span>
-              </div>
-              <h3>{build.title}</h3>
-              <p>{build.summary}</p>
-              <div className="list-meta">
-                <DifficultyBadge value={build.difficulty} />
-                <span>{build.strategyType}</span>
-              </div>
-              <div className="card__footer">
-                <div className="card__footer-action">
-                  {build.isPublished ? (
-                    <Link href={`/builds/${build.slug}`} className="button button--ghost">
-                      View Build
-                    </Link>
-                  ) : (
-                    <span className="muted">Pending admin review</span>
-                  )}
+              {/* Top row: difficulty + race + strategy | status */}
+              <div className="flex items-center justify-between gap-3">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <DifficultyBadge value={build.difficulty} />
+                  <span className="pill pill--race">{build.raceName}</span>
+                  {build.strategyType && <span className="pill">{build.strategyType}</span>}
                 </div>
-                <form action={deleteUserBuildAction}>
-                  <input type="hidden" name="buildId" value={String(build.id)} />
-                  <button className="button button--ghost" type="submit">Remove</button>
-                </form>
+                {!build.isPublished && (
+                  <span className="flex items-center gap-1.5 text-[0.75rem] font-semibold text-muted shrink-0">
+                    <span className="w-2 h-2 rounded-full shrink-0" style={{ background: "#f97316", boxShadow: "0 0 5px rgba(249,115,22,0.6)" }} />
+                    Pending review
+                  </span>
+                )}
+              </div>
+
+              {/* Title + summary */}
+              <div className="flex flex-col gap-1">
+                <h3 className="text-[1rem] font-bold text-text m-0 leading-snug">{build.title}</h3>
+                <p className="text-muted text-sm leading-relaxed m-0">{build.summary}</p>
+              </div>
+
+              {/* Footer */}
+              <div className="build-card__footer">
+                {build.isPublished ? (
+                  <Link href={`/builds/${build.slug}`} className="button button--ghost button--sm">
+                    View Build
+                  </Link>
+                ) : <span />}
+                <div className="flex items-center gap-2">
+                  <Link href={`/builds/submit?edit=${build.id}`} className="button button--edit button--sm">
+                    Edit
+                  </Link>
+                  <ConfirmDelete action={deleteUserBuildAction} itemName={build.title} hiddenFields={{ buildId: String(build.id) }} label="Remove" />
+                </div>
               </div>
             </article>
           ))}

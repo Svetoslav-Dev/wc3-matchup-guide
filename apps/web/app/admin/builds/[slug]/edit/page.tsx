@@ -47,10 +47,14 @@ export default async function EditAdminBuildPage({ params }: Props) {
 
   return (
     <div className="page-shell page-stack">
-      <div className="section-head">
-        <p className="section-label">Admin Build Editor</p>
-        <h1 className="page-title">Edit {build.title}</h1>
-        <p className="page-intro">Update metadata, publishing state, and ordered steps from one server-rendered form.</p>
+      <div className="admin-page-head">
+        <div>
+          <p className="section-label">Admin Build Editor</p>
+          <h1 className="page-title">Edit {build.title}</h1>
+        </div>
+        <div className="admin-page-head__actions">
+          <a href="/admin/builds" className="button button--ghost button--sm">← Back</a>
+        </div>
       </div>
       <form action={updateBuildAction} className="form-grid">
         <input type="hidden" name="buildId" value={build.id} />
@@ -113,7 +117,7 @@ export default async function EditAdminBuildPage({ params }: Props) {
             <textarea id="stepsInput" name="stepsInput" defaultValue={formatBuildStepsInput(build.steps)} />
           </div>
           <div className="inline-actions">
-            <button className="button" type="submit">Save Build</button>
+            <button className="button button--ghost" type="submit">Save Build</button>
           </div>
         </section>
       </form>

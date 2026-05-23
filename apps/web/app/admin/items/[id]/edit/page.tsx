@@ -45,7 +45,7 @@ export default async function EditAdminItemPage({ params }: Props) {
           <div className="field"><label htmlFor="description">Description</label><textarea id="description" name="description" defaultValue={item.description} /></div>
           <div className="inline-actions">
             <button className="button" type="submit">Save Item</button>
-            <a href="/admin/items" className="button button--ghost">Cancel</a>
+            <a href="/admin/items" className="button button--cancel">Cancel</a>
           </div>
         </section>
       </form>

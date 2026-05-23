@@ -1,11 +1,20 @@
 "use client";
 
+import { GameImage } from "./game-image";
+
 type Props = {
   activeRace?: string;
   activeMatchup?: string;
   activeDifficulty?: string;
   onRaceChange?: (race: string | undefined) => void;
   onDifficultyChange?: (difficulty: string | undefined) => void;
+};
+
+const RACE_ICONS: Record<string, string> = {
+  human:      "/images/Races/Humans_Icon.png",
+  orc:        "/images/Races/Orcs_Icon.png",
+  undead:     "/images/Races/Undead_Icon.png",
+  "night-elf": "/images/Races/Night_Elves_Icon.png",
 };
 
 const raceFilters = [
@@ -35,6 +44,7 @@ export function BuildFilterBar({ activeRace, activeDifficulty, onRaceChange, onD
         <div className="filter-chip-row">
           {raceFilters.map((race) => {
             const active = activeRaceSlug === race.slug;
+            const icon = RACE_ICONS[race.slug];
             return (
               <button
                 key={race.slug}
@@ -42,6 +52,7 @@ export function BuildFilterBar({ activeRace, activeDifficulty, onRaceChange, onD
                 className={`filter-chip${active ? " filter-chip--active" : ""}`}
                 onClick={() => onRaceChange?.(race.slug === "all" ? undefined : race.slug)}
               >
+                {icon && <GameImage src={icon} alt={race.name} className="admin-filter-icon" width={16} height={16} />}
                 {race.name}
               </button>
             );
@@ -62,7 +73,7 @@ export function BuildFilterBar({ activeRace, activeDifficulty, onRaceChange, onD
               <button
                 key={d.slug}
                 type="button"
-                className="filter-chip"
+                className={`filter-chip${active ? " filter-chip--active" : ""}`}
                 style={activeStyle}
                 onClick={() => onDifficultyChange?.(d.slug === "all" ? undefined : d.slug)}
               >

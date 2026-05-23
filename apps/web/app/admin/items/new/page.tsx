@@ -32,7 +32,7 @@ export default async function NewAdminItemPage() {
           <div className="field"><label htmlFor="description">Description</label><textarea id="description" name="description" /></div>
           <div className="inline-actions">
             <button className="button" type="submit">Create Item</button>
-            <a href="/admin/items" className="button button--ghost">Cancel</a>
+            <a href="/admin/items" className="button button--cancel">Cancel</a>
           </div>
         </section>
       </form>

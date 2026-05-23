@@ -5,6 +5,7 @@ import { hasDatabaseUrl } from "@warcraft3-guide-hub/db";
 import { getSessionUser } from "../../../lib/auth";
 import { listAdminUnits } from "../../../lib/content";
 import { deleteUnitAction } from "../actions";
+import { ConfirmDelete } from "../../../components/confirm-delete";
 
 type Props = { searchParams?: Promise<{ q?: string }> };
 
@@ -17,21 +18,26 @@ export default async function AdminUnitsPage({ searchParams }: Props) {
 
   return (
     <div className="page-shell page-stack">
-      <div className="section-head">
-        <p className="section-label">God Panel · Units</p>
-        <h1 className="page-title">All Units</h1>
+      <div className="admin-page-head">
+        <div>
+          <p className="section-label">God Panel · Units</p>
+          <h1 className="page-title">All Units</h1>
+        </div>
+        <div className="admin-page-head__actions">
+          <Link href="/admin" className="button button--ghost button--sm">← Back</Link>
+          <Link href="/admin/units/new" className="button button--ghost button--sm">+ New Unit</Link>
+        </div>
       </div>
-      <div className="inline-actions">
-        <Link href="/admin" className="button button--ghost">← Back</Link>
-        <Link href="/admin/units/new" className="button button--ghost">New Unit</Link>
+
+      <div className="admin-toolbar">
+        <form className="admin-toolbar__search" method="get">
+          <input className="admin-toolbar__input" name="q" defaultValue={q ?? ""} placeholder="Search units by name…" autoComplete="off" />
+          <button className="button button--ghost button--sm" type="submit">Search</button>
+        </form>
+        <p className="admin-toolbar__count">{records.length} result{records.length !== 1 ? "s" : ""}</p>
       </div>
-      <form className="admin-search" method="get">
-        <input className="admin-search__input" name="q" defaultValue={q ?? ""} placeholder="Search by name…" autoComplete="off" />
-        <button className="button button--ghost" type="submit">Search</button>
-        {q ? <Link href="/admin/units" className="button button--ghost">Clear</Link> : null}
-      </form>
-      <p className="muted">{records.length} result{records.length !== 1 ? "s" : ""}</p>
-      <div className="page-stack">
+
+      <div className="admin-list">
         {records.map((unit) => (
           <article key={unit.slug} className="admin-list-row">
             <div className="admin-list-row__img">
@@ -43,16 +49,13 @@ export default async function AdminUnitsPage({ searchParams }: Props) {
               <p className="admin-list-row__name">{unit.name}</p>
               <div className="admin-card-meta">
                 <span className="pill pill--race">{unit.raceName}</span>
-                <span className="muted">{unit.unitType}</span>
+                <span className="muted" style={{ fontSize: "0.78rem" }}>{unit.unitType}</span>
               </div>
             </div>
             <div className="inline-actions">
-              <Link href={`/admin/units/${unit.slug}/edit`} className="button button--edit">Edit</Link>
-              <Link href={`/units/${unit.slug}`} className="button button--view">View</Link>
-              <form action={deleteUnitAction}>
-                <input type="hidden" name="unitId" value={String(unit.id)} />
-                <button className="button button--danger" type="submit">Delete</button>
-              </form>
+              <Link href={`/admin/units/${unit.slug}/edit`} className="button button--edit button--sm">Edit</Link>
+              <Link href={`/units/${unit.slug}`} className="button button--view button--sm">View</Link>
+              <ConfirmDelete action={deleteUnitAction} itemName={unit.name} hiddenFields={{ unitId: String(unit.id) }} />
             </div>
           </article>
         ))}

@@ -3,6 +3,14 @@ import { hasDatabaseUrl } from "@warcraft3-guide-hub/db";
 import { getSessionUser } from "../../../lib/auth";
 import { getBuildBySlug, findFavoriteForUserByBuildSlug } from "../../../lib/content";
 import { removeFavoriteAction, saveFavoriteAction } from "./favorite-actions";
+import { GameImage } from "../../../components/game-image";
+
+const RACE_ICONS: Record<string, string> = {
+  Human:       "/images/Races/Humans_Icon.png",
+  Orc:         "/images/Races/Orcs_Icon.png",
+  Undead:      "/images/Races/Undead_Icon.png",
+  "Night Elf": "/images/Races/Night_Elves_Icon.png",
+};
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -43,7 +51,18 @@ export default async function BuildDetailPage({ params }: Props) {
   return (
     <div className="page-shell page-stack">
       <div className="section-head">
-        <p className="section-label">{build.strategyType}</p>
+        <div className="build-race-badge">
+          <GameImage
+            src={build.raceImageUrl ?? RACE_ICONS[build.raceName] ?? null}
+            alt={build.raceName}
+            className="build-race-badge__icon"
+            width={36}
+            height={36}
+          />
+          <span className="build-race-badge__name">{build.raceName}</span>
+          <span className="build-race-badge__sep" aria-hidden="true">·</span>
+          <span className="build-race-badge__strategy">{build.strategyType}</span>
+        </div>
         <h1 className="page-title">{build.title}</h1>
         <p className="page-intro">{build.summary}</p>
         <form action={heartAction} style={{ display: "contents" }}>

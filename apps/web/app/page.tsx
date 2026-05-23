@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { listMatchups, listRaces, getTopBuildPerRace, getHomeStats } from "../lib/content";
+import { getMatchupsBySlugs, listRaces, getTopBuildPerRace, getHomeStats } from "../lib/content";
 import { fetchMatchupWinRates } from "../lib/w3c-stats";
 
 export const revalidate = 3600;
@@ -73,17 +73,19 @@ const bestMatchupReasons: Record<string, string> = {
 };
 
 export default async function HomePage() {
-  const [stats, raceResult, allMatchups, topBuilds, winRates] = await Promise.all([
+  const neededMatchupSlugs = [...Object.values(worstMatchupSlugs), ...Object.values(bestMatchupSlugs)];
+
+  const [stats, raceResult, matchupList, topBuilds, winRates] = await Promise.all([
     getHomeStats(),
     listRaces(1, 20),
-    listMatchups(1, 50),
+    getMatchupsBySlugs(neededMatchupSlugs),
     getTopBuildPerRace(raceOrder),
     fetchMatchupWinRates(),
   ]);
   const featuredRaces = raceOrder
     .map((slug) => raceResult.data.find((race) => race.slug === slug))
     .filter((race): race is NonNullable<typeof race> => Boolean(race));
-  const matchupBySlug = new Map(allMatchups.data.map((m) => [m.slug, m]));
+  const matchupBySlug = new Map(matchupList.map((m) => [m.slug, m]));
   const worstMatchups = raceOrder
     .map((race) => matchupBySlug.get(worstMatchupSlugs[race]))
     .filter((m): m is NonNullable<typeof m> => Boolean(m));
@@ -122,20 +124,48 @@ export default async function HomePage() {
 
       <section className="stat-grid">
         <article className="stat-card">
-          <strong>{stats.raceTotal}</strong>
-          <span className="muted">playable races with strengths, hero cores, and macro themes</span>
+          <div className="stat-card__icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+          </div>
+          <div>
+            <strong>{stats.raceTotal}</strong>
+            <span className="muted">Playable races</span>
+          </div>
         </article>
         <article className="stat-card">
-          <strong>{stats.heroTotal}</strong>
-          <span className="muted">featured heroes grouped by role and primary battlefield use</span>
+          <div className="stat-card__icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+            </svg>
+          </div>
+          <div>
+            <strong>{stats.heroTotal}</strong>
+            <span className="muted">Featured heroes</span>
+          </div>
         </article>
         <article className="stat-card">
-          <strong>{stats.matchupTotal}</strong>
-          <span className="muted">matchup pages outlining early, mid, and late game priorities</span>
+          <div className="stat-card__icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5"/><line x1="13" y1="19" x2="19" y2="13"/><line x1="16" y1="16" x2="20" y2="20"/><line x1="7" y1="7" x2="11" y2="11"/>
+            </svg>
+          </div>
+          <div>
+            <strong>{stats.matchupTotal}</strong>
+            <span className="muted">Matchup pages</span>
+          </div>
         </article>
         <article className="stat-card">
-          <strong>{stats.buildTotal}</strong>
-          <span className="muted">curated build orders with timings, supply, and transition notes</span>
+          <div className="stat-card__icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/>
+            </svg>
+          </div>
+          <div>
+            <strong>{stats.buildTotal}</strong>
+            <span className="muted">Build orders</span>
+          </div>
         </article>
       </section>
 
@@ -147,29 +177,27 @@ export default async function HomePage() {
         <div className="card-grid">
           {featuredRaces.map((race) => (
             <article key={race.slug} className="card">
-              <div className="list-meta">
-                <p className="pill">{race.badge}</p>
-                {race.playDifficulty ? (
-                  <p className="pill"><DifficultyBadge value={race.playDifficulty} /></p>
-                ) : null}
-              </div>
-              <div className="title-row">
+              <div className="flex items-center gap-3">
                 <GameImage
                   src={race.imageUrl ?? raceImageSrc(race.slug)}
                   alt={race.name}
-                  className="game-image--icon"
-                  width={64}
-                  height={64}
+                  className="w-10 h-10 rounded-[8px] shrink-0 object-cover shadow-md"
+                  width={40}
+                  height={40}
                 />
-                <h3>{race.name}</h3>
+                <h3 className="text-[1rem] font-bold text-text m-0 leading-snug">{race.name}</h3>
               </div>
-              <p>{race.identity}</p>
+              <div className="flex items-center justify-between">
+                <span className="pill">{race.badge}</span>
+                {race.playDifficulty ? <DifficultyBadge value={race.playDifficulty} /> : null}
+              </div>
+              <p className="text-muted text-sm leading-relaxed m-0">{race.identity}</p>
               <div className="card__footer">
-                <div className="list-meta">
-                  <span>Signature: {race.signatureHeroes.join(", ")}</span>
-                </div>
-                <Link href={`/races/${race.slug}`} className="button button--ghost">
-                  View Race Guide
+                <p className="text-muted m-0 leading-snug" style={{ fontSize: "0.8rem" }}>
+                  {race.signatureHeroes.join(", ")}
+                </p>
+                <Link href={`/races/${race.slug}`} className="button button--ghost button--sm">
+                  View Race
                 </Link>
               </div>
             </article>
@@ -189,31 +217,33 @@ export default async function HomePage() {
             const diff = worstMatchupDifficulty[matchup.slug];
             return (
             <article key={matchup.slug} className="card">
-              <div className="matchup-header">
-                {diff ? <p className="pill"><DifficultyBadge value={diff} /></p> : null}
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2 flex-1 min-w-0">
+                  <GameImage src={raceImageSrc(slugA)} alt={nameA} className="w-10 h-10 rounded-[8px] shrink-0 object-cover shadow-md" width={40} height={40} />
+                  <span className="text-[0.88rem] font-bold text-text leading-none">{nameA}</span>
+                </div>
+                <span className="text-[0.65rem] font-bold text-muted uppercase tracking-widest px-1 shrink-0 opacity-60">vs</span>
+                <div className="flex items-center gap-2 flex-1 min-w-0 justify-end">
+                  <span className="text-[0.88rem] font-bold text-text leading-none">{nameB}</span>
+                  <GameImage src={raceImageSrc(slugB)} alt={nameB} className="w-10 h-10 rounded-[8px] shrink-0 object-cover shadow-md" width={40} height={40} />
+                </div>
+              </div>
+              <div className="flex items-center justify-between">
+                {diff ? <DifficultyBadge value={diff} /> : <span />}
                 {wr !== undefined ? (
                   <span className={`winrate-badge ${wr < 45 ? "winrate-badge--low" : wr > 55 ? "winrate-badge--high" : "winrate-badge--even"}`}>
                     {wr}% win
                   </span>
                 ) : null}
               </div>
-              <div className="matchup-vs">
-                <GameImage src={raceImageSrc(slugA)} alt={nameA} className="game-image--icon" width={64} height={64} />
-                <span className="matchup-vs__race">{nameA}</span>
-                <span className="matchup-vs__label">vs</span>
-                <GameImage src={raceImageSrc(slugB)} alt={nameB} className="game-image--icon" width={64} height={64} />
-                <span className="matchup-vs__race">{nameB}</span>
-              </div>
-              <p>{worstMatchupReasons[matchup.slug] ?? matchup.summary}</p>
+              <p className="text-muted text-sm leading-relaxed m-0">{worstMatchupReasons[matchup.slug] ?? matchup.summary}</p>
               <div className="card__footer">
-                <div className="list-meta">
-                  <span>Common mistake: {matchup.commonMistakes[0]}</span>
-                </div>
-                <div className="card__footer-action card__footer-action--center">
-                  <Link href={`/matchups/${matchup.slug}`} className="button button--ghost">
-                    Open Matchup
-                  </Link>
-                </div>
+                <p className="text-muted m-0 leading-snug" style={{ fontSize: "0.8rem" }}>
+                  Mistake: {matchup.commonMistakes[0]}
+                </p>
+                <Link href={`/matchups/${matchup.slug}`} className="button button--ghost button--sm">
+                  Open Matchup
+                </Link>
               </div>
             </article>
             );
@@ -233,31 +263,33 @@ export default async function HomePage() {
             const diff = bestMatchupDifficulty[matchup.slug];
             return (
             <article key={matchup.slug} className="card">
-              <div className="matchup-header">
-                {diff ? <p className="pill"><DifficultyBadge value={diff} /></p> : null}
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2 flex-1 min-w-0">
+                  <GameImage src={raceImageSrc(slugA)} alt={nameA} className="w-10 h-10 rounded-[8px] shrink-0 object-cover shadow-md" width={40} height={40} />
+                  <span className="text-[0.88rem] font-bold text-text leading-none">{nameA}</span>
+                </div>
+                <span className="text-[0.65rem] font-bold text-muted uppercase tracking-widest px-1 shrink-0 opacity-60">vs</span>
+                <div className="flex items-center gap-2 flex-1 min-w-0 justify-end">
+                  <span className="text-[0.88rem] font-bold text-text leading-none">{nameB}</span>
+                  <GameImage src={raceImageSrc(slugB)} alt={nameB} className="w-10 h-10 rounded-[8px] shrink-0 object-cover shadow-md" width={40} height={40} />
+                </div>
+              </div>
+              <div className="flex items-center justify-between">
+                {diff ? <DifficultyBadge value={diff} /> : <span />}
                 {wr !== undefined ? (
                   <span className={`winrate-badge ${wr < 45 ? "winrate-badge--low" : wr > 55 ? "winrate-badge--high" : "winrate-badge--even"}`}>
                     {wr}% win
                   </span>
                 ) : null}
               </div>
-              <div className="matchup-vs">
-                <GameImage src={raceImageSrc(slugA)} alt={nameA} className="game-image--icon" width={64} height={64} />
-                <span className="matchup-vs__race">{nameA}</span>
-                <span className="matchup-vs__label">vs</span>
-                <GameImage src={raceImageSrc(slugB)} alt={nameB} className="game-image--icon" width={64} height={64} />
-                <span className="matchup-vs__race">{nameB}</span>
-              </div>
-              <p>{bestMatchupReasons[matchup.slug] ?? matchup.summary}</p>
+              <p className="text-muted text-sm leading-relaxed m-0">{bestMatchupReasons[matchup.slug] ?? matchup.summary}</p>
               <div className="card__footer">
-                <div className="list-meta">
-                  <span>🗝️ Key strength: {matchup.heroChoices[0]}</span>
-                </div>
-                <div className="card__footer-action card__footer-action--center">
-                  <Link href={`/matchups/${matchup.slug}`} className="button button--ghost">
-                    Open Matchup
-                  </Link>
-                </div>
+                <p className="text-muted m-0 leading-snug" style={{ fontSize: "0.8rem" }}>
+                  Key strength: {matchup.heroChoices[0]}
+                </p>
+                <Link href={`/matchups/${matchup.slug}`} className="button button--ghost button--sm">
+                  Open Matchup
+                </Link>
               </div>
             </article>
             );
@@ -278,30 +310,28 @@ export default async function HomePage() {
           <div className="list-grid">
             {topBuilds.map((build) => (
               <article key={build.slug} className="card">
-                <div className="list-meta">
-                  <p className="pill">{build.strategyType}</p>
-                </div>
-                <div className="title-row">
+                <div className="flex items-center gap-3">
                   <GameImage
                     src={raceImageSrc(build.raceSlug)}
                     alt={build.raceName}
-                    className="game-image--icon"
-                    width={64}
-                    height={64}
+                    className="w-10 h-10 rounded-[8px] shrink-0 object-cover shadow-md"
+                    width={40}
+                    height={40}
                   />
-                  <h3>{build.title}</h3>
+                  <h3 className="text-[1rem] font-bold text-text m-0 leading-snug">{build.title}</h3>
                 </div>
-                <p>{build.summary}</p>
+                <div className="flex items-center justify-between">
+                  <DifficultyBadge value={build.difficulty} />
+                  {build.strategyType && <span className="pill">{build.strategyType}</span>}
+                </div>
+                <p className="text-muted text-sm leading-relaxed m-0">{build.summary}</p>
                 <div className="card__footer">
-                  <div className="list-meta">
-                    <span>Difficulty: <DifficultyBadge value={build.difficulty} /></span>
-                    {build.bestAgainst ? <span>Best against: {build.bestAgainst}</span> : null}
-                  </div>
-                  <div className="card__footer-action card__footer-action--center">
-                    <Link href={`/builds/${build.slug}`} className="button button--ghost">
-                      Open Build
-                    </Link>
-                  </div>
+                  <p className="text-muted m-0 leading-snug" style={{ fontSize: "0.8rem" }}>
+                    {build.bestAgainst ? `Best against: ${build.bestAgainst}` : build.raceName}
+                  </p>
+                  <Link href={`/builds/${build.slug}`} className="button button--ghost button--sm">
+                    Open Build
+                  </Link>
                 </div>
               </article>
             ))}
