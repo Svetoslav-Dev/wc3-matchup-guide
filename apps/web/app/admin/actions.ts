@@ -27,7 +27,7 @@ import {
   updateRace,
   updateUnit,
 } from "@warcraft3-guide-hub/db";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireRole } from "../../lib/auth";
 import { uploadImage } from "../../lib/upload-image";
@@ -88,6 +88,7 @@ export async function createBuildAction(formData: FormData) {
     throw new Error("Build creation failed.");
   }
 
+  revalidateTag("builds");
   revalidatePath("/admin");
   revalidatePath("/builds");
   redirect(`/admin/builds/${build.slug}/edit?status=created`);
@@ -115,6 +116,7 @@ export async function updateBuildAction(formData: FormData) {
     throw new Error("Build not found.");
   }
 
+  revalidateTag("builds");
   revalidatePath("/admin");
   revalidatePath("/builds");
   revalidatePath(`/builds/${build.slug}`);
@@ -136,6 +138,7 @@ export async function createMatchupAction(formData: FormData) {
     throw new Error("Matchup creation failed.");
   }
 
+  revalidateTag("matchups");
   revalidatePath("/admin");
   revalidatePath("/matchups");
   redirect(`/admin/matchups/${matchup.slug}/edit?status=created`);
@@ -163,6 +166,7 @@ export async function updateMatchupAction(formData: FormData) {
     throw new Error("Matchup not found.");
   }
 
+  revalidateTag("matchups");
   revalidatePath("/admin");
   revalidatePath("/matchups");
   revalidatePath(`/matchups/${matchup.slug}`);
@@ -208,6 +212,7 @@ export async function deleteBuildAction(formData: FormData) {
   }
 
   await deleteBuild(buildId);
+  revalidateTag("builds");
   revalidatePath("/admin");
   revalidatePath("/builds");
   redirect("/admin?status=build-deleted");
@@ -222,6 +227,7 @@ export async function deleteMatchupAction(formData: FormData) {
   }
 
   await deleteMatchup(matchupId);
+  revalidateTag("matchups");
   revalidatePath("/admin");
   revalidatePath("/matchups");
   redirect("/admin?status=matchup-deleted");
@@ -238,6 +244,7 @@ export async function createHeroAction(formData: FormData) {
   if (!parsed.success) throw new Error("Invalid hero form submission.");
   const hero = await createHero(parsed.data);
   if (!hero) throw new Error("Hero creation failed.");
+  revalidateTag("heroes");
   revalidatePath("/admin");
   revalidatePath("/heroes");
   redirect(`/admin/heroes/${hero.slug}/edit?status=created`);
@@ -256,6 +263,7 @@ export async function updateHeroAction(formData: FormData) {
   if (!parsed.success) throw new Error("Invalid hero form submission.");
   const hero = await updateHero(heroId, parsed.data);
   if (!hero) throw new Error("Hero not found.");
+  revalidateTag("heroes");
   revalidatePath("/admin");
   revalidatePath("/heroes");
   revalidatePath(`/heroes/${hero.slug}`);
@@ -271,6 +279,7 @@ export async function deleteHeroAction(formData: FormData) {
   }
 
   await deleteHero(heroId);
+  revalidateTag("heroes");
   revalidatePath("/admin");
   revalidatePath("/heroes");
   redirect("/admin?status=hero-deleted");
@@ -285,6 +294,7 @@ export async function createUnitAction(formData: FormData) {
   if (!parsed.success) throw new Error("Invalid unit form submission.");
   const unit = await createUnit(parsed.data);
   if (!unit) throw new Error("Unit creation failed.");
+  revalidateTag("units");
   revalidatePath("/admin");
   revalidatePath("/units");
   redirect(`/admin/units/${unit.slug}/edit?status=created`);
@@ -301,6 +311,7 @@ export async function updateUnitAction(formData: FormData) {
   if (!parsed.success) throw new Error("Invalid unit form submission.");
   const unit = await updateUnit(unitId, parsed.data);
   if (!unit) throw new Error("Unit not found.");
+  revalidateTag("units");
   revalidatePath("/admin");
   revalidatePath("/units");
   revalidatePath(`/units/${unit.slug}`);
@@ -316,6 +327,7 @@ export async function deleteUnitAction(formData: FormData) {
   }
 
   await deleteUnit(unitId);
+  revalidateTag("units");
   revalidatePath("/admin");
   revalidatePath("/units");
   redirect("/admin?status=unit-deleted");
@@ -330,6 +342,7 @@ export async function createMapAction(formData: FormData) {
   if (!parsed.success) throw new Error("Invalid map form submission.");
   const map = await createMap(parsed.data);
   if (!map) throw new Error("Map creation failed.");
+  revalidateTag("maps");
   revalidatePath("/admin");
   revalidatePath("/maps");
   redirect(`/admin/maps/${map.slug}/edit?status=created`);
@@ -354,6 +367,7 @@ export async function updateMapAction(formData: FormData) {
     throw new Error("Map not found.");
   }
 
+  revalidateTag("maps");
   revalidatePath("/admin");
   revalidatePath("/maps");
   revalidatePath(`/maps/${map.slug}`);
@@ -369,6 +383,7 @@ export async function deleteMapAction(formData: FormData) {
   }
 
   await deleteMap(mapId);
+  revalidateTag("maps");
   revalidatePath("/admin");
   revalidatePath("/maps");
   redirect("/admin?status=map-deleted");
@@ -383,6 +398,7 @@ export async function createRaceAction(formData: FormData) {
   if (!parsed.success) throw new Error("Invalid race form submission.");
   const race = await createRace(parsed.data);
   if (!race) throw new Error("Race creation failed.");
+  revalidateTag("races");
   revalidatePath("/admin");
   revalidatePath("/races");
   redirect(`/admin/races/${race.slug}/edit?status=created`);
@@ -399,6 +415,7 @@ export async function updateRaceAction(formData: FormData) {
   if (!parsed.success) throw new Error("Invalid race form submission.");
   const race = await updateRace(raceId, parsed.data);
   if (!race) throw new Error("Race not found.");
+  revalidateTag("races");
   revalidatePath("/admin");
   revalidatePath("/races");
   revalidatePath(`/races/${race.slug}`);
@@ -414,6 +431,7 @@ export async function deleteRaceAction(formData: FormData) {
   }
 
   await deleteRace(raceId);
+  revalidateTag("races");
   revalidatePath("/admin");
   revalidatePath("/races");
   redirect("/admin?status=race-deleted");

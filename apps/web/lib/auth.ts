@@ -127,10 +127,7 @@ export const getSessionUser = async () => {
   }
 
   try {
-    const session = await verifyAuthToken(token);
-    const user = await findUserById(session.id);
-
-    return user ? sanitizeUser(user) : null;
+    return await verifyAuthToken(token);
   } catch {
     return null;
   }

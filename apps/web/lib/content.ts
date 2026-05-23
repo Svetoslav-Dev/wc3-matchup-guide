@@ -1,7 +1,9 @@
+import { unstable_cache } from "next/cache";
 import {
   addFavoriteBuildForUser as addDatabaseFavoriteBuildForUser,
   findFavoriteForUserByBuildSlug as findDatabaseFavoriteForUserByBuildSlug,
   getAdminBuildBySlug as getDatabaseAdminBuildBySlug,
+  getUserBuildById as getDatabaseUserBuildById,
   getAdminBuildingById as getDatabaseAdminBuildingById,
   getAdminHeroBySlug as getDatabaseAdminHeroBySlug,
   getAdminItemById as getDatabaseAdminItemById,
@@ -32,6 +34,7 @@ import {
   listHeroes as listDatabaseHeroes,
   listMaps as listDatabaseMaps,
   listMatchups as listDatabaseMatchups,
+  findMatchupsBySlugs as findDatabaseMatchupsBySlugs,
   listRaces as listDatabaseRaces,
   listUnits as listDatabaseUnits,
   removeFavoriteBuildForUser as removeDatabaseFavoriteBuildForUser,
@@ -59,50 +62,105 @@ import {
 } from "@warcraft3-guide-hub/shared";
 import type { BuildFilters } from "@warcraft3-guide-hub/shared";
 
-export const listRaces = async (page = 1, pageSize = 20) =>
-  hasDatabaseUrl() ? listDatabaseRaces(page, pageSize) : queryRaces(page, pageSize);
+export const listRaces = unstable_cache(
+  async (page = 1, pageSize = 20) =>
+    hasDatabaseUrl() ? listDatabaseRaces(page, pageSize) : queryRaces(page, pageSize),
+  ["races"],
+  { revalidate: 3600, tags: ["races"] },
+);
 
-export const getRaceBySlug = async (slug: string) =>
-  hasDatabaseUrl() ? findDatabaseRaceBySlug(slug) : getMockRaceBySlug(slug);
+export const getRaceBySlug = unstable_cache(
+  async (slug: string) =>
+    hasDatabaseUrl() ? findDatabaseRaceBySlug(slug) : getMockRaceBySlug(slug),
+  ["race"],
+  { revalidate: 3600, tags: ["races"] },
+);
 
-export const listHeroes = async (page = 1, pageSize = 20) =>
-  hasDatabaseUrl() ? listDatabaseHeroes(page, pageSize) : queryHeroes(page, pageSize);
+export const listHeroes = unstable_cache(
+  async (page = 1, pageSize = 20) =>
+    hasDatabaseUrl() ? listDatabaseHeroes(page, pageSize) : queryHeroes(page, pageSize),
+  ["heroes"],
+  { revalidate: 3600, tags: ["heroes"] },
+);
 
-export const getHeroBySlug = async (slug: string) =>
-  hasDatabaseUrl() ? findDatabaseHeroBySlug(slug) : getMockHeroBySlug(slug);
+export const getHeroBySlug = unstable_cache(
+  async (slug: string) =>
+    hasDatabaseUrl() ? findDatabaseHeroBySlug(slug) : getMockHeroBySlug(slug),
+  ["hero"],
+  { revalidate: 3600, tags: ["heroes"] },
+);
 
-export const listUnits = async (page = 1, pageSize = 20) =>
-  hasDatabaseUrl() ? listDatabaseUnits(page, pageSize) : queryUnits(page, pageSize);
+export const listUnits = unstable_cache(
+  async (page = 1, pageSize = 20) =>
+    hasDatabaseUrl() ? listDatabaseUnits(page, pageSize) : queryUnits(page, pageSize),
+  ["units"],
+  { revalidate: 3600, tags: ["units"] },
+);
 
-export const getUnitBySlug = async (slug: string) =>
-  hasDatabaseUrl() ? findDatabaseUnitBySlug(slug) : getMockUnitBySlug(slug);
+export const getUnitBySlug = unstable_cache(
+  async (slug: string) =>
+    hasDatabaseUrl() ? findDatabaseUnitBySlug(slug) : getMockUnitBySlug(slug),
+  ["unit"],
+  { revalidate: 3600, tags: ["units"] },
+);
 
-export const listMaps = async (page = 1, pageSize = 20) =>
-  hasDatabaseUrl() ? listDatabaseMaps(page, pageSize) : queryMaps(page, pageSize);
+export const listMaps = unstable_cache(
+  async (page = 1, pageSize = 20) =>
+    hasDatabaseUrl() ? listDatabaseMaps(page, pageSize) : queryMaps(page, pageSize),
+  ["maps"],
+  { revalidate: 3600, tags: ["maps"] },
+);
 
-export const getMapBySlug = async (slug: string) =>
-  hasDatabaseUrl() ? findDatabaseMapBySlug(slug) : getMockMapBySlug(slug);
+export const getMapBySlug = unstable_cache(
+  async (slug: string) =>
+    hasDatabaseUrl() ? findDatabaseMapBySlug(slug) : getMockMapBySlug(slug),
+  ["map"],
+  { revalidate: 3600, tags: ["maps"] },
+);
 
-export const listMatchups = async (page = 1, pageSize = 20) =>
-  hasDatabaseUrl() ? listDatabaseMatchups(page, pageSize) : queryMatchups(page, pageSize);
+export const listMatchups = unstable_cache(
+  async (page = 1, pageSize = 20) =>
+    hasDatabaseUrl() ? listDatabaseMatchups(page, pageSize) : queryMatchups(page, pageSize),
+  ["matchups"],
+  { revalidate: 3600, tags: ["matchups"] },
+);
 
-export const getMatchupBySlug = async (slug: string) =>
-  hasDatabaseUrl() ? findDatabaseMatchupBySlug(slug) : getMockMatchupBySlug(slug);
+export const getMatchupBySlug = unstable_cache(
+  async (slug: string) =>
+    hasDatabaseUrl() ? findDatabaseMatchupBySlug(slug) : getMockMatchupBySlug(slug),
+  ["matchup"],
+  { revalidate: 3600, tags: ["matchups"] },
+);
 
-export const listBuilds = async (filters: BuildFilters = {}) =>
-  hasDatabaseUrl() ? listDatabaseBuilds(filters) : queryBuilds(filters);
+export const getMatchupsBySlugs = unstable_cache(
+  async (slugs: string[]) =>
+    hasDatabaseUrl() ? findDatabaseMatchupsBySlugs(slugs) : mockMatchups.filter((m) => slugs.includes(m.slug)),
+  ["matchups-by-slugs"],
+  { revalidate: 3600, tags: ["matchups"] },
+);
 
-export const getBuildBySlug = async (slug: string) =>
-  hasDatabaseUrl() ? findDatabaseBuildBySlug(slug) : getMockBuildBySlug(slug);
+export const listBuilds = unstable_cache(
+  async (filters: BuildFilters = {}) =>
+    hasDatabaseUrl() ? listDatabaseBuilds(filters) : queryBuilds(filters),
+  ["builds"],
+  { revalidate: 60, tags: ["builds"] },
+);
 
-export const listAdminBuilds = async (limit = 12, search?: string) =>
-  hasDatabaseUrl() ? listDatabaseAdminBuilds(limit, search) : [];
+export const getBuildBySlug = unstable_cache(
+  async (slug: string) =>
+    hasDatabaseUrl() ? findDatabaseBuildBySlug(slug) : getMockBuildBySlug(slug),
+  ["build"],
+  { revalidate: 60, tags: ["builds"] },
+);
+
+export const listAdminBuilds = async (limit = 12, search?: string, race?: string, difficulty?: string) =>
+  hasDatabaseUrl() ? listDatabaseAdminBuilds(limit, search, race, difficulty) : [];
 
 export const getAdminBuildBySlug = async (slug: string) =>
   hasDatabaseUrl() ? getDatabaseAdminBuildBySlug(slug) : null;
 
-export const listAdminHeroes = async (limit = 12, search?: string) =>
-  hasDatabaseUrl() ? listDatabaseAdminHeroes(limit, search) : [];
+export const listAdminHeroes = async (limit = 12, search?: string, race?: string) =>
+  hasDatabaseUrl() ? listDatabaseAdminHeroes(limit, search, race) : [];
 
 export const getAdminHeroBySlug = async (slug: string) =>
   hasDatabaseUrl() ? getDatabaseAdminHeroBySlug(slug) : null;
@@ -131,8 +189,8 @@ export const listAdminMatchups = async (limit = 12, search?: string) =>
 export const getAdminMatchupBySlug = async (slug: string) =>
   hasDatabaseUrl() ? getDatabaseAdminMatchupBySlug(slug) : null;
 
-export const listAdminBuildings = async (limit = 12, search?: string) =>
-  hasDatabaseUrl() ? listDatabaseAdminBuildings(limit, search) : [];
+export const listAdminBuildings = async (limit = 12, search?: string, race?: string) =>
+  hasDatabaseUrl() ? listDatabaseAdminBuildings(limit, search, race) : [];
 
 export const getAdminBuildingById = async (id: number) =>
   hasDatabaseUrl() ? getDatabaseAdminBuildingById(id) : null;
@@ -151,6 +209,9 @@ export const listFavoriteBuildsForUser = async (userId: number) =>
 export const listBuildSubmissionsForUser = async (userId: number) =>
   hasDatabaseUrl() ? listDatabaseBuildSubmissionsForUser(userId) : [];
 
+export const getUserBuildById = async (userId: number, buildId: number) =>
+  hasDatabaseUrl() ? getDatabaseUserBuildById(userId, buildId) : null;
+
 export const findFavoriteForUserByBuildSlug = async (userId: number, buildSlug: string) =>
   hasDatabaseUrl()
     ? findDatabaseFavoriteForUserByBuildSlug(userId, buildSlug)
@@ -167,16 +228,17 @@ export const removeFavoriteBuildForUser = async (userId: number, favoriteId: num
 export const deleteBuildForUser = async (userId: number, buildId: number) =>
   hasDatabaseUrl() ? deleteDatabaseBuildForUser(userId, buildId) : null;
 
-export const getTopBuildPerRace = async (raceSlugs: string[]) =>
-  hasDatabaseUrl() ? getDatabaseTopBuildPerRace(raceSlugs) : [];
+export const getTopBuildPerRace = unstable_cache(
+  async (raceSlugs: string[]) =>
+    hasDatabaseUrl() ? getDatabaseTopBuildPerRace(raceSlugs) : [],
+  ["top-build-per-race"],
+  { revalidate: 300, tags: ["builds"] },
+);
 
-export const getHomeStats = async () =>
-  hasDatabaseUrl()
-    ? (() => getDatabaseContentStats().then((stats) => ({
-        ...stats,
-        raceTotal: Math.max(0, stats.raceTotal - 1),
-      })))()
-    : {
+export const getHomeStats = unstable_cache(
+  async () => {
+    if (!hasDatabaseUrl()) {
+      return {
         raceTotal: mockRaces.filter((race) => race.slug !== "neutral").length,
         heroTotal: mockHeroes.length,
         matchupTotal: mockMatchups.length,
@@ -186,3 +248,10 @@ export const getHomeStats = async () =>
         buildingTotal: 0,
         itemTotal: 0,
       };
+    }
+    const stats = await getDatabaseContentStats();
+    return { ...stats, raceTotal: Math.max(0, stats.raceTotal - 1) };
+  },
+  ["home-stats"],
+  { revalidate: 300, tags: ["races", "heroes", "builds", "matchups", "units", "maps"] },
+);
