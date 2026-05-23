@@ -12,8 +12,12 @@ const RACE_OPTIONS = [
   { slug: "Orc",       label: "Orc" },
   { slug: "Undead",    label: "Undead" },
   { slug: "Night Elf", label: "Night Elf" },
-  { slug: "Neutral",   label: "Neutral" },
+  { slug: "Tavern",    label: "Tavern" },
 ];
+
+const normalizeHeroRace = (raceName: string) => (
+  raceName === "Neutral" ? "Tavern" : raceName
+);
 
 export default function HeroesScreen() {
   const router = useRouter();
@@ -23,7 +27,8 @@ export default function HeroesScreen() {
   const normalizedSearch = search.trim().toLowerCase();
 
   const filteredHeroes = heroes.filter((hero) => {
-    const matchesRace = raceFilter === "all" || hero.raceName === raceFilter;
+    const heroRace = normalizeHeroRace(hero.raceName);
+    const matchesRace = raceFilter === "all" || heroRace === raceFilter;
     const matchesSearch =
       normalizedSearch.length === 0 ||
       [hero.name, hero.description, hero.role, hero.primaryAttribute, ...hero.highlights]
@@ -79,7 +84,7 @@ export default function HeroesScreen() {
               style={styles.heroImg}
             />
             <View style={styles.cardText}>
-              <Text style={styles.racePill}>{hero.raceName} · {hero.role}</Text>
+              <Text style={styles.racePill}>{normalizeHeroRace(hero.raceName)} · {hero.role}</Text>
               <Text style={styles.name}>{hero.name}</Text>
               <Text style={styles.description} numberOfLines={2}>{hero.description}</Text>
             </View>
