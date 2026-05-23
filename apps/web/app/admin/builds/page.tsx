@@ -4,7 +4,6 @@ import { hasDatabaseUrl } from "@warcraft3-guide-hub/db";
 import { getSessionUser } from "../../../lib/auth";
 import { listAdminBuilds } from "../../../lib/content";
 import { deleteBuildAction } from "../actions";
-import { DifficultyBadge } from "../../../components/difficulty-badge";
 import { GameImage } from "../../../components/game-image";
 import { ConfirmDelete } from "../../../components/confirm-delete";
 
