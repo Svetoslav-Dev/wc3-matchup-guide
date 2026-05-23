@@ -46,8 +46,15 @@ export function getRaceIconUri(slug: string): string {
 }
 
 function raceIconUri(raceSlug: string) {
-  const base = getApiBaseUrl() ?? "";
+  const apiBase = getApiBaseUrl() ?? "";
+  const base = apiBase.replace(/\/api$/, "");
   return `${base}/images/Races/${RACE_ICON[raceSlug] ?? "Neutral.png"}`;
+}
+
+export function gameImageUri(path: string): string {
+  const apiBase = getApiBaseUrl() ?? "";
+  const base = apiBase.replace(/\/api$/, "");
+  return `${base}${path}`;
 }
 
 function parseRaces(slug: string): [string, string] {
@@ -71,11 +78,14 @@ export function Panel({ children }: { children: ReactNode }) {
   return <View style={styles.panel}>{children}</View>;
 }
 
-export function StatRow({ label, value }: { label: string; value: string | number }) {
+export function StatRow({ label, value, icon }: { label: string; value: string | number; icon?: ReactNode }) {
   return (
     <View style={styles.statRow}>
-      <Text style={styles.statValue}>{value}</Text>
-      <Text style={styles.statLabel}>{label}</Text>
+      {icon ? <View style={styles.statIconWrap}>{icon}</View> : null}
+      <View style={styles.statText}>
+        <Text style={styles.statValue}>{value}</Text>
+        <Text style={styles.statLabel}>{label}</Text>
+      </View>
     </View>
   );
 }
@@ -415,17 +425,33 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 18,
     padding: 16,
-    gap: 6,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 14,
+  },
+  statIconWrap: {
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+    backgroundColor: colors.goldSoft,
+    alignItems: "center",
+    justifyContent: "center",
+    flexShrink: 0,
+  },
+  statText: {
+    flex: 1,
+    gap: 2,
   },
   statValue: {
     color: colors.text,
-    fontSize: 28,
+    fontSize: 24,
     fontWeight: "800",
+    lineHeight: 28,
   },
   statLabel: {
     color: colors.muted,
-    fontSize: 14,
-    lineHeight: 20,
+    fontSize: 13,
+    lineHeight: 18,
   },
   card: {
     backgroundColor: colors.panel,

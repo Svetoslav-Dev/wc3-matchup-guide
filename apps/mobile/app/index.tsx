@@ -1,4 +1,5 @@
 import { StyleSheet, View } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 import { ScreenShell } from "../components/screen-shell";
 import { BuildCard, GhostBadge, MatchupCard, PageIntro, PageTitle, SectionLabel, StatRow } from "../components/mobile-ui";
 import { useHomeContent } from "../lib/live-content";
@@ -17,10 +18,10 @@ export default function HomeScreen() {
       </PageIntro>
 
       <View style={styles.grid}>
-        <StatRow label="Playable Races" value={stats.races} />
-        <StatRow label="Builds" value={stats.builds} />
-        <StatRow label="Matchups" value={stats.matchups} />
-        <StatRow label="Heroes" value={stats.heroes} />
+        <StatRow label="Playable Races" value={stats.races}    icon={<Ionicons name="shield-outline"       size={22} color={colors.gold} />} />
+        <StatRow label="Builds"         value={stats.builds}   icon={<Ionicons name="layers-outline"       size={22} color={colors.gold} />} />
+        <StatRow label="Matchups"       value={stats.matchups} icon={<Ionicons name="git-compare-outline" size={22} color={colors.gold} />} />
+        <StatRow label="Heroes"         value={stats.heroes}   icon={<Ionicons name="star-outline"         size={22} color={colors.gold} />} />
       </View>
 
       <GhostBadge>Worst Matchups</GhostBadge>
