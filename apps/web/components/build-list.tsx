@@ -29,6 +29,7 @@ type Props = {
   search?: string;
   difficulty?: string;
   favoriteSlugs?: string[];
+  isLoggedIn?: boolean;
 };
 
 const PAGE_SIZE_OPTIONS = [20, 50, 100];

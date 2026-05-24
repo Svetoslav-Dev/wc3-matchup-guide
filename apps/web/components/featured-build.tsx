@@ -26,9 +26,13 @@ export function FeaturedBuild({ builds }: { builds: Build[] }) {
   const [ordered, setOrdered] = useState<Build[]>([]);
 
   useEffect(() => {
-    if (builds.length === 0) return;
+    if (builds.length === 0) {
+      setOrdered([]);
+      return;
+    }
+
     setOrdered(shuffle(builds));
-  }, []);
+  }, [builds]);
 
   if (ordered.length === 0) return null;
 
