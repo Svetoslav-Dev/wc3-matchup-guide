@@ -26,6 +26,7 @@ export function ScreenShell({ children }: Props) {
         <Text style={styles.disclaimer}>
           Unofficial fan project for educational purposes. Warcraft is a trademark of Blizzard Entertainment.
         </Text>
+        <Text style={styles.credit}>© Svetoslav Dichkov {new Date().getFullYear()}</Text>
       </ScrollView>
     </SafeAreaView>
   );
@@ -79,7 +80,15 @@ const styles = StyleSheet.create({
     fontSize: 11,
     textAlign: "center",
     paddingHorizontal: 20,
-    paddingBottom: 16,
+    paddingBottom: 4,
     opacity: 0.6,
+  },
+  credit: {
+    color: colors.muted,
+    fontSize: 11,
+    textAlign: "center",
+    paddingHorizontal: 20,
+    paddingBottom: 16,
+    opacity: 0.4,
   },
 });

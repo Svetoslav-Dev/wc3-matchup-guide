@@ -1,7 +1,7 @@
 import { useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
-import { GhostBadge, PageIntro, PageTitle, SectionLabel } from "../../components/mobile-ui";
+import { Image, Pressable, StyleSheet, Text, View } from "react-native";
+import { GhostBadge, PageIntro, PageTitle, getRaceDisplayName, getRaceIconUri } from "../../components/mobile-ui";
 import { ScreenShell } from "../../components/screen-shell";
 import { useAuth } from "../../lib/auth-context";
 import { mobileApi } from "../../lib/api";
@@ -66,10 +66,32 @@ export default function BuildDetailScreen() {
     );
   }
 
+  const raceName = getRaceDisplayName(build.raceSlug);
+  const displayTitle = build.title.startsWith(raceName + " ")
+    ? build.title.slice(raceName.length + 1)
+    : build.title;
+
   return (
     <ScreenShell>
-      <SectionLabel>{build.strategyType}</SectionLabel>
-      <PageTitle>{build.title}</PageTitle>
+      {/* Race + title hero */}
+      <View style={styles.hero}>
+        <Image source={{ uri: getRaceIconUri(build.raceSlug) }} style={styles.raceIcon} />
+        <View style={styles.heroText}>
+          <Text style={styles.raceLabel}>{raceName}</Text>
+          <Text style={styles.heroTitle}>{displayTitle}</Text>
+        </View>
+      </View>
+
+      {/* Tags row */}
+      <View style={styles.tagsRow}>
+        <View style={styles.tag}>
+          <Text style={styles.tagText}>{build.strategyType}</Text>
+        </View>
+        <View style={styles.tag}>
+          <Text style={styles.tagText}>{build.difficulty}</Text>
+        </View>
+      </View>
+
       <PageIntro>{build.summary}</PageIntro>
       {loading ? <Text style={{ color: colors.muted }}>Refreshing build order…</Text> : null}
       {apiReady && user ? (
@@ -136,6 +158,56 @@ export default function BuildDetailScreen() {
 }
 
 const styles = StyleSheet.create({
+  hero: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 14,
+    backgroundColor: colors.panel,
+    borderColor: colors.line,
+    borderWidth: 1,
+    borderRadius: 16,
+    padding: 16,
+  },
+  raceIcon: {
+    width: 52,
+    height: 52,
+    borderRadius: 10,
+  },
+  heroText: {
+    flex: 1,
+    gap: 4,
+  },
+  raceLabel: {
+    color: colors.gold,
+    fontSize: 11,
+    fontWeight: "700",
+    letterSpacing: 1,
+    textTransform: "uppercase",
+    opacity: 0.85,
+  },
+  heroTitle: {
+    color: colors.text,
+    fontSize: 18,
+    fontWeight: "800",
+    lineHeight: 24,
+  },
+  tagsRow: {
+    flexDirection: "row",
+    gap: 8,
+    flexWrap: "wrap",
+  },
+  tag: {
+    borderWidth: 1,
+    borderColor: colors.line,
+    borderRadius: 999,
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+  },
+  tagText: {
+    color: colors.muted,
+    fontSize: 12,
+    fontWeight: "700",
+  },
   actionPanel: {
     backgroundColor: colors.panel,
     borderColor: colors.line,

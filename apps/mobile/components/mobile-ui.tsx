@@ -239,6 +239,7 @@ export function BuildCard({
   difficulty,
   title,
   summary,
+  compact = false,
 }: {
   slug: string;
   raceSlug: string;
@@ -246,6 +247,7 @@ export function BuildCard({
   difficulty: string;
   title: string;
   summary: string;
+  compact?: boolean;
 }) {
   const router = useRouter();
   const dotColor = DIFFICULTY_COLORS[difficulty];
@@ -262,7 +264,7 @@ export function BuildCard({
         <Image source={{ uri: raceIconUri(raceSlug) }} style={matchupStyles.raceIcon} />
         <Text style={matchupStyles.raceName}>{raceName}</Text>
       </View>
-      <Text style={buildStyles.title}>{title}</Text>
+      {!compact && <Text style={buildStyles.title}>{title}</Text>}
       <View style={matchupStyles.tagsRow}>
         <View style={[matchupStyles.diffTag, dotColor ? { borderColor: dotColor } : null]}>
           {dotColor ? <View style={[matchupStyles.diffDot, { backgroundColor: dotColor }]} /> : null}

@@ -54,18 +54,23 @@ export default function HomeScreen() {
         />
       ))}
 
-      <GhostBadge>Build Routes</GhostBadge>
-      {builds.slice(0, 2).map((build) => (
-        <BuildCard
-          key={build.slug}
-          slug={build.slug}
-          raceSlug={build.raceSlug}
-          raceName={build.raceName}
-          difficulty={build.difficulty}
-          title={build.title}
-          summary={build.summary}
-        />
-      ))}
+      <GhostBadge>Recent Build Routes</GhostBadge>
+      {["human", "orc", "undead", "night-elf"].map((raceSlug) => {
+        const build = builds.find((b) => b.raceSlug === raceSlug);
+        if (!build) return null;
+        return (
+          <BuildCard
+            key={build.slug}
+            slug={build.slug}
+            raceSlug={build.raceSlug}
+            raceName={build.raceName}
+            difficulty={build.difficulty}
+            title={build.title}
+            summary={build.summary}
+            compact
+          />
+        );
+      })}
     </ScreenShell>
   );
 }
