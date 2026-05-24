@@ -410,6 +410,16 @@ button, input, select, textarea { font: inherit; }
 }
 .card, .favorite-card { @apply flex flex-col gap-2.5 relative; }
 .card .card__footer   { @apply mt-auto; }
+a.card {
+  text-decoration: none;
+  transition: border-color 160ms ease, background 160ms ease, transform 140ms ease, box-shadow 160ms ease;
+}
+a.card:hover {
+  border-color: rgba(201,163,91,0.4);
+  background: linear-gradient(180deg,rgba(22,32,50,0.97),rgba(12,16,24,0.97));
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.35), 0 0 0 1px rgba(201,163,91,0.12);
+}
 
 .card p, .detail-panel p, .timeline-step p,
 .favorite-card p, .admin-card p, .form-panel p,
@@ -521,7 +531,7 @@ button, input, select, textarea { font: inherit; }
   justify-items:center;
 }
 .auth-modal {
-  @apply p-6;
+  @apply px-6 pt-6 pb-2;
   width:min(460px,100%);
   box-shadow:0 28px 90px rgba(0,0,0,0.42);
 }
@@ -532,9 +542,22 @@ button, input, select, textarea { font: inherit; }
   box-shadow:0 32px 110px rgba(0,0,0,0.58),0 0 0 1px rgba(255,255,255,0.03);
 }
 .auth-modal__bar  { @apply flex items-center justify-between gap-4 mb-4; }
-.auth-modal__head { @apply mb-2; }
+.auth-modal__head { @apply mb-1; gap: 0.25rem; }
+.auth-modal__head .page-intro { margin: 0; }
 .auth-modal h1 { @apply my-1 leading-none; font-size:clamp(1.6rem,3.5vw,2.2rem); }
 .auth-modal .button { @apply px-4 py-2.5 text-sm; }
+.auth-modal .button[type="submit"] {
+  background: transparent;
+  border-color: rgba(255,255,255,0.12);
+  color: rgba(255,255,255,0.45);
+  margin-top: 0.5rem;
+  transition: background 160ms ease, border-color 160ms ease, color 160ms ease;
+}
+.auth-modal .button[type="submit"]:hover {
+  background: rgba(201,163,91,0.14);
+  border-color: #c9a35b;
+  color: #c9a35b;
+}
 .auth-note  { @apply text-center; width:min(520px,100%); }
 .user-menu  { @apply relative; }
 .user-menu__trigger {
@@ -564,7 +587,7 @@ button, input, select, textarea { font: inherit; }
 .user-menu__item:hover { background:rgba(255,255,255,0.04); @apply text-text; }
 .user-menu__item--danger { @apply text-muted; }
 .user-menu__item--danger:hover { background:rgba(220,60,60,0.12); color:#f87171; }
-.auth-modal__close { background:rgba(140,10,10,0.9)!important; border-color:rgba(180,20,20,0.7)!important; color:#fca5a5!important; }
+.auth-modal__close { background:rgba(140,10,10,0.9)!important; border-color:rgba(180,20,20,0.7)!important; color:#ffffff!important; }
 .auth-modal__close:hover { background:rgba(160,10,10,1)!important; }
 .modal-backdrop { @apply fixed inset-0 z-30 grid place-items-center p-6; }
 .modal-backdrop__scrim {
@@ -832,7 +855,8 @@ button, input, select, textarea { font: inherit; }
 .admin-search__input:focus { @apply outline-none border-gold; }
 
 /* ─── Modal body blur ───────────────────────────────────────────────────── */
-body:has(.modal-backdrop) main {
+body:has(.modal-backdrop) main,
+body:has(.modal-backdrop) footer {
   filter:blur(4px);
   transition:filter 0.15s ease;
 }

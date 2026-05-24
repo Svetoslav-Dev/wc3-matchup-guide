@@ -5,6 +5,7 @@ import { fetchMatchupWinRates } from "../lib/w3c-stats";
 export const revalidate = 3600;
 import { GameImage } from "../components/game-image";
 import { DifficultyBadge } from "../components/difficulty-badge";
+import { FeaturedBuild } from "../components/featured-build";
 
 const toRaceSlug = (name: string) => name.toLowerCase().replace(/\s+/g, "-");
 const parseMatchupTitle = (title: string) => {
@@ -19,6 +20,34 @@ const raceImages: Record<string, string> = {
   "neutral": "/images/Races/Neutral.png",
 };
 const raceImageSrc = (slug: string) => raceImages[slug] ?? "/placeholder.svg";
+
+const heroImages: Record<string, string> = {
+  "Archmage":            "/images/Heroes/HeroArchMage.png",
+  "Mountain King":       "/images/Heroes/HeroMountainKing.png",
+  "Paladin":             "/images/Heroes/HeroPaladin.png",
+  "Blood Mage":          "/images/Heroes/HeroBloodElfPrince.png",
+  "Blademaster":         "/images/Heroes/HeroBlademaster.png",
+  "Far Seer":            "/images/Heroes/HeroFarseer.png",
+  "Shadow Hunter":       "/images/Heroes/ShadowHunter.png",
+  "Tauren Chieftain":    "/images/Heroes/HeroTaurenChieftain.png",
+  "Demon Hunter":        "/images/Heroes/HeroDemonHunter.png",
+  "Keeper of the Grove": "/images/Heroes/KeeperOfTheGrove.png",
+  "Warden":              "/images/Heroes/HeroWarden.png",
+  "Priestess of the Moon": "/images/Heroes/PriestessOfTheMoon.png",
+  "Death Knight":        "/images/Heroes/HeroDeathKnight.png",
+  "Lich":                "/images/Heroes/LichVersion2.png",
+  "Crypt Lord":          "/images/Heroes/HeroCryptLord.png",
+  "Dreadlord":           "/images/Heroes/HeroDreadLord.png",
+  "Dark Ranger":         "/images/Heroes/BansheeRanger.png",
+  "Naga Sea Witch":      "/images/Heroes/NagaSeaWitch.png",
+  "Panda Brewmaster":    "/images/Heroes/PandarenBrewmaster.png",
+  "Pandaren Brewmaster": "/images/Heroes/PandarenBrewmaster.png",
+  "Beast Master":        "/images/Heroes/BeastMaster.png",
+  "Beastmaster":         "/images/Heroes/BeastMaster.png",
+  "Tinker":              "/images/Heroes/HeroTinker.png",
+  "Alchemist":           "/images/Heroes/HeroAlchemist.png",
+  "Pit Lord":            "/images/Heroes/PitLord.png",
+};
 
 const raceOrder = ["human", "orc", "undead", "night-elf"];
 
@@ -96,13 +125,16 @@ export default async function HomePage() {
   return (
     <div className="page-shell">
       <section className="hero hero--split">
-        <div>
-          <p className="section-label">Capstone Website MVP</p>
-          <h1>Sharpen your Warcraft III decision making.</h1>
-          <p>
-            Browse race identities, study matchup pressure points, follow polished build orders, and
-            track your favorite plans from one dark fantasy strategy hub.
-          </p>
+        <div className="self-stretch flex flex-col justify-between gap-6">
+          <div className="flex flex-col gap-4">
+            <p className="section-label">Guides Builds Matchups</p>
+            <h1>Sharpen your Warcraft III decision making one bad matchup at a time</h1>
+            <p>
+              Every matchup has a tipping point. Study the timings that decide games, understand the
+              openings your opponent is running, and walk into every game with a plan that survives
+              first contact.
+            </p>
+          </div>
           <div className="hero-actions">
             <Link href="/builds" className="button button--ghost">
               Explore Builds
@@ -112,14 +144,7 @@ export default async function HomePage() {
             </Link>
           </div>
         </div>
-        <aside className="panel hero-aside">
-          <p className="pill">Current Focus</p>
-          <h2>Orc tempo, Undead pressure, Human scaling, Night Elf map control.</h2>
-          <p>
-            This first website pass ships with polished mock content so the browsing experience is
-            usable before the database, auth, and admin APIs are wired in.
-          </p>
-        </aside>
+        {topBuilds.length > 0 ? <FeaturedBuild builds={topBuilds} /> : null}
       </section>
 
       <section className="stat-grid">
@@ -187,16 +212,27 @@ export default async function HomePage() {
                 />
                 <h3 className="text-[1rem] font-bold text-text m-0 leading-snug">{race.name}</h3>
               </div>
-              <div className="flex items-center justify-between">
-                <span className="pill">{race.badge}</span>
+              <div className="flex flex-col items-start gap-1.5">
                 {race.playDifficulty ? <DifficultyBadge value={race.playDifficulty} /> : null}
+                <span className="pill">{race.badge}</span>
               </div>
               <p className="text-muted text-sm leading-relaxed m-0">{race.identity}</p>
               <div className="card__footer">
-                <p className="text-muted m-0 leading-snug" style={{ fontSize: "0.8rem" }}>
-                  {race.signatureHeroes.join(", ")}
-                </p>
-                <Link href={`/races/${race.slug}`} className="button button--ghost button--sm">
+                <div className="grid grid-cols-2 gap-x-3 gap-y-1.5">
+                  {race.signatureHeroes.map((hero) => (
+                    <span key={hero} className="flex items-center gap-1.5 min-w-0">
+                      <GameImage
+                        src={heroImages[hero] ?? "/placeholder.svg"}
+                        alt={hero}
+                        className="w-5 h-5 rounded object-cover shrink-0"
+                        width={20}
+                        height={20}
+                      />
+                      <span className="text-muted leading-none truncate" style={{ fontSize: "0.78rem" }}>{hero}</span>
+                    </span>
+                  ))}
+                </div>
+                <Link href={`/races/${race.slug}`} className="button button--ghost button--sm justify-self-center w-fit">
                   View Race
                 </Link>
               </div>
@@ -237,12 +273,19 @@ export default async function HomePage() {
                 ) : null}
               </div>
               <p className="text-muted text-sm leading-relaxed m-0">{worstMatchupReasons[matchup.slug] ?? matchup.summary}</p>
-              <div className="card__footer">
-                <p className="text-muted m-0 leading-snug" style={{ fontSize: "0.8rem" }}>
-                  Mistake: {matchup.commonMistakes[0]}
-                </p>
-                <Link href={`/matchups/${matchup.slug}`} className="button button--ghost button--sm">
-                  Open Matchup
+              <div className="mt-auto flex items-start justify-between gap-3">
+                <div className="flex items-center gap-1.5 min-w-0">
+                  <svg className="shrink-0 text-muted opacity-70" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0-3.42 0z"/>
+                    <line x1="12" y1="9" x2="12" y2="13"/>
+                    <line x1="12" y1="17" x2="12.01" y2="17"/>
+                  </svg>
+                  <p className="text-muted m-0 leading-snug" style={{ fontSize: "0.8rem" }}>
+                    Mistake: {matchup.commonMistakes[0]}
+                  </p>
+                </div>
+                <Link href={`/matchups/${matchup.slug}`} className="shrink-0 px-3.5 py-[0.45rem] text-[0.75rem] font-semibold rounded-full border border-line text-text hover:bg-gold-soft hover:border-gold hover:text-gold transition-all duration-150 whitespace-nowrap">
+                  Open Matchup →
                 </Link>
               </div>
             </article>
@@ -283,12 +326,19 @@ export default async function HomePage() {
                 ) : null}
               </div>
               <p className="text-muted text-sm leading-relaxed m-0">{bestMatchupReasons[matchup.slug] ?? matchup.summary}</p>
-              <div className="card__footer">
-                <p className="text-muted m-0 leading-snug" style={{ fontSize: "0.8rem" }}>
-                  Key strength: {matchup.heroChoices[0]}
-                </p>
-                <Link href={`/matchups/${matchup.slug}`} className="button button--ghost button--sm">
-                  Open Matchup
+              <div className="mt-auto flex items-start justify-between gap-3">
+                <div className="flex items-center gap-1.5 min-w-0">
+                  <svg className="shrink-0 text-muted opacity-70" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <circle cx="7.5" cy="15.5" r="5.5"/>
+                    <path d="M21 2l-9.6 9.6"/>
+                    <path d="M15.5 7.5l3 3L22 7l-3-3"/>
+                  </svg>
+                  <p className="text-muted m-0 leading-snug" style={{ fontSize: "0.8rem" }}>
+                    Key strength: {matchup.heroChoices[0]}
+                  </p>
+                </div>
+                <Link href={`/matchups/${matchup.slug}`} className="shrink-0 px-3.5 py-[0.45rem] text-[0.75rem] font-semibold rounded-full border border-line text-text hover:bg-gold-soft hover:border-gold hover:text-gold transition-all duration-150 whitespace-nowrap">
+                  Open Matchup →
                 </Link>
               </div>
             </article>
@@ -300,41 +350,43 @@ export default async function HomePage() {
       {topBuilds.length > 0 ? (
         <section className="section">
           <div className="section-head">
-            <p className="section-label">Top Builds by Race</p>
-            <h2>Most popular opening for each race.</h2>
-            <p className="page-intro">
-              One featured build order per race — the most commonly played general opener based on
-              current submissions.
-            </p>
+            <p className="section-label">Recent Build Routes</p>
+            <h2>Latest build for each race.</h2>
           </div>
           <div className="list-grid">
-            {topBuilds.map((build) => (
-              <article key={build.slug} className="card">
-                <div className="flex items-center gap-3">
-                  <GameImage
-                    src={raceImageSrc(build.raceSlug)}
-                    alt={build.raceName}
-                    className="w-10 h-10 rounded-[8px] shrink-0 object-cover shadow-md"
-                    width={40}
-                    height={40}
-                  />
-                  <h3 className="text-[1rem] font-bold text-text m-0 leading-snug">{build.title}</h3>
-                </div>
-                <div className="flex items-center justify-between">
-                  <DifficultyBadge value={build.difficulty} />
-                  {build.strategyType && <span className="pill">{build.strategyType}</span>}
-                </div>
-                <p className="text-muted text-sm leading-relaxed m-0">{build.summary}</p>
-                <div className="card__footer">
-                  <p className="text-muted m-0 leading-snug" style={{ fontSize: "0.8rem" }}>
-                    {build.bestAgainst ? `Best against: ${build.bestAgainst}` : build.raceName}
-                  </p>
-                  <Link href={`/builds/${build.slug}`} className="button button--ghost button--sm">
-                    Open Build
-                  </Link>
-                </div>
-              </article>
-            ))}
+            {raceOrder.map((raceSlug) => {
+              const build = topBuilds.find((b) => b.raceSlug === raceSlug);
+              if (!build) return null;
+              return (
+                <article key={build.slug} className="card">
+                  <div className="flex items-center gap-3">
+                    <GameImage
+                      src={raceImageSrc(build.raceSlug)}
+                      alt={build.raceName}
+                      className="w-10 h-10 rounded-[8px] shrink-0 object-cover shadow-md"
+                      width={40}
+                      height={40}
+                    />
+                    <span className="text-[0.88rem] font-bold text-text leading-snug">{build.raceName}</span>
+                  </div>
+                  <h3 className="m-0 text-[0.95rem] font-bold text-text leading-snug">
+                    {build.title.startsWith(build.raceName + " ")
+                      ? build.title.slice(build.raceName.length + 1)
+                      : build.title}
+                  </h3>
+                  <div className="flex items-center justify-between">
+                    <DifficultyBadge value={build.difficulty} />
+                    {build.strategyType && <span className="pill">{build.strategyType}</span>}
+                  </div>
+                  <p className="text-muted text-sm leading-relaxed m-0">{build.summary}</p>
+                  <div className="mt-auto flex justify-end">
+                    <Link href={`/builds/${build.slug}`} className="shrink-0 px-3.5 py-[0.45rem] text-[0.75rem] font-semibold rounded-full border border-line text-text hover:bg-gold-soft hover:border-gold hover:text-gold transition-all duration-150 whitespace-nowrap">
+                      Open Build →
+                    </Link>
+                  </div>
+                </article>
+              );
+            })}
           </div>
         </section>
       ) : null}

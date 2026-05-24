@@ -21,6 +21,34 @@ const parseMatchup = (title: string) => {
   return { nameA: a, nameB: b, slugA: toRaceSlug(a), slugB: toRaceSlug(b) };
 };
 
+const heroImages: Record<string, string> = {
+  "Archmage":              "/images/Heroes/HeroArchMage.png",
+  "Mountain King":         "/images/Heroes/HeroMountainKing.png",
+  "Paladin":               "/images/Heroes/HeroPaladin.png",
+  "Blood Mage":            "/images/Heroes/HeroBloodElfPrince.png",
+  "Blademaster":           "/images/Heroes/HeroBlademaster.png",
+  "Far Seer":              "/images/Heroes/HeroFarseer.png",
+  "Shadow Hunter":         "/images/Heroes/ShadowHunter.png",
+  "Tauren Chieftain":      "/images/Heroes/HeroTaurenChieftain.png",
+  "Demon Hunter":          "/images/Heroes/HeroDemonHunter.png",
+  "Keeper of the Grove":   "/images/Heroes/KeeperOfTheGrove.png",
+  "Priestess of the Moon": "/images/Heroes/PriestessOfTheMoon.png",
+  "Warden":                "/images/Heroes/HeroWarden.png",
+  "Death Knight":          "/images/Heroes/HeroDeathKnight.png",
+  "Lich":                  "/images/Heroes/LichVersion2.png",
+  "Crypt Lord":            "/images/Heroes/HeroCryptLord.png",
+  "Dreadlord":             "/images/Heroes/HeroDreadLord.png",
+  "Dark Ranger":           "/images/Heroes/BansheeRanger.png",
+  "Naga Sea Witch":        "/images/Heroes/NagaSeaWitch.png",
+  "Panda Brewmaster":      "/images/Heroes/PandarenBrewmaster.png",
+  "Pandaren Brewmaster":   "/images/Heroes/PandarenBrewmaster.png",
+  "Beast Master":          "/images/Heroes/BeastMaster.png",
+  "Beastmaster":           "/images/Heroes/BeastMaster.png",
+  "Tinker":                "/images/Heroes/HeroTinker.png",
+  "Alchemist":             "/images/Heroes/HeroAlchemist.png",
+  "Pit Lord":              "/images/Heroes/PitLord.png",
+};
+
 const raceImages: Record<string, string> = {
   "human":     "/images/Races/Humans_Icon.png",
   "orc":       "/images/Races/Orcs_Icon.png",
@@ -127,10 +155,29 @@ export default async function MatchupsPage({ searchParams }: Props) {
 
               <p className="matchup-card__summary">{matchup.summary}</p>
 
-              <div className="card__footer">
-                <p className="text-muted m-0 leading-snug" style={{ fontSize: "0.8rem" }}>
-                  Hero focus: {matchup.heroChoices.join(", ")}
+              <div className="flex flex-col gap-2">
+                <p className="flex items-center gap-1.5 text-muted m-0" style={{ fontSize: "0.75rem", fontWeight: 600, letterSpacing: "0.04em", textTransform: "uppercase" }}>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="opacity-70 shrink-0" style={{ color: "#c9a35b" }}>
+                    <path d="M14.5 17.5L3 6V3h3l11.5 11.5"/><path d="M13 19l6-6"/><path d="M16 16l4 4"/><path d="M19 21l2-2"/>
+                  </svg>
+                  Hero Focus
                 </p>
+                <div className="grid grid-cols-2 gap-x-3 gap-y-1.5">
+                  {matchup.heroChoices.map((hero) => (
+                    <div key={hero} className="flex items-center gap-1.5 min-w-0">
+                      <GameImage
+                        src={heroImages[hero] ?? "/placeholder.svg"}
+                        alt={hero}
+                        width={20}
+                        height={20}
+                        className="rounded-[4px] shrink-0 object-cover border border-line"
+                      />
+                      <span className="text-muted truncate" style={{ fontSize: "0.75rem" }}>{hero}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div className="flex justify-center">
                 <Link href={`/matchups/${matchup.slug}`} className="button button--ghost button--sm">
                   View Plan
                 </Link>

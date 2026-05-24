@@ -44,7 +44,7 @@ async function fetchBuilds(page: number, pageSize: number, race?: string, matchu
   return res.json();
 }
 
-export function BuildList({ initialResult, race, matchup, search, difficulty, favoriteSlugs = [] }: Props) {
+export function BuildList({ initialResult, race, matchup, search, difficulty, favoriteSlugs = [], isLoggedIn = false }: Props) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -67,6 +67,12 @@ export function BuildList({ initialResult, race, matchup, search, difficulty, fa
   const hasMore = builds.length < total;
 
   const toggleFavorite = (slug: string) => {
+    if (!isLoggedIn) {
+      const params = new URLSearchParams(searchParams.toString());
+      params.set("auth", "login");
+      router.push(`${pathname}?${params}`);
+      return;
+    }
     const isFav = favSet.has(slug);
     setFavSet((prev) => {
       const next = new Set(prev);

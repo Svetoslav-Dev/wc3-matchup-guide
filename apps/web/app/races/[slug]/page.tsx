@@ -4,6 +4,34 @@ import { getRaceBySlug, listBuilds } from "../../../lib/content";
 import { GameImage } from "../../../components/game-image";
 import { DifficultyBadge } from "../../../components/difficulty-badge";
 
+const heroImages: Record<string, string> = {
+  "Archmage":              "/images/Heroes/HeroArchMage.png",
+  "Mountain King":         "/images/Heroes/HeroMountainKing.png",
+  "Paladin":               "/images/Heroes/HeroPaladin.png",
+  "Blood Mage":            "/images/Heroes/HeroBloodElfPrince.png",
+  "Blademaster":           "/images/Heroes/HeroBlademaster.png",
+  "Far Seer":              "/images/Heroes/HeroFarseer.png",
+  "Shadow Hunter":         "/images/Heroes/ShadowHunter.png",
+  "Tauren Chieftain":      "/images/Heroes/HeroTaurenChieftain.png",
+  "Demon Hunter":          "/images/Heroes/HeroDemonHunter.png",
+  "Keeper of the Grove":   "/images/Heroes/KeeperOfTheGrove.png",
+  "Warden":                "/images/Heroes/HeroWarden.png",
+  "Priestess of the Moon": "/images/Heroes/PriestessOfTheMoon.png",
+  "Death Knight":          "/images/Heroes/HeroDeathKnight.png",
+  "Lich":                  "/images/Heroes/LichVersion2.png",
+  "Crypt Lord":            "/images/Heroes/HeroCryptLord.png",
+  "Dreadlord":             "/images/Heroes/HeroDreadLord.png",
+  "Dark Ranger":           "/images/Heroes/BansheeRanger.png",
+  "Naga Sea Witch":        "/images/Heroes/NagaSeaWitch.png",
+  "Panda Brewmaster":      "/images/Heroes/PandarenBrewmaster.png",
+  "Pandaren Brewmaster":   "/images/Heroes/PandarenBrewmaster.png",
+  "Beast Master":          "/images/Heroes/BeastMaster.png",
+  "Beastmaster":           "/images/Heroes/BeastMaster.png",
+  "Tinker":                "/images/Heroes/HeroTinker.png",
+  "Alchemist":             "/images/Heroes/HeroAlchemist.png",
+  "Pit Lord":              "/images/Heroes/PitLord.png",
+};
+
 type Props = {
   params: Promise<{ slug: string }>;
 };
@@ -21,6 +49,11 @@ export default async function RaceDetailPage({ params }: Props) {
 
   return (
     <div className="page-shell page-stack">
+      <div className="flex justify-end pt-4">
+        <Link href="/races" className="button button--ghost button--sm">
+          ← All Races
+        </Link>
+      </div>
       <div className="section-head">
         <p className="section-label">{race.badge}</p>
         <div className="title-row">
@@ -39,21 +72,40 @@ export default async function RaceDetailPage({ params }: Props) {
       </div>
       <div className="detail-grid">
         <article className="detail-panel">
-          <h2>Strategic Identity</h2>
+          <h2 className="flex items-center gap-2">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gold opacity-80 shrink-0" aria-hidden="true">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+            Strategic Identity
+          </h2>
           <p>{race.identity}</p>
-          <ul>
+          <ul className="list-none pl-0 flex flex-col gap-1.5">
             {race.strengths.map((strength) => (
-              <li key={strength}>{strength}</li>
+              <li key={strength} className="flex items-center gap-2 text-muted">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-gold opacity-70 shrink-0" aria-hidden="true">
+                  <polyline points="20 6 9 17 4 12"/>
+                </svg>
+                {strength}
+              </li>
             ))}
           </ul>
         </article>
         <article className="detail-panel">
           <h2>Signature Heroes</h2>
-          <ul>
+          <div className="grid grid-cols-2 gap-x-4 gap-y-2.5">
             {race.signatureHeroes.map((hero) => (
-              <li key={hero}>{hero}</li>
+              <div key={hero} className="flex items-center gap-2.5 min-w-0">
+                <GameImage
+                  src={heroImages[hero] ?? "/placeholder.svg"}
+                  alt={hero}
+                  className="w-9 h-9 rounded-[8px] object-cover shrink-0 border border-line"
+                  width={36}
+                  height={36}
+                />
+                <span className="text-muted leading-snug text-sm truncate">{hero}</span>
+              </div>
             ))}
-          </ul>
+          </div>
           <p>Preferred ladder focus: {race.ladderFocus}</p>
         </article>
       </div>

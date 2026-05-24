@@ -60,6 +60,9 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
               Unofficial fan project for educational purposes. Warcraft is a trademark of Blizzard
               Entertainment.
             </p>
+            <p className="footer-note" style={{ marginTop: "0.35rem", fontSize: "0.8rem", opacity: 0.5 }}>
+              © Svetoslav Dichkov {new Date().getFullYear()}
+            </p>
           </div>
         </footer>
       </body>
