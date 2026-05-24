@@ -3,6 +3,9 @@ export type Building = {
   race: string;
   description: string;
   imageFile: string;
+  gold: number;
+  lumber: number;
+  tip: string;
 };
 
 export type Item = {

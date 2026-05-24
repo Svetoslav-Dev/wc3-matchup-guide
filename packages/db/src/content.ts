@@ -450,7 +450,7 @@ export const getTopBuildPerRace = async (raceSlugs: string[]): Promise<Build[]> 
           inArray(builds.raceId, db.select({ id: races.id }).from(races).where(eq(races.slug, raceSlug))),
         ),
         with: { race: true, matchup: true },
-        orderBy: asc(builds.title),
+        orderBy: desc(builds.createdAt),
       }),
     ),
   );
