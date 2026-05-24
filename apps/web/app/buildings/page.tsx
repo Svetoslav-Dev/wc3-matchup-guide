@@ -11,6 +11,9 @@ const raceFilters = [
   { slug: "neutral",   label: "Neutral" },
 ];
 
+const toSlug = (b: { race: string; imageFile: string }) =>
+  `${b.race}-${b.imageFile.toLowerCase()}`;
+
 type Props = {
   searchParams?: Promise<{ race?: string }>;
 };
@@ -48,21 +51,40 @@ export default async function BuildingsPage({ searchParams }: Props) {
         </div>
       </div>
 
-      <div className="icon-grid">
+      <div className="card-grid">
         {visible.map((building) => (
-          <div key={building.imageFile} className="icon-card">
-            <GameImage
-              src={`/images/Buildings/${building.imageFile}.png`}
-              alt={building.name}
-              width={64}
-              height={64}
-              className="game-image--icon"
-            />
-            <div className="icon-card__body">
-              <p className="icon-card__name">{building.name}</p>
-              <p className="icon-card__desc">{building.description}</p>
+          <Link key={toSlug(building)} href={`/buildings/${toSlug(building)}`} className="card" style={{ textDecoration: "none" }}>
+            <div className="flex items-center gap-3">
+              <GameImage
+                src={`/images/Buildings/${building.imageFile}.png`}
+                alt={building.name}
+                width={48}
+                height={48}
+                className="rounded-[8px] object-cover shrink-0"
+              />
+              <div className="flex flex-col gap-0.5 min-w-0">
+                <p className="font-bold text-text text-[0.95rem] leading-snug m-0">{building.name}</p>
+                <p className="pill w-fit" style={{ fontSize: "0.65rem", padding: "0.1rem 0.55rem" }}>
+                  {building.race === "night-elf" ? "Night Elf" : building.race.charAt(0).toUpperCase() + building.race.slice(1)}
+                </p>
+              </div>
             </div>
-          </div>
+            <p className="text-muted text-sm leading-relaxed m-0 line-clamp-2">{building.description}</p>
+            {building.gold > 0 || building.lumber > 0 ? (
+              <div className="flex items-center gap-2 mt-auto">
+                <span className="cost-chip" aria-label={`${building.gold} gold`}>
+                  <span className="cost-chip__icon" aria-hidden="true">🪙</span>
+                  <span>{building.gold}</span>
+                </span>
+                <span className="cost-chip" aria-label={`${building.lumber} lumber`}>
+                  <span className="cost-chip__icon" aria-hidden="true">🪵</span>
+                  <span>{building.lumber}</span>
+                </span>
+              </div>
+            ) : (
+              <p className="text-muted mt-auto" style={{ fontSize: "0.75rem", opacity: 0.5 }}>Map object — no build cost</p>
+            )}
+          </Link>
         ))}
       </div>
     </div>

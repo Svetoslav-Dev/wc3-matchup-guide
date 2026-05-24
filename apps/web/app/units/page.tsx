@@ -1,22 +1,8 @@
-import Link from "next/link";
-import { listRaces } from "../../lib/content";
-import { GameImage } from "../../components/game-image";
+import { listUnits } from "../../lib/content";
+import { UnitsFilterClient } from "../../components/units-filter-client";
 
 export default async function UnitsPage() {
-  const races = await listRaces(1, 20);
-  const categoryOrder = ["human", "orc", "undead", "night-elf", "neutral"];
-  const categoryDescriptions: Record<string, string> = {
-    human: "Militia timings, sturdy frontlines, and layered spell support from the Human arsenal.",
-    orc: "Aggressive melee, ensnare catches, and tempo-driven warbands from the Orc roster.",
-    undead: "Fiend pressure, statue sustain, and devastating spell timing tools from Undead armies.",
-    "night-elf": "Mobile skirmishers, bear frontlines, and anti-magic control from Night Elf tech paths.",
-    neutral: "Mercenary camp hireables and neutral support options available to any race on the map.",
-  };
-  const DISPLAY_NAME: Record<string, string> = { neutral: "Mercenaries" };
-  const categories = categoryOrder
-    .map((slug) => races.data.find((race) => race.slug === slug))
-    .filter((race): race is NonNullable<typeof race> => Boolean(race))
-    .map((race) => ({ ...race, name: DISPLAY_NAME[race.slug] ?? race.name }));
+  const result = await listUnits(1, 500);
 
   return (
     <div className="page-shell page-stack">
@@ -24,38 +10,11 @@ export default async function UnitsPage() {
         <p className="section-label">Unit Library</p>
         <h1 className="page-title">Core units define timing, control, and counters.</h1>
         <p className="page-intro">
-          Choose a faction to browse its full unit roster. Neutral covers mercenary camp hireables
-          and other shared pickups available on specific maps.
+          Filter by race to browse a faction's full roster. Mercenary covers neutral camp
+          hireables available to any race on the map.
         </p>
       </div>
-      <div className="card-grid">
-        {categories.map((category) => (
-          <article key={category.slug} className="card">
-            <p className="pill">{category.badge}</p>
-            <div className="title-row">
-              <GameImage
-                src={category.imageUrl ?? `/images/races/${category.slug}.jpg`}
-                alt={category.name}
-                className="game-image--icon"
-                width={64}
-                height={64}
-              />
-              <h2>{category.name}</h2>
-            </div>
-            <p>{categoryDescriptions[category.slug] ?? category.description}</p>
-            <div className="card__footer">
-              <div className="list-meta">
-                <span>{category.identity}</span>
-              </div>
-              <div className="card__footer-action card__footer-action--center">
-                <Link href={`/units/${category.slug}`} className="button button--ghost">
-                  View {category.name} Units
-                </Link>
-              </div>
-            </div>
-          </article>
-        ))}
-      </div>
+      <UnitsFilterClient units={result.data} />
     </div>
   );
 }
