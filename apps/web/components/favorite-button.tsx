@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
-import { useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { saveFavoriteAction, removeFavoriteAction } from "../app/builds/[slug]/favorite-actions";
 
 const HeartSvg = ({ filled }: { filled: boolean }) => (
@@ -20,7 +20,12 @@ export function FavoriteButton({ buildSlug, isFavorite, isLoggedIn }: Props) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const [, startTransition] = useTransition();
+  const [optimisticFavorite, setOptimisticFavorite] = useState(isFavorite);
+  const [isPending, startTransition] = useTransition();
+
+  useEffect(() => {
+    setOptimisticFavorite(isFavorite);
+  }, [isFavorite]);
 
   const handleClick = () => {
     if (!isLoggedIn) {
@@ -29,26 +34,39 @@ export function FavoriteButton({ buildSlug, isFavorite, isLoggedIn }: Props) {
       router.push(`${pathname}?${params}`);
       return;
     }
+
+    const nextFavorite = !optimisticFavorite;
+    setOptimisticFavorite(nextFavorite);
+
     startTransition(async () => {
-      const fd = new FormData();
-      fd.append("buildSlug", buildSlug);
-      if (isFavorite) {
-        await removeFavoriteAction(fd);
-      } else {
-        await saveFavoriteAction(fd);
+      try {
+        const fd = new FormData();
+        fd.append("buildSlug", buildSlug);
+
+        if (nextFavorite) {
+          await saveFavoriteAction(fd);
+        } else {
+          await removeFavoriteAction(fd);
+        }
+
+        router.refresh();
+      } catch (error) {
+        setOptimisticFavorite(!nextFavorite);
+        throw error;
       }
-      router.refresh();
     });
   };
 
   return (
     <button
-      className={`heart-btn heart-btn--detail${isFavorite ? " heart-btn--filled" : ""}`}
+      className={`heart-btn heart-btn--detail${optimisticFavorite ? " heart-btn--filled" : ""}`}
       type="button"
-      aria-label={isFavorite ? "Remove from favorites" : "Save to favorites"}
+      aria-label={optimisticFavorite ? "Remove from favorites" : "Save to favorites"}
+      aria-pressed={optimisticFavorite}
       onClick={handleClick}
+      disabled={isPending}
     >
-      <HeartSvg filled={isFavorite} />
+      <HeartSvg filled={optimisticFavorite} />
     </button>
   );
 }
