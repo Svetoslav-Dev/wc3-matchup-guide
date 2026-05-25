@@ -72,6 +72,7 @@ export type MapGuide = {
   expansionNotes: string;
   availableItems: string[];
   shops: string[];
+  mercenaries?: string[];
   imageUrl?: string | null;
   raceAdvantage?: { race: string; reason: string } | null;
 };

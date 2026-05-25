@@ -1251,7 +1251,7 @@ export const units: Unit[] = [
   },
 ];
 
-const baseMaps: Omit<MapGuide, "shops">[] = [
+const baseMaps: Omit<MapGuide, "shops" | "mercenaries">[] = [
   {
     slug: "echo-isles",
     name: "Echo Isles",
@@ -1510,9 +1510,29 @@ const mapShopsBySlug: Record<string, string[]> = {
   "ice-crown": ["Goblin Merchant", "Goblin Laboratory", "Tavern"],
 };
 
+const FOREST_MERCENARIES = [
+  "Forest Troll Shadow Priest",
+  "Forest Troll Berserker",
+  "Mud Golem",
+  "Ogre Mauler",
+];
+
+const mapMercenariesBySlug: Record<string, string[]> = {
+  "turtle-rock": FOREST_MERCENARIES,
+  "twisted-meadows": FOREST_MERCENARIES,
+  "lost-temple": FOREST_MERCENARIES,
+  "traversing-the-ruins": FOREST_MERCENARIES,
+  "tranquil-paths": FOREST_MERCENARIES,
+  monsoon: FOREST_MERCENARIES,
+  "gold-rush": FOREST_MERCENARIES,
+  "murgul-oasis": FOREST_MERCENARIES,
+  "dustwallow-keys": FOREST_MERCENARIES,
+};
+
 export const maps: MapGuide[] = baseMaps.map((map) => ({
   ...map,
   shops: mapShopsBySlug[map.slug] ?? [],
+  mercenaries: mapMercenariesBySlug[map.slug] ?? [],
 }));
 
 export const matchups: Matchup[] = [
@@ -2204,7 +2224,7 @@ export const items: Item[] = [
   { name: "Staff of Teleportation", category: "consumable", shops: ["goblin-merchant"], description: "Teleports the hero to a targeted location on the map.", imageFile: "StaffOfTeleportation" },
   { name: "Clarity Potion",         category: "consumable", shops: ALL_RACE_SHOPS,                      description: "Restores 100 mana to a target friendly unit over 60 seconds.", imageFile: "LesserClarityPotion" },
   { name: "Dust of Appearance",      category: "consumable", shops: ALL_RACE_SHOPS,                      description: "Reveals invisible units and wards in a target area.", imageFile: "DustOfAppearance" },
-  { name: "Mask of Death",           category: "permanent",  shops: ["undead", "goblin-merchant"],       description: "Drains 10% of damage dealt on each attack as hit points.", imageFile: "MaskOfDeath" },
+  { name: "Mask of Death",           category: "permanent",  shops: ["creep-drop"],                        description: "Drains 10% of damage dealt on each attack as hit points.", imageFile: "MaskOfDeath" },
   { name: "Orb of Frost",            category: "permanent",  shops: ["goblin-merchant"],                 description: "Adds a frost attack that slows enemy movement and attack speed.", imageFile: "BTNOrbOfFrost" },
   { name: "Ring of Regeneration",    category: "permanent",  shops: ["goblin-merchant", "creep-drop"],   description: "Increases hit point regeneration by 3 per second.", imageFile: "RingSkull" },
   { name: "Khadgar's Gem of Health", category: "permanent",  shops: ["creep-drop"],                      description: "Increases the hero's maximum hit points by 200.", imageFile: "Khadgar_gem" },
