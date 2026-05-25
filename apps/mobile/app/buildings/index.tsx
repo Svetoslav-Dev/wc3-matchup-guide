@@ -1,9 +1,13 @@
 import { useState } from "react";
+import { useRouter } from "expo-router";
 import { Image, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
-import { ScreenShell } from "../components/screen-shell";
-import { GhostBadge, SectionLabel } from "../components/mobile-ui";
+import { ScreenShell } from "../../components/screen-shell";
+import { GhostBadge, SectionLabel, gameImageUri } from "../../components/mobile-ui";
 import { buildings } from "@warcraft3-guide-hub/shared";
-import { colors } from "../lib/theme";
+import { colors } from "../../lib/theme";
+
+const toSlug = (b: { race: string; imageFile: string }) =>
+  `${b.race}-${b.imageFile.toLowerCase()}`;
 
 const raceOptions = [
   { slug: "all",       label: "All" },
@@ -15,6 +19,7 @@ const raceOptions = [
 ];
 
 export default function BuildingsScreen() {
+  const router = useRouter();
   const [search, setSearch] = useState("");
   const [raceFilter, setRaceFilter] = useState("all");
 
@@ -64,12 +69,15 @@ export default function BuildingsScreen() {
       <GhostBadge>{filtered.length} building{filtered.length !== 1 ? "s" : ""}</GhostBadge>
 
       {filtered.map((building) => (
-        <Pressable key={`${building.race}-${building.name}`} style={({ hovered, pressed }) => [styles.card, (hovered || pressed) ? styles.cardHovered : null]}>
+        <Pressable
+          key={`${building.race}-${building.name}`}
+          onPress={() => router.push(`/buildings/${toSlug(building)}` as never)}
+          style={({ hovered, pressed }) => [styles.card, (hovered || pressed) ? styles.cardHovered : null]}
+        >
           <View style={styles.cardRow}>
             <Image
-              source={{ uri: `/images/Buildings/${building.imageFile}.png` }}
+              source={{ uri: gameImageUri(`/images/Buildings/${building.imageFile}.png`) }}
               style={styles.buildingImg}
-              defaultSource={{ uri: "/images/placeholder.svg" }}
             />
             <View style={styles.cardText}>
               <Text style={styles.racePill}>{building.race}</Text>
