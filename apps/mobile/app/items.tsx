@@ -1,9 +1,14 @@
 import { useState } from "react";
 import { Image, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
+import { useRouter } from "expo-router";
 import { ScreenShell } from "../components/screen-shell";
 import { GhostBadge, SectionLabel } from "../components/mobile-ui";
 import { items } from "@warcraft3-guide-hub/shared";
 import { colors } from "../lib/theme";
+
+function slugify(name: string): string {
+  return name.toLowerCase().replace(/'/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+}
 
 const CATEGORY_OPTIONS = [
   { slug: "all",        label: "All" },
@@ -29,6 +34,7 @@ const CATEGORY_COLOR: Record<string, string> = {
 };
 
 export default function ItemsScreen() {
+  const router = useRouter();
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [shopFilter, setShopFilter] = useState("all");
@@ -101,7 +107,7 @@ export default function ItemsScreen() {
         const catColor = CATEGORY_COLOR[item.category] ?? colors.muted;
         const imgUri = `/images/Items/${item.imageFile}.png`;
         return (
-          <Pressable key={item.name} style={({ hovered, pressed }) => [styles.card, (hovered || pressed) ? styles.cardHovered : null]}>
+          <Pressable key={item.name} onPress={() => router.push(`/items/${slugify(item.name)}` as never)} style={({ hovered, pressed }) => [styles.card, (hovered || pressed) ? styles.cardHovered : null]}>
             <View style={styles.cardRow}>
               <Image
                 source={{ uri: imgUri }}
