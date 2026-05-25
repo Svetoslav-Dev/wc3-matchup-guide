@@ -1,5 +1,5 @@
-import { useLocalSearchParams } from "expo-router";
-import { Image, StyleSheet, Text, View } from "react-native";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import { GhostBadge, PageIntro, PageTitle, SectionLabel } from "../../components/mobile-ui";
 import { ScreenShell } from "../../components/screen-shell";
 import { useMapContent } from "../../lib/live-content";
@@ -28,6 +28,7 @@ const panelStyle = {
 
 export default function MapDetailScreen() {
   const { slug } = useLocalSearchParams<{ slug: string }>();
+  const router = useRouter();
   const { data: map, loading } = useMapContent(slug);
 
   if (!map) {
@@ -40,6 +41,12 @@ export default function MapDetailScreen() {
 
   return (
     <ScreenShell>
+      <Pressable
+        onPress={() => router.back()}
+        style={({ hovered, pressed }) => [styles.backBtn, (hovered || pressed) ? styles.backBtnActive : null]}
+      >
+        <Text style={styles.backText}>← Maps</Text>
+      </Pressable>
       <SectionLabel>Map Guide</SectionLabel>
       <PageTitle>{map.name}</PageTitle>
       {map.imageUrl ? (
@@ -79,18 +86,14 @@ export default function MapDetailScreen() {
       {map.availableItems.length > 0 ? (
         <View style={panelStyle}>
           <Text style={{ color: colors.text, fontSize: 16, fontWeight: "700" }}>Available Items</Text>
-          {map.availableItems.map((itemName) => {
+          {map.availableItems.filter((itemName) => itemImageMap[itemName]).map((itemName) => {
             const imageFile = itemImageMap[itemName];
             return (
               <View key={itemName} style={styles.itemRow}>
-                {imageFile ? (
-                  <Image
-                    source={{ uri: `/images/Items/${imageFile}.png` }}
-                    style={styles.itemIcon}
-                  />
-                ) : (
-                  <View style={styles.itemIconPlaceholder} />
-                )}
+                <Image
+                  source={{ uri: `/images/Items/${imageFile}.png` }}
+                  style={styles.itemIcon}
+                />
                 <Text style={{ color: colors.muted }}>{itemName}</Text>
               </View>
             );
@@ -102,6 +105,24 @@ export default function MapDetailScreen() {
 }
 
 const styles = StyleSheet.create({
+  backBtn: {
+    alignSelf: "flex-start",
+    paddingVertical: 7,
+    paddingHorizontal: 14,
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: colors.line,
+    backgroundColor: colors.panel,
+  },
+  backBtnActive: {
+    backgroundColor: colors.bgSoft,
+    borderColor: colors.gold,
+  },
+  backText: {
+    color: colors.muted,
+    fontSize: 14,
+    fontWeight: "600",
+  },
   mapImage: {
     width: "100%",
     height: 180,
@@ -140,9 +161,5 @@ const styles = StyleSheet.create({
     width: 28,
     height: 28,
     borderRadius: 4,
-  },
-  itemIconPlaceholder: {
-    width: 28,
-    height: 28,
   },
 });

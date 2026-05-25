@@ -5,6 +5,20 @@ import { BuildCard, GhostBadge, MatchupCard, PageIntro, PageTitle, SectionLabel,
 import { useHomeContent } from "../lib/live-content";
 import { colors } from "../lib/theme";
 
+const BEST_MATCHUP_DIFFICULTY: Record<string, string> = {
+  "human-vs-orc":        "Medium",
+  "orc-vs-undead":       "Easy",
+  "undead-vs-night-elf": "Medium",
+  "night-elf-vs-human":  "Easy",
+};
+
+const WORST_MATCHUP_DIFFICULTY: Record<string, string> = {
+  "human-vs-undead":     "Very Hard",
+  "orc-vs-human":        "Hard",
+  "undead-vs-orc":       "Hard",
+  "night-elf-vs-undead": "Very Hard",
+};
+
 export default function HomeScreen() {
   const { builds, matchups, stats } = useHomeContent();
 
@@ -24,21 +38,6 @@ export default function HomeScreen() {
         <StatRow label="Heroes"         value={stats.heroes}   icon={<Ionicons name="star-outline"         size={22} color={colors.gold} />} />
       </View>
 
-      <GhostBadge>Worst Matchups</GhostBadge>
-      {[
-        matchups.find((m) => m.slug === "human-vs-undead"),
-        matchups.find((m) => m.slug === "orc-vs-human"),
-        matchups.find((m) => m.slug === "undead-vs-orc"),
-        matchups.find((m) => m.slug === "night-elf-vs-undead"),
-      ].filter(Boolean).map((matchup) => (
-        <MatchupCard
-          key={matchup!.slug}
-          slug={matchup!.slug}
-          difficulty={matchup!.difficulty}
-          summary={matchup!.summary}
-        />
-      ))}
-
       <GhostBadge>Best Matchups</GhostBadge>
       {[
         matchups.find((m) => m.slug === "human-vs-orc"),
@@ -49,12 +48,27 @@ export default function HomeScreen() {
         <MatchupCard
           key={matchup!.slug}
           slug={matchup!.slug}
-          difficulty={matchup!.difficulty}
+          difficulty={BEST_MATCHUP_DIFFICULTY[matchup!.slug] ?? matchup!.difficulty}
           summary={matchup!.summary}
         />
       ))}
 
-      <GhostBadge>Recent Build Routes</GhostBadge>
+      <GhostBadge>Worst Matchups</GhostBadge>
+      {[
+        matchups.find((m) => m.slug === "human-vs-undead"),
+        matchups.find((m) => m.slug === "orc-vs-human"),
+        matchups.find((m) => m.slug === "undead-vs-orc"),
+        matchups.find((m) => m.slug === "night-elf-vs-undead"),
+      ].filter(Boolean).map((matchup) => (
+        <MatchupCard
+          key={matchup!.slug}
+          slug={matchup!.slug}
+          difficulty={WORST_MATCHUP_DIFFICULTY[matchup!.slug] ?? matchup!.difficulty}
+          summary={matchup!.summary}
+        />
+      ))}
+
+      <GhostBadge>Latest Build per Race</GhostBadge>
       {["human", "orc", "undead", "night-elf"].map((raceSlug) => {
         const build = builds.find((b) => b.raceSlug === raceSlug);
         if (!build) return null;

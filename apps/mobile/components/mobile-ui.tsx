@@ -57,6 +57,15 @@ export function gameImageUri(path: string): string {
   return `${base}${path}`;
 }
 
+export function resolveImageUrl(imageUrl: string | null | undefined): string | null {
+  if (!imageUrl) return null;
+  if (imageUrl.startsWith("http")) return imageUrl;
+  const apiBase = getApiBaseUrl();
+  if (!apiBase) return null;
+  const origin = apiBase.replace(/\/api$/, "");
+  return `${origin}${imageUrl}`;
+}
+
 function parseRaces(slug: string): [string, string] {
   const parts = slug.split("-vs-");
   return [parts[0] ?? "", parts[1] ?? ""];

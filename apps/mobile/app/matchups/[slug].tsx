@@ -1,9 +1,35 @@
-import { useLocalSearchParams } from "expo-router";
-import { Image, StyleSheet, Text, View } from "react-native";
-import { DifficultyBadge, GhostBadge, getRaceDisplayName, getRaceIconUri } from "../../components/mobile-ui";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { Image, Pressable, StyleSheet, Text, View } from "react-native";
+import { DifficultyBadge, GhostBadge, gameImageUri, getRaceDisplayName, getRaceIconUri } from "../../components/mobile-ui";
 import { ScreenShell } from "../../components/screen-shell";
 import { useMatchupContent } from "../../lib/live-content";
 import { colors } from "../../lib/theme";
+
+const HERO_IMAGES: Record<string, string> = {
+  "Archmage":              "/images/Heroes/HeroArchMage.png",
+  "Mountain King":         "/images/Heroes/HeroMountainKing.png",
+  "Paladin":               "/images/Heroes/HeroPaladin.png",
+  "Blood Mage":            "/images/Heroes/HeroBloodElfPrince.png",
+  "Blademaster":           "/images/Heroes/HeroBlademaster.png",
+  "Far Seer":              "/images/Heroes/HeroFarseer.png",
+  "Shadow Hunter":         "/images/Heroes/ShadowHunter.png",
+  "Tauren Chieftain":      "/images/Heroes/HeroTaurenChieftain.png",
+  "Demon Hunter":          "/images/Heroes/HeroDemonHunter.png",
+  "Keeper of the Grove":   "/images/Heroes/KeeperOfTheGrove.png",
+  "Priestess of the Moon": "/images/Heroes/PriestessOfTheMoon.png",
+  "Warden":                "/images/Heroes/HeroWarden.png",
+  "Death Knight":          "/images/Heroes/HeroDeathKnight.png",
+  "Lich":                  "/images/Heroes/LichVersion2.png",
+  "Crypt Lord":            "/images/Heroes/HeroCryptLord.png",
+  "Dreadlord":             "/images/Heroes/HeroDreadLord.png",
+  "Dark Ranger":           "/images/Heroes/BansheeRanger.png",
+  "Naga Sea Witch":        "/images/Heroes/NagaSeaWitch.png",
+  "Pandaren Brewmaster":   "/images/Heroes/PandarenBrewmaster.png",
+  "Beastmaster":           "/images/Heroes/BeastMaster.png",
+  "Tinker":                "/images/Heroes/HeroTinker.png",
+  "Alchemist":             "/images/Heroes/HeroAlchemist.png",
+  "Pit Lord":              "/images/Heroes/PitLord.png",
+};
 
 function parseMatchupSlug(slug: string): [string, string] {
   const parts = slug.split("-vs-");
@@ -39,6 +65,7 @@ const card = StyleSheet.create({
 
 export default function MatchupDetailScreen() {
   const { slug } = useLocalSearchParams<{ slug: string }>();
+  const router = useRouter();
   const { data: matchup, loading } = useMatchupContent(slug);
 
   if (!matchup) {
@@ -53,6 +80,13 @@ export default function MatchupDetailScreen() {
 
   return (
     <ScreenShell>
+      <Pressable
+        onPress={() => router.back()}
+        style={({ hovered, pressed }) => [styles.backBtn, (hovered || pressed) ? styles.backBtnActive : null]}
+      >
+        <Text style={styles.backText}>← Matchups</Text>
+      </Pressable>
+
       {/* Matchup header card */}
       <View style={styles.heroCard}>
         <View style={styles.racesRow}>
@@ -93,13 +127,28 @@ export default function MatchupDetailScreen() {
       {matchup.heroChoices?.length ? (
         <>
           <GhostBadge>Hero Picks</GhostBadge>
-          <View style={styles.pillRow}>
-            {matchup.heroChoices.map((hero: string) => (
-              <View key={hero} style={styles.pill}>
-                <Text style={styles.pillText}>{hero}</Text>
-              </View>
-            ))}
-          </View>
+          <SectionCard label="Recommended Heroes">
+            <View style={styles.heroGrid}>
+              {matchup.heroChoices.map((hero: string) => {
+                const imgPath = HERO_IMAGES[hero];
+                return (
+                  <View key={hero} style={styles.heroItem}>
+                    <View style={styles.heroPortraitWrap}>
+                      {imgPath ? (
+                        <Image
+                          source={{ uri: gameImageUri(imgPath) }}
+                          style={styles.heroPortrait}
+                        />
+                      ) : (
+                        <View style={[styles.heroPortrait, styles.heroPortraitPlaceholder]} />
+                      )}
+                    </View>
+                    <Text style={styles.heroName} numberOfLines={2}>{hero}</Text>
+                  </View>
+                );
+              })}
+            </View>
+          </SectionCard>
         </>
       ) : null}
 
@@ -122,6 +171,24 @@ export default function MatchupDetailScreen() {
 }
 
 const styles = StyleSheet.create({
+  backBtn: {
+    alignSelf: "flex-start",
+    paddingVertical: 7,
+    paddingHorizontal: 14,
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: colors.line,
+    backgroundColor: colors.panel,
+  },
+  backBtnActive: {
+    backgroundColor: colors.bgSoft,
+    borderColor: colors.gold,
+  },
+  backText: {
+    color: colors.muted,
+    fontSize: 14,
+    fontWeight: "600",
+  },
   notFound: {
     color: colors.text,
     fontSize: 28,
@@ -194,23 +261,35 @@ const styles = StyleSheet.create({
     fontSize: 14,
     lineHeight: 22,
   },
-  pillRow: {
+  heroGrid: {
     flexDirection: "row",
     flexWrap: "wrap",
-    gap: 8,
+    gap: 12,
   },
-  pill: {
-    borderColor: colors.gold,
+  heroItem: {
+    alignItems: "center",
+    gap: 5,
+    width: 72,
+  },
+  heroPortraitWrap: {
+    borderRadius: 14,
     borderWidth: 1,
-    borderRadius: 999,
-    backgroundColor: colors.goldSoft,
-    paddingHorizontal: 12,
-    paddingVertical: 5,
+    borderColor: colors.line,
+    overflow: "hidden",
   },
-  pillText: {
-    color: colors.gold,
-    fontSize: 13,
+  heroPortrait: {
+    width: 64,
+    height: 64,
+  },
+  heroPortraitPlaceholder: {
+    backgroundColor: colors.bgSoft,
+  },
+  heroName: {
+    color: colors.text,
+    fontSize: 11,
     fontWeight: "700",
+    textAlign: "center",
+    lineHeight: 15,
   },
   mistakesList: {
     backgroundColor: colors.panel,

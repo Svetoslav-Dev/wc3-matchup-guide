@@ -80,8 +80,13 @@ export function useHomeContent() {
     return response.data;
   }, mobileData.matchups);
   const builds = useRemoteValue("home-builds", async () => {
-    const response = await mobileApi.getBuilds({ page: 1, pageSize: 50 });
-    return response.data;
+    const response = await mobileApi.getBuilds({ page: 1, pageSize: 500 });
+    const liveBuilds = response.data.filter((b) => !b.slug.includes("-variant-"));
+    const fallbackSlugs = new Set(liveBuilds.map((b) => b.slug));
+    return [
+      ...liveBuilds,
+      ...mobileData.builds.filter((b) => !fallbackSlugs.has(b.slug)),
+    ];
   }, mobileData.builds);
 
   return {
@@ -142,8 +147,14 @@ export function useMatchupContent(slug?: string) {
 
 export function useBuildsContent() {
   return useRemoteValue("builds", async () => {
-    const response = await mobileApi.getBuilds({ page: 1, pageSize: 50 });
-    return response.data;
+    const response = await mobileApi.getBuilds({ page: 1, pageSize: 500 });
+    const liveBuilds = response.data.filter((b) => !b.slug.includes("-variant-"));
+    const fallbackSlugs = new Set(liveBuilds.map((b) => b.slug));
+    const merged = [
+      ...liveBuilds,
+      ...mobileData.builds.filter((b) => !fallbackSlugs.has(b.slug)),
+    ];
+    return merged;
   }, mobileData.builds);
 }
 

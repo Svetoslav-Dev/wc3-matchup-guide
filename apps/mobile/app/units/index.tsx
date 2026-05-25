@@ -2,9 +2,11 @@ import { useState } from "react";
 import { Image, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import { useRouter } from "expo-router";
 import { ScreenShell } from "../../components/screen-shell";
-import { GhostBadge, SectionLabel } from "../../components/mobile-ui";
+import { GhostBadge, SectionLabel, resolveImageUrl } from "../../components/mobile-ui";
 import { useUnitsContent } from "../../lib/live-content";
 import { colors } from "../../lib/theme";
+
+const toMercenary = (s: string) => s.replace(/^Neutral(\s|$)/, "Mercenary$1");
 
 const raceFilters = [
   { slug: "all",       label: "All" },
@@ -12,7 +14,7 @@ const raceFilters = [
   { slug: "Orc",       label: "Orc" },
   { slug: "Undead",    label: "Undead" },
   { slug: "Night Elf", label: "Night Elf" },
-  { slug: "Neutral",   label: "Neutral" },
+  { slug: "Neutral",   label: "Mercenaries" },
 ];
 
 export default function UnitsScreen() {
@@ -72,11 +74,11 @@ export default function UnitsScreen() {
         >
           <View style={styles.cardRow}>
             <Image
-              source={{ uri: unit.imageUrl ?? "/images/placeholder.svg" }}
+              source={{ uri: resolveImageUrl(unit.imageUrl) ?? "/images/placeholder.svg" }}
               style={styles.unitImg}
             />
             <View style={styles.cardText}>
-              <Text style={styles.racePill}>{unit.raceName} · {unit.unitType}</Text>
+              <Text style={styles.racePill}>{toMercenary(unit.raceName)} · {toMercenary(unit.unitType)}</Text>
               <Text style={styles.name}>{unit.name}</Text>
               <Text style={styles.description} numberOfLines={2}>{unit.description}</Text>
             </View>

@@ -1,4 +1,4 @@
-import { useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import { GhostBadge, PageIntro, PageTitle, getRaceDisplayName, getRaceIconUri } from "../../components/mobile-ui";
@@ -10,6 +10,7 @@ import { colors } from "../../lib/theme";
 
 export default function BuildDetailScreen() {
   const { slug } = useLocalSearchParams<{ slug: string }>();
+  const router = useRouter();
   const { apiReady, token, user } = useAuth();
   const { data: build, loading } = useBuildContent(slug);
   const [favoriteId, setFavoriteId] = useState<number | null>(null);
@@ -73,6 +74,13 @@ export default function BuildDetailScreen() {
 
   return (
     <ScreenShell>
+      <Pressable
+        onPress={() => router.back()}
+        style={({ hovered, pressed }) => [styles.backBtn, (hovered || pressed) ? styles.backBtnActive : null]}
+      >
+        <Text style={styles.backText}>← Builds</Text>
+      </Pressable>
+
       {/* Race + title hero */}
       <View style={styles.hero}>
         <Image source={{ uri: getRaceIconUri(build.raceSlug) }} style={styles.raceIcon} />
@@ -142,15 +150,23 @@ export default function BuildDetailScreen() {
       {apiReady && !user ? (
         <Text style={styles.metaCopy}>Log in from Profile to save this build to mobile favorites.</Text>
       ) : null}
+      <GhostBadge>Build Order</GhostBadge>
       {build.steps.map((step) => (
-        <View
-          key={step.stepNumber}
-          style={styles.stepCard}
-        >
-          <GhostBadge>
-            Step {step.stepNumber} · {step.supply} supply · {step.timing}
-          </GhostBadge>
-          <Text style={{ color: "#a7b4cd", lineHeight: 22 }}>{step.instruction}</Text>
+        <View key={step.stepNumber} style={styles.stepCard}>
+          <View style={styles.stepHeader}>
+            <View style={styles.stepNumBadge}>
+              <Text style={styles.stepNumText}>{step.stepNumber}</Text>
+            </View>
+            <View style={styles.stepMeta}>
+              <View style={styles.metaChip}>
+                <Text style={styles.metaChipText}>🍖 {step.supply}</Text>
+              </View>
+              <View style={styles.metaChip}>
+                <Text style={styles.metaChipText}>⏱ {step.timing}</Text>
+              </View>
+            </View>
+          </View>
+          <Text style={styles.stepInstruction}>{step.instruction}</Text>
         </View>
       ))}
     </ScreenShell>
@@ -158,6 +174,24 @@ export default function BuildDetailScreen() {
 }
 
 const styles = StyleSheet.create({
+  backBtn: {
+    alignSelf: "flex-start",
+    paddingVertical: 7,
+    paddingHorizontal: 14,
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: colors.line,
+    backgroundColor: colors.panel,
+  },
+  backBtnActive: {
+    backgroundColor: colors.bgSoft,
+    borderColor: colors.gold,
+  },
+  backText: {
+    color: colors.muted,
+    fontSize: 14,
+    fontWeight: "600",
+  },
   hero: {
     flexDirection: "row",
     alignItems: "center",
@@ -239,6 +273,50 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 18,
     padding: 16,
+    gap: 12,
+  },
+  stepHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+  },
+  stepNumBadge: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: colors.goldSoft,
+    borderColor: colors.gold,
+    borderWidth: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    flexShrink: 0,
+  },
+  stepNumText: {
+    color: colors.gold,
+    fontSize: 13,
+    fontWeight: "800",
+  },
+  stepMeta: {
+    flexDirection: "row",
     gap: 8,
+    flexWrap: "wrap",
+  },
+  metaChip: {
+    backgroundColor: colors.bgSoft,
+    borderColor: colors.line,
+    borderWidth: 1,
+    borderRadius: 999,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+  },
+  metaChipText: {
+    color: colors.muted,
+    fontSize: 12,
+    fontWeight: "700",
+  },
+  stepInstruction: {
+    color: "#a7b4cd",
+    lineHeight: 22,
+    fontSize: 14,
   },
 });

@@ -1,6 +1,6 @@
-import { useLocalSearchParams } from "expo-router";
-import { Image, StyleSheet, Text, View } from "react-native";
-import { getRaceIconUri, SectionLabel } from "../../components/mobile-ui";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { Image, Pressable, StyleSheet, Text, View } from "react-native";
+import { gameImageUri, getRaceIconUri, SectionLabel } from "../../components/mobile-ui";
 import { ScreenShell } from "../../components/screen-shell";
 import { useHeroesContent, useRaceContent } from "../../lib/live-content";
 import { getApiBaseUrl } from "../../lib/api";
@@ -22,6 +22,50 @@ const DIFFICULTY_COLORS: Record<string, string> = {
   "Very Hard": "#ef4444",
 };
 
+type ItemEntry = { name: string; imageFile: string };
+
+const BEST_ITEMS: Record<string, ItemEntry[]> = {
+  human: [
+    { name: "Scroll of Town Portal",    imageFile: "ScrollOfTownPortal" },
+    { name: "Runed Bracers",            imageFile: "RunedBracers" },
+    { name: "Orb of Fire",              imageFile: "OrbOfFire" },
+    { name: "Lion Horn of Stormwind",   imageFile: "LionHornOfStormwind" },
+    { name: "Boots of Speed",           imageFile: "BootsOfSpeed" },
+    { name: "Circlet of Nobility",      imageFile: "CircletOfNobility" },
+  ],
+  orc: [
+    { name: "Healing Salve",            imageFile: "PotionOfHealing" },
+    { name: "Scroll of Town Portal",    imageFile: "ScrollOfTownPortal" },
+    { name: "Gloves of Haste",          imageFile: "GlovesOfHaste" },
+    { name: "Claws of Attack",          imageFile: "ClawsOfAttack" },
+    { name: "Ancient Janggo",           imageFile: "AncientJanggoOfEndurance" },
+    { name: "Boots of Speed",           imageFile: "BootsOfSpeed" },
+  ],
+  "night-elf": [
+    { name: "Staff of Preservation",    imageFile: "StaffOfPreservation" },
+    { name: "Scroll of Town Portal",    imageFile: "ScrollOfTownPortal" },
+    { name: "Orb of Venom",             imageFile: "OrbOfVenom" },
+    { name: "Khadgar's Pipe",           imageFile: "KhadgarsPipeOfInsight" },
+    { name: "Robe of the Magi",         imageFile: "RobeOfTheMagi" },
+    { name: "Boots of Speed",           imageFile: "BootsOfSpeed" },
+  ],
+  undead: [
+    { name: "Orb of Corruption",        imageFile: "OrbOfCorruption" },
+    { name: "Sobi Mask",                imageFile: "SobiMask" },
+    { name: "Scroll of Town Portal",    imageFile: "ScrollOfTownPortal" },
+    { name: "Runed Bracers",            imageFile: "RunedBracers" },
+    { name: "Periapt of Vitality",      imageFile: "PeriaptOfVitality" },
+    { name: "Boots of Speed",           imageFile: "BootsOfSpeed" },
+  ],
+};
+
+const ALTAR_NAMES: Record<string, string> = {
+  human:       "Altar of Kings",
+  orc:         "Altar of Storms",
+  "night-elf": "Altar of Elders",
+  undead:      "Altar of Darkness",
+};
+
 // Common tavern hero picks for each race (hero names as returned by the API)
 const TAVERN_PICKS: Record<string, string[]> = {
   human:       ["Naga Sea Witch", "Dark Ranger", "Firelord"],
@@ -32,6 +76,7 @@ const TAVERN_PICKS: Record<string, string[]> = {
 
 export default function RaceDetailScreen() {
   const { slug } = useLocalSearchParams<{ slug: string }>();
+  const router = useRouter();
   const { data: race, loading } = useRaceContent(slug);
   const { data: allHeroes } = useHeroesContent();
 
@@ -56,6 +101,13 @@ export default function RaceDetailScreen() {
 
   return (
     <ScreenShell>
+      <Pressable
+        onPress={() => router.canGoBack() ? router.back() : router.push("/races")}
+        style={({ hovered, pressed }) => [styles.backBtn, (hovered || pressed) ? styles.backBtnActive : null]}
+      >
+        <Text style={styles.backText}>← Races</Text>
+      </Pressable>
+
       {/* ── header ── */}
       <View style={styles.header}>
         <Image source={{ uri: getRaceIconUri(slug ?? "") }} style={styles.raceIcon} />
@@ -91,7 +143,14 @@ export default function RaceDetailScreen() {
 
       {/* ── race heroes ── */}
       <View style={styles.panel}>
-        <Text style={styles.panelTitle}>Heroes</Text>
+        <View style={styles.panelTitleRow}>
+          <Text style={styles.panelTitle}>Heroes</Text>
+          {ALTAR_NAMES[slug ?? ""] ? (
+            <View style={[styles.tavernBadge, { backgroundColor: "rgba(167,139,250,0.12)" }]}>
+              <Text style={[styles.tavernBadgeText, { color: "#a78bfa" }]}>{ALTAR_NAMES[slug ?? ""]}</Text>
+            </View>
+          ) : null}
+        </View>
         <HeroGrid
           heroes={raceHeroes}
           fallbackNames={race.signatureHeroes}
@@ -103,7 +162,7 @@ export default function RaceDetailScreen() {
       {(tavernHeroes.length > 0 || tavernPicks.length > 0) ? (
         <View style={styles.panel}>
           <View style={styles.panelTitleRow}>
-            <Text style={styles.panelTitle}>Tavern Picks</Text>
+            <Text style={styles.panelTitle}>Best Tavern Picks</Text>
             <View style={styles.tavernBadge}>
               <Text style={styles.tavernBadgeText}>Tavern</Text>
             </View>
@@ -114,6 +173,31 @@ export default function RaceDetailScreen() {
             signatureNames={[]}
             accent="silver"
           />
+        </View>
+      ) : null}
+
+      {/* ── best items ── */}
+      {(BEST_ITEMS[slug ?? ""] ?? []).length > 0 ? (
+        <View style={styles.panel}>
+          <View style={styles.panelTitleRow}>
+            <Text style={styles.panelTitle}>Best Items to Prioritize</Text>
+            <View style={[styles.tavernBadge, { backgroundColor: "rgba(96,165,250,0.12)" }]}>
+              <Text style={[styles.tavernBadgeText, { color: "#60a5fa" }]}>Items</Text>
+            </View>
+          </View>
+          <View style={styles.heroRow}>
+            {(BEST_ITEMS[slug ?? ""] ?? []).map((item) => (
+              <View key={item.name} style={styles.heroCard}>
+                <View style={styles.itemIconWrap}>
+                  <Image
+                    source={{ uri: gameImageUri(`/images/Items/${item.imageFile}.png`) }}
+                    style={styles.itemIcon}
+                  />
+                </View>
+                <Text style={styles.heroName} numberOfLines={2}>{item.name}</Text>
+              </View>
+            ))}
+          </View>
         </View>
       ) : null}
 
@@ -184,6 +268,24 @@ function HeroGrid({
 }
 
 const styles = StyleSheet.create({
+  backBtn: {
+    alignSelf: "flex-start",
+    paddingVertical: 7,
+    paddingHorizontal: 14,
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: colors.line,
+    backgroundColor: colors.panel,
+  },
+  backBtnActive: {
+    backgroundColor: colors.bgSoft,
+    borderColor: colors.gold,
+  },
+  backText: {
+    color: colors.muted,
+    fontSize: 14,
+    fontWeight: "600",
+  },
   header: {
     flexDirection: "row",
     alignItems: "center",
@@ -322,6 +424,17 @@ const styles = StyleSheet.create({
   },
   heroPortraitPlaceholder: {
     backgroundColor: colors.bgSoft,
+  },
+  itemIconWrap: {
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: colors.line,
+    overflow: "hidden",
+    backgroundColor: colors.bgSoft,
+  },
+  itemIcon: {
+    width: 56,
+    height: 56,
   },
   heroName: {
     color: colors.text,

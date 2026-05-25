@@ -1,6 +1,6 @@
-import { useLocalSearchParams } from "expo-router";
-import { Image, StyleSheet, Text, View } from "react-native";
-import { GhostBadge, PageTitle, SectionLabel } from "../../components/mobile-ui";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { Image, Pressable, StyleSheet, Text, View } from "react-native";
+import { GhostBadge, PageTitle, SectionLabel, resolveImageUrl } from "../../components/mobile-ui";
 import { ScreenShell } from "../../components/screen-shell";
 import { useUnitContent } from "../../lib/live-content";
 import { colors } from "../../lib/theme";
@@ -16,6 +16,7 @@ const panelStyle = {
 
 export default function UnitDetailScreen() {
   const { slug } = useLocalSearchParams<{ slug: string }>();
+  const router = useRouter();
   const { data: unit, loading } = useUnitContent(slug);
 
   if (!unit) {
@@ -28,10 +29,16 @@ export default function UnitDetailScreen() {
 
   return (
     <ScreenShell>
+      <Pressable
+        onPress={() => router.back()}
+        style={({ hovered, pressed }) => [styles.backBtn, (hovered || pressed) ? styles.backBtnActive : null]}
+      >
+        <Text style={styles.backText}>← Units</Text>
+      </Pressable>
       <SectionLabel>{unit.raceName}</SectionLabel>
       <View style={styles.header}>
-        {unit.imageUrl ? (
-          <Image source={{ uri: unit.imageUrl }} style={styles.portrait} />
+        {resolveImageUrl(unit.imageUrl) ? (
+          <Image source={{ uri: resolveImageUrl(unit.imageUrl)! }} style={styles.portrait} />
         ) : null}
         <View style={styles.headerText}>
           <Text style={styles.name}>{unit.name}</Text>
@@ -70,6 +77,24 @@ export default function UnitDetailScreen() {
 }
 
 const styles = StyleSheet.create({
+  backBtn: {
+    alignSelf: "flex-start",
+    paddingVertical: 7,
+    paddingHorizontal: 14,
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: colors.line,
+    backgroundColor: colors.panel,
+  },
+  backBtnActive: {
+    backgroundColor: colors.bgSoft,
+    borderColor: colors.gold,
+  },
+  backText: {
+    color: colors.muted,
+    fontSize: 14,
+    fontWeight: "600",
+  },
   header: {
     flexDirection: "row",
     alignItems: "flex-start",
