@@ -50,23 +50,19 @@ export default async function MapDetailPage({ params }: Props) {
             </div>
           </article>
         ) : null}
-        {map.availableItems.length > 0 ? (
+        {map.availableItems.filter((item) => getItemInfo(item).imageFile).length > 0 ? (
           <article className="detail-panel">
             <h2>Available Items</h2>
             <ul className="map-item-list">
-              {map.availableItems.map((item) => (
+              {map.availableItems.filter((item) => getItemInfo(item).imageFile).map((item) => (
                 <li key={item} className="map-item-list__item">
-                  {getItemInfo(item).imageFile ? (
-                    <GameImage
-                      src={`/images/Items/${getItemInfo(item).imageFile}.png`}
-                      alt=""
-                      width={20}
-                      height={20}
-                      className="filter-btn__icon"
-                    />
-                  ) : (
-                    <span className="gold-coin" aria-hidden="true" />
-                  )}
+                  <GameImage
+                    src={`/images/Items/${getItemInfo(item).imageFile}.png`}
+                    alt=""
+                    width={20}
+                    height={20}
+                    className="filter-btn__icon"
+                  />
                   <span>{item}</span>
                   <span className="map-item-source">{getItemInfo(item).source}</span>
                 </li>

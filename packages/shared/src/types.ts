@@ -6,6 +6,7 @@ export type Building = {
   gold: number;
   lumber: number;
   tip: string;
+  produces: string[];
 };
 
 export type Item = {
