@@ -8,7 +8,7 @@ export default async function UnitsPage() {
     <div className="page-shell page-stack">
       <div className="section-head">
         <p className="section-label">Unit Library</p>
-        <h1 className="page-title">Core units define timing, control, and counters.</h1>
+        <h1 className="page-title">Core units define timing, control, and counters</h1>
         <p className="page-intro">
           Filter by race to browse a faction&apos;s full roster. Mercenary covers neutral camp
           hireables available to any race on the map.

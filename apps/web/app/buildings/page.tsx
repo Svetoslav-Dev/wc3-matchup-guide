@@ -27,31 +27,30 @@ export default async function BuildingsPage({ searchParams }: Props) {
     <div className="page-shell page-stack">
       <div className="section-head">
         <p className="section-label">Building Reference</p>
-        <h1 className="page-title">Every structure, its role, and its unlock.</h1>
+        <h1 className="page-title">Every structure, its role, and its unlock</h1>
         <p className="page-intro">
           Browse the complete building roster for each race — from base tiers and production
           structures to defense towers and item shops.
         </p>
       </div>
 
-      <div className="filter-panel">
-        <div className="filter-panel__group">
-          <span className="filter-panel__label">Race</span>
-          <div className="filter-chip-row">
-            {raceFilters.map((f) => (
-              <Link
-                key={f.slug}
-                href={f.slug === "all" ? "/buildings" : `/buildings?race=${f.slug}`}
-                className={`filter-chip${activeRace === f.slug ? " filter-chip--active" : ""}`}
-              >
-                {f.label}
-              </Link>
-            ))}
-          </div>
+      <div className="builds-toolbar">
+        <p className="filter-panel__label" style={{ gridColumn: 1, gridRow: 1, margin: 0 }}>Buildings</p>
+        <div className="builds-page-size">
+          {raceFilters.map((f) => (
+            <Link
+              key={f.slug}
+              href={f.slug === "all" ? "/buildings" : `/buildings?race=${f.slug}`}
+              className={`button button--ghost${activeRace === f.slug ? " button--active" : ""}`}
+            >
+              {f.label}
+            </Link>
+          ))}
         </div>
+        <p className="muted">Showing {visible.length} of {buildings.length} buildings.</p>
       </div>
 
-      <div className="card-grid">
+      <div className="card-grid" style={{ gridTemplateColumns: "repeat(4, 1fr)" }}>
         {visible.map((building) => (
           <Link key={toSlug(building)} href={`/buildings/${toSlug(building)}`} className="card" style={{ textDecoration: "none" }}>
             <div className="flex items-center gap-3">

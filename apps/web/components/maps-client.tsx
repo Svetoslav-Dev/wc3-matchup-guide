@@ -38,28 +38,27 @@ export function MapsClient({ allMaps, initialMode }: Props) {
 
   return (
     <>
-      <div className="filter-panel">
-        <div className="filter-panel__group">
-          <span className="filter-panel__label">Game Mode</span>
-          <div className="filter-chip-row">
+      <div className="builds-toolbar">
+        <p className="filter-panel__label" style={{ gridColumn: 1, gridRow: 1, margin: 0 }}>Game Mode</p>
+        <p className="muted" style={{ gridColumn: 2, gridRow: "1 / 3", alignSelf: "center", margin: 0 }}>Showing {visibleMaps.length} of {allMaps.length} maps.</p>
+        <div className="builds-page-size">
+          <button
+            type="button"
+            className={`button button--ghost${!activeMode ? " button--active" : ""}`}
+            onClick={() => handleModeChange(undefined)}
+          >
+            All
+          </button>
+          {mapCategories.map((category) => (
             <button
+              key={category.slug}
               type="button"
-              className={`filter-chip${!activeMode ? " filter-chip--active" : ""}`}
-              onClick={() => handleModeChange(undefined)}
+              className={`button button--ghost${activeMode === category.slug ? " button--active" : ""}`}
+              onClick={() => handleModeChange(category.slug)}
             >
-              All
+              {category.name}
             </button>
-            {mapCategories.map((category) => (
-              <button
-                key={category.slug}
-                type="button"
-                className={`filter-chip${activeMode === category.slug ? " filter-chip--active" : ""}`}
-                onClick={() => handleModeChange(category.slug)}
-              >
-                {category.name}
-              </button>
-            ))}
-          </div>
+          ))}
         </div>
       </div>
 
@@ -70,7 +69,7 @@ export function MapsClient({ allMaps, initialMode }: Props) {
             .map((c) => mapCategoryNameBySlug[c.slug]);
 
           return (
-            <article key={map.slug} className="card">
+            <Link key={map.slug} href={`/maps/${map.slug}`} className="card" style={{ textDecoration: "none" }}>
               <p className="pill">{categories.join(" · ")}</p>
               <div className="title-row">
                 <GameImage
@@ -85,17 +84,10 @@ export function MapsClient({ allMaps, initialMode }: Props) {
                 </div>
               </div>
               <p>{map.description}</p>
-              <div className="card__footer">
-                <div className="list-meta">
-                  <span>{map.creepNotes}</span>
-                </div>
-                <div className="card__footer-action card__footer-action--center">
-                  <Link href={`/maps/${map.slug}`} className="button button--ghost">
-                    View Map Guide
-                  </Link>
-                </div>
+              <div className="list-meta mt-auto">
+                <span>{map.creepNotes}</span>
               </div>
-            </article>
+            </Link>
           );
         })}
       </div>

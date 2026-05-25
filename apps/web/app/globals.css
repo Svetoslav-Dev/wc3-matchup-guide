@@ -154,11 +154,11 @@ button, input, select, textarea { font: inherit; }
 
 /* ─── Icon grid / card ──────────────────────────────────────────────────── */
 .icon-grid        { @apply grid gap-4; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); }
-.icon-card        { @apply flex items-start gap-3 bg-panel border border-line rounded-[14px] p-3.5; }
-.icon-card__body  { @apply flex flex-col gap-0.5 min-w-0; }
-.icon-card__name  { @apply font-bold text-text leading-tight; font-size:0.875rem; }
+.icon-card        { @apply flex items-start gap-3 bg-panel border border-line rounded-[14px] p-3.5; height: 120px; overflow: hidden; }
+.icon-card__body  { @apply flex flex-col gap-0.5 min-w-0 overflow-hidden; }
+.icon-card__name  { @apply font-bold text-text leading-tight line-clamp-1; font-size:0.875rem; }
 .icon-card__type  { @apply text-[0.72rem] uppercase tracking-widest text-gold; }
-.icon-card__desc  { @apply text-muted leading-snug; font-size:0.8rem; }
+.icon-card__desc  { @apply text-muted leading-snug line-clamp-2; font-size:0.8rem; }
 
 /* ─── Hero section ──────────────────────────────────────────────────────── */
 .hero       { @apply grid gap-6 pt-[4.5rem] pb-8; }
@@ -420,6 +420,15 @@ a.card:hover {
   transform: translateY(-2px);
   box-shadow: 0 8px 32px rgba(0,0,0,0.35), 0 0 0 1px rgba(201,163,91,0.12);
 }
+a.icon-card {
+  transition: border-color 160ms ease, background 160ms ease, transform 140ms ease, box-shadow 160ms ease;
+}
+a.icon-card:hover {
+  border-color: rgba(201,163,91,0.4);
+  background: linear-gradient(180deg,rgba(22,32,50,0.97),rgba(12,16,24,0.97));
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.35), 0 0 0 1px rgba(201,163,91,0.12);
+}
 
 .card p, .detail-panel p, .timeline-step p,
 .favorite-card p, .admin-card p, .form-panel p,
@@ -658,21 +667,21 @@ a.card:hover {
 /* ─── Builds list toolbar ───────────────────────────────────────────────── */
 .builds-toolbar {
   display: grid;
-  grid-template-columns: 1fr auto;
+  grid-template-columns: auto 1fr;
   grid-template-rows: auto auto;
-  gap: 0.875rem 1.5rem;
+  gap: 0.5rem 1.5rem;
   align-items: center;
-  padding: 1.125rem 1.375rem;
+  padding: 0.625rem 1.375rem;
   border-radius: 18px;
   border: 1px solid var(--color-line);
   background: linear-gradient(180deg,rgba(17,24,36,0.97),rgba(11,14,20,0.97));
 }
 /* Search bar spans full width on top */
 .builds-toolbar > .builds-search    { grid-column: 1 / -1; grid-row: 1; }
-/* Count badge bottom-left */
-.builds-toolbar > .muted            { grid-column: 1; grid-row: 2; align-self: center; }
-/* Page size segmented control bottom-right */
-.builds-toolbar > .builds-page-size { grid-column: 2; grid-row: 2; }
+/* Filter buttons left */
+.builds-toolbar > .builds-page-size { grid-column: 1; grid-row: 2; }
+/* Count badge right */
+.builds-toolbar > .muted            { grid-column: 2; grid-row: 2; align-self: center; text-align: right; }
 
 .builds-search    { @apply flex items-center gap-2.5; }
 .builds-search__label {
@@ -736,7 +745,7 @@ a.card:hover {
 .game-image--item { @apply w-8 h-8 rounded-md object-cover border border-line shrink-0; background:var(--panel); }
 
 /* ─── Item entry ────────────────────────────────────────────────────────── */
-.item-list         { @apply grid gap-2; }
+.item-list         { @apply grid gap-5; }
 .item-entry        { @apply flex items-center gap-2.5; }
 .item-entry__name  { @apply flex-1 text-text; font-size:0.9rem; }
 .item-entry__source {
@@ -765,21 +774,22 @@ a.card:hover {
 .unit-stats-card {
   grid-column: 1 / -1;
   display: flex;
-  align-items: center;
-  gap: 2rem;
+  flex-direction: column;
+  gap: 0.875rem;
 }
 .unit-stats-card__badges {
-  @apply flex flex-col gap-2;
-  min-width: 120px;
+  @apply flex flex-wrap gap-2;
+  padding-bottom: 0.875rem;
+  border-bottom: 1px solid var(--color-line);
 }
 .unit-stats-card__costs {
-  @apply flex flex-1 items-center;
+  @apply flex items-stretch;
   gap: 0;
 }
 
 .unit-stat-row {
   @apply flex flex-col items-center flex-1;
-  padding: 0.5rem 1rem;
+  padding: 0.625rem 1rem;
   border-right: 1px solid var(--color-line);
   text-align: center;
 }

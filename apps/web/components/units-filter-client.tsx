@@ -35,7 +35,8 @@ export function UnitsFilterClient({ units }: Props) {
   return (
     <>
       <div className="builds-toolbar">
-        <p className="muted">Showing {visible.length} of {units.length} units.</p>
+        <p className="filter-panel__label" style={{ gridColumn: 1, gridRow: 1, margin: 0 }}>Units</p>
+        <p className="muted" style={{ gridColumn: 2, gridRow: "1 / 3", alignSelf: "center", margin: 0 }}>Showing {visible.length} of {units.length} units.</p>
         <div className="builds-page-size">
           {FILTERS.map(({ label, value }) => (
             <button
@@ -49,9 +50,9 @@ export function UnitsFilterClient({ units }: Props) {
         </div>
       </div>
 
-      <div className="card-grid">
+      <div className="card-grid" style={{ gridTemplateColumns: "repeat(5, 1fr)" }}>
         {visible.map((unit) => (
-          <article key={unit.slug} className="card">
+          <Link key={unit.slug} href={`/units/${unit.slug}`} className="card" style={{ textDecoration: "none" }}>
             <p className="pill">{unit.raceName === "Neutral" ? "Mercenary" : unit.raceName}</p>
             <div className="title-row">
               <GameImage
@@ -70,28 +71,21 @@ export function UnitsFilterClient({ units }: Props) {
               </div>
             </div>
             <p>{unit.description}</p>
-            <div className="card__footer">
-              <div className="list-meta">
-                <span className="cost-chip" aria-label={`${unit.food} food`}>
-                  <span className="cost-chip__icon" aria-hidden="true">🍖</span>
-                  <span>{unit.food}</span>
-                </span>
-                <span className="cost-chip" aria-label={`${unit.gold} gold`}>
-                  <span className="cost-chip__icon" aria-hidden="true">🪙</span>
-                  <span>{unit.gold}</span>
-                </span>
-                <span className="cost-chip" aria-label={`${unit.lumber} lumber`}>
-                  <span className="cost-chip__icon" aria-hidden="true">🪵</span>
-                  <span>{unit.lumber}</span>
-                </span>
-              </div>
-              <div className="card__footer-action card__footer-action--center">
-                <Link href={`/units/${unit.slug}`} className="button button--ghost button--sm">
-                  View Unit Guide
-                </Link>
-              </div>
+            <div className="list-meta justify-center mt-auto">
+              <span className="cost-chip" aria-label={`${unit.food} food`}>
+                <span className="cost-chip__icon" aria-hidden="true">🍖</span>
+                <span>{unit.food}</span>
+              </span>
+              <span className="cost-chip" aria-label={`${unit.gold} gold`}>
+                <span className="cost-chip__icon" aria-hidden="true">🪙</span>
+                <span>{unit.gold}</span>
+              </span>
+              <span className="cost-chip" aria-label={`${unit.lumber} lumber`}>
+                <span className="cost-chip__icon" aria-hidden="true">🪵</span>
+                <span>{unit.lumber}</span>
+              </span>
             </div>
-          </article>
+          </Link>
         ))}
       </div>
     </>

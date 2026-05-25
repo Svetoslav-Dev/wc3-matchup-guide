@@ -12,7 +12,7 @@ export default async function RacesPage() {
     <div className="page-shell page-stack">
       <div className="section-head">
         <p className="section-label">Race Archive</p>
-        <h1 className="page-title">Choose your battlefield language.</h1>
+        <h1 className="page-title">Choose your battlefield language</h1>
         <p className="page-intro">
           Each race page captures identity, strategic posture, core heroes, and the macro habits that
           define strong Warcraft III fundamentals.
@@ -33,12 +33,19 @@ export default async function RacesPage() {
               <h2>{race.name}</h2>
             </div>
             <p>{race.identity}</p>
+            <ul className="list-none p-0 m-0 flex flex-col gap-1.5">
+              {race.strengths.map((s) => (
+                <li key={s} className="flex items-center gap-1.5 text-muted" style={{ fontSize: "0.85rem" }}>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-gold opacity-70 shrink-0" aria-hidden="true">
+                    <polyline points="20 6 9 17 4 12"/>
+                  </svg>
+                  {s}
+                </li>
+              ))}
+            </ul>
             <div className="card__footer">
-              <div className="list-meta">
-                <span>Strengths: {race.strengths.join(", ")}</span>
-              </div>
-              <div className="card__footer-action">
-                <Link href={`/races/${race.slug}`} className="button button--ghost">
+              <div className="card__footer-action card__footer-action--center">
+                <Link href={`/races/${race.slug}`} className="button button--ghost button--sm">
                   Read Guide
                 </Link>
               </div>

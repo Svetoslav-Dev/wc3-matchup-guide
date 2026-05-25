@@ -135,7 +135,6 @@ export function BuildList({ initialResult, race, matchup, search, difficulty, fa
   return (
     <>
       <div className="builds-toolbar">
-        <p className="muted">Showing {builds.length} of {total} builds.</p>
         <form
           className="builds-search"
           onSubmit={(event) => {
@@ -171,6 +170,7 @@ export function BuildList({ initialResult, race, matchup, search, difficulty, fa
             </button>
           ))}
         </div>
+        <p className="muted">Showing {builds.length} of {total} builds.</p>
       </div>
       <div className="list-grid">
         {builds.map((build) => (

@@ -127,7 +127,7 @@ export default async function HomePage() {
       <section className="hero hero--split">
         <div className="self-stretch flex flex-col justify-between gap-6">
           <div className="flex flex-col gap-4">
-            <p className="section-label">Guides Builds Matchups</p>
+            <span className="section-label">Guides Builds Matchups</span>
             <h1>Sharpen your Warcraft III decision making one bad matchup at a time</h1>
             <p>
               Every matchup has a tipping point. Study the timings that decide games, understand the
