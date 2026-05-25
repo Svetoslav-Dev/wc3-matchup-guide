@@ -10,25 +10,6 @@ function slugify(name: string): string {
   return name.toLowerCase().replace(/'/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 }
 
-type BannerInfo = { label: string; sublabel: string; icon: string };
-
-const SHOP_BANNERS: Partial<Record<string, BannerInfo>> = {
-  "human":           { label: "Faction Shop", sublabel: "Arcane Vault",       icon: "/images/Buildings/ArcaneVault.png" },
-  "orc":             { label: "Faction Shop", sublabel: "Voodoo Lounge",      icon: "/images/Buildings/VoodooLounge.png" },
-  "undead":          { label: "Faction Shop", sublabel: "Tomb of Relics",     icon: "/images/Buildings/TombOfRelics.png" },
-  "night-elf":       { label: "Faction Shop", sublabel: "Ancient of Wonders", icon: "/images/Buildings/AncientOfWonders.png" },
-  "goblin-merchant": { label: "Neutral Shop", sublabel: "Goblin Merchant",    icon: "/images/Buildings/GoblinLaboratory.png" },
-};
-
-const SHOP_BUILDING_ICONS: Record<string, string> = {
-  "human":           "/images/Buildings/ArcaneVault.png",
-  "orc":             "/images/Buildings/VoodooLounge.png",
-  "undead":          "/images/Buildings/TombOfRelics.png",
-  "night-elf":       "/images/Buildings/AncientOfWonders.png",
-  "goblin-merchant": "/images/Buildings/GoblinLaboratory.png",
-  "tome":            "/images/Items/TomeOfStrength.png",
-};
-
 type FilterDef = { slug: string; label: string };
 
 const filters: FilterDef[] = [
@@ -63,27 +44,22 @@ export function ItemsClient({ items, initialTab }: Props) {
   }, [router, pathname]);
 
   const visible = getVisible(items, activeTab);
-  const banner = SHOP_BANNERS[activeTab] ?? null;
-
   return (
     <>
       <div className="builds-toolbar">
         <p className="filter-panel__label" style={{ gridColumn: 1, gridRow: 1, margin: 0 }}>Source</p>
         <p className="muted" style={{ gridColumn: 2, gridRow: "1 / 3", alignSelf: "center", margin: 0 }}>Showing {visible.length} of {items.length} items.</p>
         <div className="builds-page-size">
-          {filters.map((f) => {
-            const icon = SHOP_BUILDING_ICONS[f.slug];
-            return (
-              <button
-                key={f.slug}
-                type="button"
-                className={`button button--ghost${activeTab === f.slug ? " button--active" : ""}`}
-                onClick={() => handleTabChange(f.slug)}
-              >
-                {f.label}
-              </button>
-            );
-          })}
+          {filters.map((f) => (
+            <button
+              key={f.slug}
+              type="button"
+              className={`button button--ghost${activeTab === f.slug ? " button--active" : ""}`}
+              onClick={() => handleTabChange(f.slug)}
+            >
+              {f.label}
+            </button>
+          ))}
         </div>
       </div>
 
