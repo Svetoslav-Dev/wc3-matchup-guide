@@ -49,7 +49,7 @@ export default async function RaceDetailPage({ params }: Props) {
 
   return (
     <div className="page-shell page-stack">
-      <div className="flex justify-end pt-4">
+      <div className="flex justify-start pt-4">
         <Link href="/races" className="button button--ghost button--sm">
           ← All Races
         </Link>
@@ -70,8 +70,8 @@ export default async function RaceDetailPage({ params }: Props) {
         </div>
         <p className="page-intro">{race.description}</p>
       </div>
-      <div className="detail-grid">
-        <article className="detail-panel">
+      <div className="detail-grid" style={{ alignItems: "stretch" }}>
+        <article className="detail-panel" style={{ paddingTop: "0.75rem", paddingBottom: "0.75rem" }}>
           <h2 className="flex items-center gap-2">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gold opacity-80 shrink-0" aria-hidden="true">
               <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
@@ -90,9 +90,14 @@ export default async function RaceDetailPage({ params }: Props) {
             ))}
           </ul>
         </article>
-        <article className="detail-panel">
-          <h2>Signature Heroes</h2>
-          <div className="grid grid-cols-2 gap-x-4 gap-y-2.5">
+        <article className="detail-panel" style={{ paddingTop: "0.75rem", paddingBottom: "0.75rem" }}>
+          <h2 className="flex items-center gap-2">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gold opacity-80 shrink-0" aria-hidden="true">
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+            </svg>
+            Signature Heroes
+          </h2>
+          <div className="grid grid-cols-2 gap-x-4 gap-y-2.5 mt-3">
             {race.signatureHeroes.map((hero) => (
               <div key={hero} className="flex items-center gap-2.5 min-w-0">
                 <GameImage
@@ -106,7 +111,6 @@ export default async function RaceDetailPage({ params }: Props) {
               </div>
             ))}
           </div>
-          <p>Preferred ladder focus: {race.ladderFocus}</p>
         </article>
       </div>
       {race.slug !== "neutral" && buildResult ? (
@@ -125,11 +129,8 @@ export default async function RaceDetailPage({ params }: Props) {
                   </div>
                   <h3>{build.title}</h3>
                   <p>{build.summary}</p>
-                  <div className="card__footer">
-                    <div className="list-meta">
-                      {build.bestAgainst ? <span>Best against: {build.bestAgainst}</span> : null}
-                    </div>
-                    <Link href={`/builds/${build.slug}`} className="button button--ghost">
+                  <div className="card__footer flex justify-center">
+                    <Link href={`/builds/${build.slug}`} className="button button--ghost button--sm">
                       Read Me
                     </Link>
                   </div>

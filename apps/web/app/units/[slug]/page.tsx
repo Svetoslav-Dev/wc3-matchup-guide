@@ -160,27 +160,21 @@ export default async function UnitDetailPage({ params }: Props) {
           <div className="unit-stats-card__costs">
             <div className="unit-stat-row">
               <span className="unit-stat-row__label flex items-center gap-2">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="opacity-60">
-                  <path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/>
-                </svg>
+                <span aria-hidden="true">🍖</span>
                 Food
               </span>
               <span className="unit-stat-row__value">{unit.food}</span>
             </div>
             <div className="unit-stat-row">
               <span className="unit-stat-row__label flex items-center gap-2">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="opacity-60" style={{ color: "#c9a35b" }}>
-                  <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
-                </svg>
+                <span aria-hidden="true">🪙</span>
                 Gold
               </span>
               <span className="unit-stat-row__value">{unit.gold}</span>
             </div>
             <div className="unit-stat-row">
               <span className="unit-stat-row__label flex items-center gap-2">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="opacity-60" style={{ color: "#7fa66b" }}>
-                  <line x1="17" y1="10" x2="3" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="14" x2="3" y2="14"/><line x1="17" y1="18" x2="3" y2="18"/>
-                </svg>
+                <span aria-hidden="true">🪵</span>
                 Lumber
               </span>
               <span className="unit-stat-row__value">{unit.lumber}</span>
