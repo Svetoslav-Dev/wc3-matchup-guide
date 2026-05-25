@@ -1,7 +1,5 @@
 "use client";
 
-import { useState, useCallback } from "react";
-import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import { GameImage } from "./game-image";
 import type { Item } from "@warcraft3-guide-hub/shared";
@@ -33,16 +31,7 @@ function getVisible(items: Item[], filter: string) {
 type Props = { items: Item[]; initialTab: string };
 
 export function ItemsClient({ items, initialTab }: Props) {
-  const router = useRouter();
-  const pathname = usePathname();
-  const [activeTab, setActiveTab] = useState(initialTab);
-
-  const handleTabChange = useCallback((tab: string) => {
-    setActiveTab(tab);
-    const url = tab === "all" ? pathname : `${pathname}?tab=${tab}`;
-    router.replace(url, { scroll: false });
-  }, [router, pathname]);
-
+  const activeTab = initialTab;
   const visible = getVisible(items, activeTab);
   return (
     <>
@@ -51,14 +40,13 @@ export function ItemsClient({ items, initialTab }: Props) {
         <p className="muted" style={{ gridColumn: 2, gridRow: "1 / 3", alignSelf: "center", margin: 0 }}>Showing {visible.length} of {items.length} items.</p>
         <div className="builds-page-size">
           {filters.map((f) => (
-            <button
+            <Link
               key={f.slug}
-              type="button"
+              href={f.slug === "all" ? "/items" : `/items?tab=${f.slug}`}
               className={`button button--ghost${activeTab === f.slug ? " button--active" : ""}`}
-              onClick={() => handleTabChange(f.slug)}
             >
               {f.label}
-            </button>
+            </Link>
           ))}
         </div>
       </div>
