@@ -15,7 +15,7 @@ export default async function ItemsPage({ searchParams }: Props) {
     <div className="page-shell page-stack">
       <div className="section-head">
         <p className="section-label">Item Reference</p>
-        <h1 className="page-title">Items that turn the tide of fights.</h1>
+        <h1 className="page-title">Items that turn the tide of fights</h1>
         <p className="page-intro">
           Browse creep-drop loot, faction shop stock, and neutral market inventories in one place.
         </p>

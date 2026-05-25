@@ -2,8 +2,13 @@
 
 import { useState, useCallback } from "react";
 import { useRouter, usePathname } from "next/navigation";
+import Link from "next/link";
 import { GameImage } from "./game-image";
 import type { Item } from "@warcraft3-guide-hub/shared";
+
+function slugify(name: string): string {
+  return name.toLowerCase().replace(/'/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+}
 
 type BannerInfo = { label: string; sublabel: string; icon: string };
 
@@ -62,45 +67,30 @@ export function ItemsClient({ items, initialTab }: Props) {
 
   return (
     <>
-      <div className="filter-panel">
-        <div className="filter-panel__group">
-          <span className="filter-panel__label">Source</span>
-          <div className="filter-chip-row">
-            {filters.map((f) => {
-              const icon = SHOP_BUILDING_ICONS[f.slug];
-              return (
-                <button
-                  key={f.slug}
-                  type="button"
-                  className={`filter-chip${activeTab === f.slug ? " filter-chip--active" : ""}`}
-                  onClick={() => handleTabChange(f.slug)}
-                >
-                  {f.slug === "creep-drop" ? (
-                    <span className="gold-coin" aria-hidden="true" />
-                  ) : icon ? (
-                    <GameImage src={icon} alt="" width={16} height={16} className="filter-btn__icon" />
-                  ) : null}
-                  {f.label}
-                </button>
-              );
-            })}
-          </div>
+      <div className="builds-toolbar">
+        <p className="filter-panel__label" style={{ gridColumn: 1, gridRow: 1, margin: 0 }}>Source</p>
+        <p className="muted" style={{ gridColumn: 2, gridRow: "1 / 3", alignSelf: "center", margin: 0 }}>Showing {visible.length} of {items.length} items.</p>
+        <div className="builds-page-size">
+          {filters.map((f) => {
+            const icon = SHOP_BUILDING_ICONS[f.slug];
+            return (
+              <button
+                key={f.slug}
+                type="button"
+                className={`button button--ghost${activeTab === f.slug ? " button--active" : ""}`}
+                onClick={() => handleTabChange(f.slug)}
+              >
+                {f.label}
+              </button>
+            );
+          })}
         </div>
       </div>
 
-      {banner ? (
-        <div className="shop-banner">
-          <GameImage src={banner.icon} alt={banner.sublabel} width={40} height={40} className="game-image--icon" />
-          <div>
-            <p className="shop-banner__label">{banner.label}</p>
-            <p className="shop-banner__name">{banner.sublabel}</p>
-          </div>
-        </div>
-      ) : null}
 
       <div className="icon-grid">
         {visible.map((item) => (
-          <div key={item.name} className="icon-card">
+          <Link key={item.name} href={`/items/${slugify(item.name)}`} className="icon-card" style={{ textDecoration: "none" }}>
             <GameImage
               src={`/images/Items/${item.imageFile}.png`}
               alt={item.name}
@@ -115,7 +105,7 @@ export function ItemsClient({ items, initialTab }: Props) {
               </p>
               <p className="icon-card__desc">{item.description}</p>
             </div>
-          </div>
+          </Link>
         ))}
       </div>
     </>
