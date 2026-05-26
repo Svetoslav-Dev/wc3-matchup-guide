@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { AdminSearchInput } from "../../../components/admin-search-input";
 import Image from "next/image";
 import { redirect } from "next/navigation";
 import { hasDatabaseUrl } from "@warcraft3-guide-hub/db";
@@ -47,11 +48,7 @@ export default async function AdminHeroesPage({ searchParams }: Props) {
       </div>
 
       <div className="admin-toolbar">
-        <form className="admin-toolbar__search" method="get">
-          {activeRace ? <input type="hidden" name="race" value={activeRace.slug} /> : null}
-          <input className="admin-toolbar__input" name="q" defaultValue={q ?? ""} placeholder="Search heroes by name…" autoComplete="off" />
-          <button className="button button--ghost button--sm" type="submit">Search</button>
-        </form>
+        <AdminSearchInput placeholder="Search heroes by name…" />
         <div className="admin-toolbar__filters">
           <Link href={filterHref()} className={`filter-chip${!activeRace ? " filter-chip--active" : ""}`}>All</Link>
           {RACE_FILTERS.map((r) => (
@@ -74,7 +71,7 @@ export default async function AdminHeroesPage({ searchParams }: Props) {
             <div className="admin-list-row__info">
               <p className="admin-list-row__name">{hero.name}</p>
               <div className="admin-card-meta">
-                <span className="pill pill--race">{hero.raceName}</span>
+                <span className="pill pill--race">{hero.raceSlug === "neutral" ? "Tavern" : hero.raceName}</span>
                 <span className="muted" style={{ fontSize: "0.78rem" }}>{hero.primaryAttribute} · {hero.role}</span>
               </div>
             </div>

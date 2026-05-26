@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { redirect } from "next/navigation";
 import { hasDatabaseUrl } from "@warcraft3-guide-hub/db";
 import { getSessionUser } from "../../../lib/auth";
@@ -6,6 +7,15 @@ import { listAdminMatchups } from "../../../lib/content";
 import { deleteMatchupAction } from "../actions";
 import { DifficultyBadge } from "../../../components/difficulty-badge";
 import { ConfirmDelete } from "../../../components/confirm-delete";
+import { AdminSearchInput } from "../../../components/admin-search-input";
+
+const RACE_ICONS: Record<string, string> = {
+  human:       "/images/Races/Humans_Icon.png",
+  orc:         "/images/Races/Orcs_Icon.png",
+  "night-elf": "/images/Races/Night_Elves_Icon.png",
+  undead:      "/images/Races/Undead_Icon.png",
+  neutral:     "/images/Races/Neutral.png",
+};
 
 type Props = { searchParams?: Promise<{ q?: string }> };
 
@@ -30,10 +40,7 @@ export default async function AdminMatchupsPage({ searchParams }: Props) {
       </div>
 
       <div className="admin-toolbar">
-        <form className="admin-toolbar__search" method="get">
-          <input className="admin-toolbar__input" name="q" defaultValue={q ?? ""} placeholder="Search matchups by title…" autoComplete="off" />
-          <button className="button button--ghost button--sm" type="submit">Search</button>
-        </form>
+        <AdminSearchInput placeholder="Search matchups by title…" />
         <p className="admin-toolbar__count">{records.length} result{records.length !== 1 ? "s" : ""}</p>
       </div>
 
@@ -43,8 +50,14 @@ export default async function AdminMatchupsPage({ searchParams }: Props) {
             <div className="admin-list-row__info">
               <p className="admin-list-row__name">{matchup.title}</p>
               <div className="admin-card-meta">
+                {RACE_ICONS[matchup.raceASlug] && (
+                  <Image src={RACE_ICONS[matchup.raceASlug]} alt={matchup.raceASlug} width={18} height={18} style={{ objectFit: "contain" }} />
+                )}
                 <span className="pill pill--race">{matchup.raceASlug}</span>
                 <span className="muted" style={{ fontSize: "0.78rem" }}>vs</span>
+                {RACE_ICONS[matchup.raceBSlug] && (
+                  <Image src={RACE_ICONS[matchup.raceBSlug]} alt={matchup.raceBSlug} width={18} height={18} style={{ objectFit: "contain" }} />
+                )}
                 <span className="pill pill--race">{matchup.raceBSlug}</span>
                 <DifficultyBadge value={matchup.difficulty} />
               </div>

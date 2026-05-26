@@ -1,29 +1,40 @@
 import Image from "next/image";
+import { readdir } from "node:fs/promises";
+import { join } from "node:path";
 import { notFound, redirect } from "next/navigation";
 import { hasDatabaseUrl } from "@warcraft3-guide-hub/db";
 import { getSessionUser } from "../../../../../lib/auth";
-import { getAdminBuildingById } from "../../../../../lib/content";
+import { getAdminBuildingById, listRaces } from "../../../../../lib/content";
 import { updateBuildingAction } from "../../../actions";
 import { RaceSelect } from "../../../../../components/race-select";
 
-type Props = { params: Promise<{ id: string }> };
+async function resolveBuildingImageUrl(imageFile: string): Promise<string | null> {
+  if (!imageFile) return null;
+  if (imageFile.includes(".")) return `/images/Buildings/${imageFile}`;
+  const dirs = [join(process.cwd(), "public"), join(process.cwd(), "apps", "web", "public")];
+  for (const base of dirs) {
+    try {
+      const files = await readdir(join(base, "images", "Buildings"));
+      const match = files.find((f) => f.replace(/\.[^.]+$/, "") === imageFile);
+      if (match) return `/images/Buildings/${match}`;
+    } catch { /* skip */ }
+  }
+  return null;
+}
 
-const allRaces = [
-  { slug: "human", name: "Human" },
-  { slug: "orc", name: "Orc" },
-  { slug: "undead", name: "Undead" },
-  { slug: "night-elf", name: "Night Elf" },
-  { slug: "neutral", name: "Neutral" },
-];
+type Props = { params: Promise<{ id: string }>; searchParams?: Promise<{ status?: string; error?: string }> };
 
-export default async function EditAdminBuildingPage({ params }: Props) {
+export default async function EditAdminBuildingPage({ params, searchParams }: Props) {
   if (!hasDatabaseUrl() || !process.env.JWT_SECRET) redirect("/admin");
   const user = await getSessionUser();
   if (!user || user.role !== "admin") redirect("/admin");
 
   const { id } = await params;
-  const building = await getAdminBuildingById(Number(id));
+  const { error, status } = (await searchParams) ?? {};
+  const [building, raceResult] = await Promise.all([getAdminBuildingById(Number(id)), listRaces(1, 100)]);
   if (!building) notFound();
+  const races = raceResult.data;
+  const imagePreviewUrl = await resolveBuildingImageUrl(building.imageFile);
 
   return (
     <div className="page-shell page-stack">
@@ -37,6 +48,12 @@ export default async function EditAdminBuildingPage({ params }: Props) {
         </div>
       </div>
 
+      {(status === "updated" || status === "created") && (
+        <div className="status-banner status-banner--success">Building {status === "created" ? "created" : "updated"}.</div>
+      )}
+      {error && (
+        <div className="status-banner status-banner--error">{decodeURIComponent(error)}</div>
+      )}
       <form action={updateBuildingAction} className="admin-edit-form">
         <input type="hidden" name="buildingId" value={building.id} />
 
@@ -48,12 +65,9 @@ export default async function EditAdminBuildingPage({ params }: Props) {
             </div>
             <div className="field">
               <label htmlFor="race">Race</label>
-              <RaceSelect races={allRaces} defaultValue={building.race} name="race" id="race" />
+              <RaceSelect races={races} defaultValue={building.race} name="race" id="race" />
             </div>
-            <div className="field">
-              <label htmlFor="imageFile">Image filename <span className="admin-edit-form__hint">(without extension)</span></label>
-              <input id="imageFile" name="imageFile" type="text" defaultValue={building.imageFile} placeholder="TownHall" />
-            </div>
+            <input type="hidden" name="imageFile" value={building.imageFile} />
             <div className="field">
               <label htmlFor="description">Description</label>
               <textarea id="description" name="description" defaultValue={building.description} />
@@ -63,9 +77,9 @@ export default async function EditAdminBuildingPage({ params }: Props) {
           <div className="admin-edit-form__sidebar">
             <div className="admin-edit-form__preview-card">
               <p className="section-label">Image Preview</p>
-              {building.imageFile ? (
+              {imagePreviewUrl ? (
                 <Image
-                  src={`/images/Buildings/${building.imageFile}.png`}
+                  src={imagePreviewUrl}
                   alt={building.name}
                   width={120}
                   height={120}
@@ -85,7 +99,6 @@ export default async function EditAdminBuildingPage({ params }: Props) {
 
         <div className="admin-edit-form__footer">
           <button className="button button--ghost" type="submit">Save Building</button>
-          <a href="/admin/buildings" className="button button--cancel">Cancel</a>
         </div>
       </form>
     </div>

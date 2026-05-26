@@ -8,9 +8,10 @@ import { RaceSelect } from "../../../../../components/race-select";
 
 type Props = {
   params: Promise<{ slug: string }>;
+  searchParams?: Promise<{ status?: string; error?: string }>;
 };
 
-export default async function EditAdminMatchupPage({ params }: Props) {
+export default async function EditAdminMatchupPage({ params, searchParams }: Props) {
   if (!hasDatabaseUrl() || !process.env.JWT_SECRET) {
     return (
       <div className="page-shell page-stack">
@@ -36,7 +37,9 @@ export default async function EditAdminMatchupPage({ params }: Props) {
   }
 
   const { slug } = await params;
+  const { error, status } = (await searchParams) ?? {};
   const [matchup, raceResult] = await Promise.all([ensureAdminMatchupEditor(slug), listRaces(1, 20)]);
+  const visibleRaces = raceResult.data.filter((r) => r.slug !== "neutral");
 
   if (!matchup) {
     notFound();
@@ -44,29 +47,41 @@ export default async function EditAdminMatchupPage({ params }: Props) {
 
   return (
     <div className="page-shell page-stack">
-      <div className="section-head">
-        <p className="section-label">Admin Matchup Editor</p>
-        <h1 className="page-title">Edit {matchup.title}</h1>
-        <p className="page-intro">Update race pairing, pacing notes, and common mistakes from the protected web editor.</p>
+      <div className="admin-page-head">
+        <div>
+          <p className="section-label">Admin Matchup Editor</p>
+          <h1 className="page-title">Edit {matchup.title}</h1>
+        </div>
+        <div className="admin-page-head__actions">
+          <a href="/admin/matchups" className="button button--ghost button--sm">← Back</a>
+        </div>
       </div>
+      {(status === "updated" || status === "created") && (
+        <div className="status-banner status-banner--success">Matchup {status === "created" ? "created" : "updated"}.</div>
+      )}
+      {error && (
+        <div className="status-banner status-banner--error">{decodeURIComponent(error)}</div>
+      )}
+      <p className="page-intro">Update race pairing, pacing notes, and common mistakes from the protected web editor.</p>
       <form action={updateMatchupAction} className="form-grid">
         <input type="hidden" name="matchupId" value={matchup.id} />
+        <input type="hidden" name="currentSlug" value={matchup.slug} />
         <section className="form-panel">
           <h2>Core Metadata</h2>
           <div className="field">
             <label htmlFor="raceASlug">Race A</label>
-            <RaceSelect races={raceResult.data} defaultValue={matchup.raceASlug} name="raceASlug" id="raceASlug" />
+            <RaceSelect races={visibleRaces} defaultValue={matchup.raceASlug} name="raceASlug" id="raceASlug" />
           </div>
           <div className="field">
             <label htmlFor="raceBSlug">Race B</label>
-            <RaceSelect races={raceResult.data} defaultValue={matchup.raceBSlug} name="raceBSlug" id="raceBSlug" />
+            <RaceSelect races={visibleRaces} defaultValue={matchup.raceBSlug} name="raceBSlug" id="raceBSlug" />
           </div>
           <div className="field">
             <label htmlFor="title">Title</label>
             <input id="title" name="title" type="text" defaultValue={matchup.title} />
           </div>
           <div className="field">
-            <label htmlFor="slug">Slug</label>
+            <label htmlFor="slug">Page URL <span className="admin-edit-form__hint">(e.g. /matchups/human-vs-orc)</span></label>
             <input id="slug" name="slug" type="text" defaultValue={matchup.slug} />
           </div>
           <div className="field">
@@ -96,8 +111,8 @@ export default async function EditAdminMatchupPage({ params }: Props) {
             <label htmlFor="commonMistakesInput">Common mistakes</label>
             <textarea id="commonMistakesInput" name="commonMistakesInput" defaultValue={formatCommonMistakesInput(matchup.commonMistakes)} />
           </div>
-          <div className="inline-actions">
-            <button className="button" type="submit">Save Matchup</button>
+          <div style={{ marginTop: "0.5rem", display: "flex", justifyContent: "center" }}>
+            <button className="button button--ghost" type="submit">Save Matchup</button>
           </div>
         </section>
       </form>

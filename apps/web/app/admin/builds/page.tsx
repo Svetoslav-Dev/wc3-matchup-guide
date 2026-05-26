@@ -1,11 +1,13 @@
 import Link from "next/link";
+import { AdminSearchInput } from "../../../components/admin-search-input";
+import { AdminPerPageSelect } from "../../../components/admin-per-page-select";
+import { AdminBuildsList } from "../../../components/admin-builds-list";
 import { redirect } from "next/navigation";
 import { hasDatabaseUrl } from "@warcraft3-guide-hub/db";
 import { getSessionUser } from "../../../lib/auth";
 import { listAdminBuilds } from "../../../lib/content";
 import { deleteBuildAction } from "../actions";
 import { GameImage } from "../../../components/game-image";
-import { ConfirmDelete } from "../../../components/confirm-delete";
 
 const RACES = [
   { label: "Human",     slug: "human" },
@@ -17,41 +19,45 @@ const RACES = [
 const DIFFICULTIES = ["Easy", "Medium", "Hard", "Very Hard"] as const;
 
 const RACE_ICONS: Record<string, string> = {
-  human:      "/images/Races/Humans_Icon.png",
-  orc:        "/images/Races/Orcs_Icon.png",
-  undead:     "/images/Races/Undead_Icon.png",
+  human:       "/images/Races/Humans_Icon.png",
+  orc:         "/images/Races/Orcs_Icon.png",
+  undead:      "/images/Races/Undead_Icon.png",
   "night-elf": "/images/Races/Night_Elves_Icon.png",
 };
 
 const DIFFICULTY_COLORS: Record<string, string> = {
-  Easy:      "#4ade80",
-  Medium:    "#facc15",
-  Hard:      "#f97316",
+  Easy:        "#4ade80",
+  Medium:      "#facc15",
+  Hard:        "#f97316",
   "Very Hard": "#ef4444",
 };
 
-type Props = { searchParams?: Promise<{ q?: string; race?: string; difficulty?: string }> };
-
-const LIMIT = 200;
+type Props = { searchParams?: Promise<{ q?: string; race?: string; difficulty?: string; perPage?: string }> };
 
 export default async function AdminBuildsPage({ searchParams }: Props) {
   const user = await getSessionUser();
   if (!user || user.role !== "admin") redirect("/admin");
 
-  const { q, race, difficulty } = (await searchParams) ?? {};
+  const { q, race, difficulty, perPage: perPageParam } = (await searchParams) ?? {};
+
+  const perPage = Math.min(100, Math.max(20, Number(perPageParam) || 20));
 
   const activeRace = RACES.find((r) => r.slug === race);
   const activeDifficulty = DIFFICULTIES.find((d) => d.toLowerCase().replace(" ", "-") === difficulty?.toLowerCase().replace(" ", "-"));
 
   const records = hasDatabaseUrl()
-    ? await listAdminBuilds(LIMIT, q, activeRace?.slug, activeDifficulty)
+    ? await listAdminBuilds(perPage + 1, q, activeRace?.slug, activeDifficulty)
     : [];
+
+  const hasMore = records.length > perPage;
+  const visible = records.slice(0, perPage);
 
   const buildFilterHref = (params: Record<string, string | undefined>) => {
     const qs = new URLSearchParams();
     if (params.q ?? q) qs.set("q", params.q ?? q ?? "");
     if (params.race !== undefined ? params.race : race) qs.set("race", params.race !== undefined ? params.race : race!);
     if (params.difficulty !== undefined ? params.difficulty : difficulty) qs.set("difficulty", params.difficulty !== undefined ? params.difficulty : difficulty!);
+    if (perPageParam) qs.set("perPage", perPageParam);
     const str = qs.toString();
     return str ? `/admin/builds?${str}` : "/admin/builds";
   };
@@ -70,18 +76,7 @@ export default async function AdminBuildsPage({ searchParams }: Props) {
       </div>
 
       <div className="admin-toolbar">
-        <form className="admin-toolbar__search" method="get">
-          {activeRace     ? <input type="hidden" name="race"       value={activeRace.slug} /> : null}
-          {activeDifficulty ? <input type="hidden" name="difficulty" value={activeDifficulty.toLowerCase().replace(" ", "-")} /> : null}
-          <input
-            className="admin-toolbar__input"
-            name="q"
-            defaultValue={q ?? ""}
-            placeholder="Search builds by title…"
-            autoComplete="off"
-          />
-          <button className="button button--ghost button--sm" type="submit">Search</button>
-        </form>
+        <AdminSearchInput placeholder="Search builds by title…" />
 
         <div className="admin-toolbar__filters">
           <Link href={buildFilterHref({ race: undefined })} className={`filter-chip${!activeRace ? " filter-chip--active" : ""}`}>All races</Link>
@@ -117,45 +112,24 @@ export default async function AdminBuildsPage({ searchParams }: Props) {
           })}
         </div>
 
-        <p className="admin-toolbar__count">
-          {records.length === LIMIT ? `${LIMIT}+ results (use filters to narrow)` : `${records.length} result${records.length !== 1 ? "s" : ""}`}
-        </p>
+        <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+          <p className="admin-toolbar__count" style={{ margin: 0, flex: 1 }}>
+            Showing {visible.length}{hasMore ? "+" : ""} result{visible.length !== 1 ? "s" : ""}
+          </p>
+          <AdminPerPageSelect />
+        </div>
       </div>
 
-      <div className="admin-list">
-        {records.map((build) => (
-          <article key={build.slug} className="admin-list-row">
-            <div className="admin-list-row__img">
-              <GameImage
-                src={RACE_ICONS[build.raceSlug] ?? null}
-                alt={build.raceName}
-                width={40}
-                height={40}
-                className="admin-build-race-icon"
-              />
-            </div>
-            <div className="admin-list-row__info">
-              <p className="admin-list-row__name">{build.title}</p>
-              <div className="admin-card-meta">
-                <span className="pill pill--race">{build.raceName}</span>
-                <span
-                  className="admin-difficulty-badge"
-                  style={{ color: DIFFICULTY_COLORS[build.difficulty] ?? "var(--color-muted)", borderColor: `${DIFFICULTY_COLORS[build.difficulty] ?? "var(--color-line)"}55`, background: `${DIFFICULTY_COLORS[build.difficulty] ?? "transparent"}12` }}
-                >
-                  {build.difficulty}
-                </span>
-                <span className="muted" style={{ fontSize: "0.78rem" }}>{build.strategyType}</span>
-                {!build.isPublished && <span className="pill pill--draft">Draft</span>}
-              </div>
-            </div>
-            <div className="inline-actions">
-              <Link href={`/admin/builds/${build.slug}/edit`} className="button button--edit button--sm">Edit</Link>
-              <Link href={`/builds/${build.slug}`} className="button button--view button--sm">View</Link>
-              <ConfirmDelete action={deleteBuildAction} itemName={build.title} hiddenFields={{ buildId: String(build.id) }} />
-            </div>
-          </article>
-        ))}
-      </div>
+      <AdminBuildsList
+        key={`${q}-${race}-${difficulty}-${perPage}`}
+        initialBuilds={visible}
+        initialHasMore={hasMore}
+        perPage={perPage}
+        q={q}
+        race={race}
+        difficulty={difficulty}
+        deleteBuildAction={deleteBuildAction}
+      />
     </div>
   );
 }

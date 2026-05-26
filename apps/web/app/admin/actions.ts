@@ -15,6 +15,7 @@ import {
   deleteItem,
   deleteMap,
   deleteMatchup,
+  countActiveRaceDependencies,
   deleteRace,
   deleteUnit,
   hasDatabaseUrl,
@@ -30,7 +31,7 @@ import {
 import { revalidatePath, revalidateTag } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireRole } from "../../lib/auth";
-import { uploadImage } from "../../lib/upload-image";
+import { deleteImageByFile, deleteImageByUrl, uploadImage } from "../../lib/upload-image";
 import {
   getAdminBuildBySlug,
   getAdminBuildingById,
@@ -70,22 +71,41 @@ const requireAdminMutationContext = async () => {
   return requireRole("admin");
 };
 
-export async function createBuildAction(formData: FormData) {
+export type FormState = { error: string; fields?: Record<string, string>; key?: number } | null;
+
+const extractFields = (formData: FormData): Record<string, string> => {
+  const out: Record<string, string> = {};
+  for (const [k, v] of formData.entries()) {
+    if (typeof v === "string") out[k] = v;
+  }
+  return out;
+};
+
+export async function createBuildAction(prevState: FormState, formData: FormData): Promise<FormState> {
   const user = await requireAdminMutationContext();
-  const input = formDataToAdminBuildInput(formData);
+  const fields = extractFields(formData);
+  const nextKey = (prevState?.key ?? 0) + 1;
+  let input: ReturnType<typeof formDataToAdminBuildInput>;
+  try {
+    input = formDataToAdminBuildInput(formData);
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : "Invalid form data.";
+    return { error: msg, fields, key: nextKey };
+  }
   const parsed = adminBuildSchema.safeParse(input);
 
   if (!parsed.success) {
-    throw new Error("Invalid build form submission.");
+    return { error: parsed.error.errors[0]?.message ?? "Please fill all the fields.", fields, key: nextKey };
   }
 
-  const build = await createBuild({
-    ...parsed.data,
-    createdByUserId: user.id,
-  });
-
+  let build;
+  try {
+    build = await createBuild({ ...parsed.data, createdByUserId: user.id });
+  } catch {
+    return { error: "Could not save — the Page URL may already be taken.", fields, key: nextKey };
+  }
   if (!build) {
-    throw new Error("Build creation failed.");
+    return { error: "Build creation failed.", fields, key: nextKey };
   }
 
   revalidateTag("builds");
@@ -103,17 +123,30 @@ export async function updateBuildAction(formData: FormData) {
     throw new Error("Invalid build id.");
   }
 
-  const input = formDataToAdminBuildInput(formData);
+  const currentSlug = String(formData.get("currentSlug") ?? "");
+
+  let input: ReturnType<typeof formDataToAdminBuildInput>;
+  try {
+    input = formDataToAdminBuildInput(formData);
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : "Invalid form data.";
+    redirect(`/admin/builds/${currentSlug}/edit?error=${encodeURIComponent(msg)}`);
+  }
+
   const parsed = adminBuildSchema.safeParse(input);
 
   if (!parsed.success) {
-    throw new Error("Invalid build form submission.");
+    redirect(`/admin/builds/${currentSlug}/edit?error=${encodeURIComponent(parsed.error.errors[0]?.message ?? "Please fill all the fields.")}`);
   }
 
-  const build = await updateBuild(buildId, parsed.data);
-
+  let build;
+  try {
+    build = await updateBuild(buildId, parsed.data);
+  } catch {
+    redirect(`/admin/builds/${currentSlug}/edit?error=${encodeURIComponent("Could not save — the Page URL may already be taken.")}`);
+  }
   if (!build) {
-    throw new Error("Build not found.");
+    redirect(`/admin/builds/${currentSlug}/edit?error=${encodeURIComponent("Build not found.")}`);
   }
 
   revalidateTag("builds");
@@ -123,19 +156,30 @@ export async function updateBuildAction(formData: FormData) {
   redirect(`/admin/builds/${build.slug}/edit?status=updated`);
 }
 
-export async function createMatchupAction(formData: FormData) {
+export async function createMatchupAction(prevState: FormState, formData: FormData): Promise<FormState> {
   await requireAdminMutationContext();
+  const fields = extractFields(formData);
+  const nextKey = (prevState?.key ?? 0) + 1;
   const input = formDataToAdminMatchupInput(formData);
   const parsed = adminMatchupSchema.safeParse(input);
 
   if (!parsed.success) {
-    throw new Error("Invalid matchup form submission.");
+    return { error: parsed.error.errors[0]?.message ?? "Please fill all the fields.", fields, key: nextKey };
   }
 
-  const matchup = await createMatchup(parsed.data);
+  const existing = await getAdminMatchupBySlug(parsed.data.slug);
+  if (existing) {
+    return { error: `This matchup already exists. Edit it at /admin/matchups/${existing.slug}/edit`, fields, key: nextKey };
+  }
 
+  let matchup;
+  try {
+    matchup = await createMatchup(parsed.data);
+  } catch {
+    return { error: "Could not save — the Page URL may already be taken.", fields, key: nextKey };
+  }
   if (!matchup) {
-    throw new Error("Matchup creation failed.");
+    return { error: "Matchup creation failed.", fields, key: nextKey };
   }
 
   revalidateTag("matchups");
@@ -153,17 +197,22 @@ export async function updateMatchupAction(formData: FormData) {
     throw new Error("Invalid matchup id.");
   }
 
+  const currentSlug = String(formData.get("currentSlug") ?? "");
   const input = formDataToAdminMatchupInput(formData);
   const parsed = adminMatchupSchema.safeParse(input);
 
   if (!parsed.success) {
-    throw new Error("Invalid matchup form submission.");
+    redirect(`/admin/matchups/${currentSlug}/edit?error=${encodeURIComponent(parsed.error.errors[0]?.message ?? "Please fill all the fields.")}`);
   }
 
-  const matchup = await updateMatchup(matchupId, parsed.data);
-
+  let matchup;
+  try {
+    matchup = await updateMatchup(matchupId, parsed.data);
+  } catch {
+    redirect(`/admin/matchups/${currentSlug}/edit?error=${encodeURIComponent("Could not save — the Page URL may already be taken.")}`);
+  }
   if (!matchup) {
-    throw new Error("Matchup not found.");
+    redirect(`/admin/matchups/${currentSlug}/edit?error=${encodeURIComponent("Matchup not found.")}`);
   }
 
   revalidateTag("matchups");
@@ -233,17 +282,25 @@ export async function deleteMatchupAction(formData: FormData) {
   redirect("/admin?status=matchup-deleted");
 }
 
-export async function createHeroAction(formData: FormData) {
+export async function createHeroAction(prevState: FormState, formData: FormData): Promise<FormState> {
   await requireAdminMutationContext();
+  const fields = extractFields(formData);
+  const nextKey = (prevState?.key ?? 0) + 1;
   const input = formDataToAdminHeroInput(formData);
+  const parsed = adminHeroSchema.safeParse(input);
+  if (!parsed.success) return { error: parsed.error.errors[0]?.message ?? "Please fill all the fields.", fields, key: nextKey };
   const file = formData.get("imageUpload");
   if (file instanceof File && file.size > 0) {
-    input.imageUrl = await uploadImage(file, "Heroes");
+    parsed.data.imageUrl = await uploadImage(file, "Heroes", String(formData.get("name") ?? "").trim() || undefined);
   }
-  const parsed = adminHeroSchema.safeParse(input);
-  if (!parsed.success) throw new Error("Invalid hero form submission.");
-  const hero = await createHero(parsed.data);
-  if (!hero) throw new Error("Hero creation failed.");
+  let hero;
+  try {
+    hero = await createHero(parsed.data);
+  } catch {
+    await deleteImageByUrl(parsed.data.imageUrl);
+    return { error: "Could not save — the Page URL may already be taken.", fields, key: nextKey };
+  }
+  if (!hero) return { error: "Hero creation failed.", fields, key: nextKey };
   revalidateTag("heroes");
   revalidatePath("/admin");
   revalidatePath("/heroes");
@@ -254,15 +311,23 @@ export async function updateHeroAction(formData: FormData) {
   await requireAdminMutationContext();
   const heroId = Number.parseInt(String(formData.get("heroId") ?? ""), 10);
   if (!Number.isFinite(heroId) || heroId < 1) throw new Error("Invalid hero id.");
+  const currentSlug = String(formData.get("currentSlug") ?? "");
   const input = formDataToAdminHeroInput(formData);
+  const oldImageUrl = input.imageUrl;
   const file = formData.get("imageUpload");
   if (file instanceof File && file.size > 0) {
     input.imageUrl = await uploadImage(file, "Heroes");
   }
   const parsed = adminHeroSchema.safeParse(input);
-  if (!parsed.success) throw new Error("Invalid hero form submission.");
-  const hero = await updateHero(heroId, parsed.data);
-  if (!hero) throw new Error("Hero not found.");
+  if (!parsed.success) redirect(`/admin/heroes/${currentSlug}/edit?error=${encodeURIComponent(parsed.error.errors[0]?.message ?? "Please fill all the fields.")}`);
+  let hero;
+  try {
+    hero = await updateHero(heroId, parsed.data);
+  } catch {
+    redirect(`/admin/heroes/${currentSlug}/edit?error=${encodeURIComponent("Could not save — the Page URL may already be taken.")}`);
+  }
+  if (!hero) redirect(`/admin/heroes/${currentSlug}/edit?error=${encodeURIComponent("Hero not found.")}`);
+  if (parsed.data.imageUrl !== oldImageUrl) await deleteImageByUrl(oldImageUrl);
   revalidateTag("heroes");
   revalidatePath("/admin");
   revalidatePath("/heroes");
@@ -278,22 +343,31 @@ export async function deleteHeroAction(formData: FormData) {
     throw new Error("Invalid hero id.");
   }
 
-  await deleteHero(heroId);
+  const removed = await deleteHero(heroId);
+  await deleteImageByUrl(removed?.imageUrl);
   revalidateTag("heroes");
   revalidatePath("/admin");
   revalidatePath("/heroes");
   redirect("/admin?status=hero-deleted");
 }
 
-export async function createUnitAction(formData: FormData) {
+export async function createUnitAction(prevState: FormState, formData: FormData): Promise<FormState> {
   await requireAdminMutationContext();
+  const fields = extractFields(formData);
+  const nextKey = (prevState?.key ?? 0) + 1;
   const input = formDataToAdminUnitInput(formData);
-  const file = formData.get("imageUpload");
-  if (file instanceof File && file.size > 0) input.imageUrl = await uploadImage(file, "Units");
   const parsed = adminUnitSchema.safeParse(input);
-  if (!parsed.success) throw new Error("Invalid unit form submission.");
-  const unit = await createUnit(parsed.data);
-  if (!unit) throw new Error("Unit creation failed.");
+  if (!parsed.success) return { error: parsed.error.errors[0]?.message ?? "Please fill all the fields.", fields, key: nextKey };
+  const file = formData.get("imageUpload");
+  if (file instanceof File && file.size > 0) parsed.data.imageUrl = await uploadImage(file, "Units", String(formData.get("name") ?? "").trim() || undefined);
+  let unit;
+  try {
+    unit = await createUnit(parsed.data);
+  } catch {
+    await deleteImageByUrl(parsed.data.imageUrl);
+    return { error: "Could not save — the Page URL may already be taken.", fields, key: nextKey };
+  }
+  if (!unit) return { error: "Unit creation failed.", fields, key: nextKey };
   revalidateTag("units");
   revalidatePath("/admin");
   revalidatePath("/units");
@@ -304,13 +378,21 @@ export async function updateUnitAction(formData: FormData) {
   await requireAdminMutationContext();
   const unitId = Number.parseInt(String(formData.get("unitId") ?? ""), 10);
   if (!Number.isFinite(unitId) || unitId < 1) throw new Error("Invalid unit id.");
+  const currentSlug = String(formData.get("currentSlug") ?? "");
   const input = formDataToAdminUnitInput(formData);
+  const oldImageUrl = input.imageUrl;
   const file = formData.get("imageUpload");
   if (file instanceof File && file.size > 0) input.imageUrl = await uploadImage(file, "Units");
   const parsed = adminUnitSchema.safeParse(input);
-  if (!parsed.success) throw new Error("Invalid unit form submission.");
-  const unit = await updateUnit(unitId, parsed.data);
-  if (!unit) throw new Error("Unit not found.");
+  if (!parsed.success) redirect(`/admin/units/${currentSlug}/edit?error=${encodeURIComponent(parsed.error.errors[0]?.message ?? "Please fill all the fields.")}`);
+  let unit;
+  try {
+    unit = await updateUnit(unitId, parsed.data);
+  } catch {
+    redirect(`/admin/units/${currentSlug}/edit?error=${encodeURIComponent("Could not save — the Page URL may already be taken.")}`);
+  }
+  if (!unit) redirect(`/admin/units/${currentSlug}/edit?error=${encodeURIComponent("Unit not found.")}`);
+  if (parsed.data.imageUrl !== oldImageUrl) await deleteImageByUrl(oldImageUrl);
   revalidateTag("units");
   revalidatePath("/admin");
   revalidatePath("/units");
@@ -326,22 +408,31 @@ export async function deleteUnitAction(formData: FormData) {
     throw new Error("Invalid unit id.");
   }
 
-  await deleteUnit(unitId);
+  const removed = await deleteUnit(unitId);
+  await deleteImageByUrl(removed?.imageUrl);
   revalidateTag("units");
   revalidatePath("/admin");
   revalidatePath("/units");
   redirect("/admin?status=unit-deleted");
 }
 
-export async function createMapAction(formData: FormData) {
+export async function createMapAction(prevState: FormState, formData: FormData): Promise<FormState> {
   await requireAdminMutationContext();
+  const fields = extractFields(formData);
+  const nextKey = (prevState?.key ?? 0) + 1;
   const input = formDataToAdminMapInput(formData);
-  const file = formData.get("imageUpload");
-  if (file instanceof File && file.size > 0) input.imageUrl = await uploadImage(file, "Maps");
   const parsed = adminMapSchema.safeParse(input);
-  if (!parsed.success) throw new Error("Invalid map form submission.");
-  const map = await createMap(parsed.data);
-  if (!map) throw new Error("Map creation failed.");
+  if (!parsed.success) return { error: parsed.error.errors[0]?.message ?? "Please fill all the fields.", fields, key: nextKey };
+  const file = formData.get("imageUpload");
+  if (file instanceof File && file.size > 0) parsed.data.imageUrl = await uploadImage(file, "Maps", String(formData.get("name") ?? "").trim() || undefined);
+  let map;
+  try {
+    map = await createMap(parsed.data);
+  } catch {
+    await deleteImageByUrl(parsed.data.imageUrl);
+    return { error: "Could not save — the Page URL may already be taken.", fields, key: nextKey };
+  }
+  if (!map) return { error: "Map creation failed.", fields, key: nextKey };
   revalidateTag("maps");
   revalidatePath("/admin");
   revalidatePath("/maps");
@@ -352,21 +443,28 @@ export async function updateMapAction(formData: FormData) {
   await requireAdminMutationContext();
   const mapId = Number.parseInt(String(formData.get("mapId") ?? ""), 10);
   if (!Number.isFinite(mapId) || mapId < 1) throw new Error("Invalid map id.");
+  const currentSlug = String(formData.get("currentSlug") ?? "");
   const input = formDataToAdminMapInput(formData);
+  const oldImageUrl = input.imageUrl;
   const file = formData.get("imageUpload");
   if (file instanceof File && file.size > 0) input.imageUrl = await uploadImage(file, "Maps");
   const parsed = adminMapSchema.safeParse(input);
 
   if (!parsed.success) {
-    throw new Error("Invalid map form submission.");
+    redirect(`/admin/maps/${currentSlug}/edit?error=${encodeURIComponent(parsed.error.errors[0]?.message ?? "Please fill all the fields.")}`);
   }
 
-  const map = await updateMap(mapId, parsed.data);
-
+  let map;
+  try {
+    map = await updateMap(mapId, parsed.data);
+  } catch {
+    redirect(`/admin/maps/${currentSlug}/edit?error=${encodeURIComponent("Could not save — the Page URL may already be taken.")}`);
+  }
   if (!map) {
-    throw new Error("Map not found.");
+    redirect(`/admin/maps/${currentSlug}/edit?error=${encodeURIComponent("Map not found.")}`);
   }
 
+  if (parsed.data.imageUrl !== oldImageUrl) await deleteImageByUrl(oldImageUrl);
   revalidateTag("maps");
   revalidatePath("/admin");
   revalidatePath("/maps");
@@ -382,22 +480,31 @@ export async function deleteMapAction(formData: FormData) {
     throw new Error("Invalid map id.");
   }
 
-  await deleteMap(mapId);
+  const removed = await deleteMap(mapId);
+  await deleteImageByUrl(removed?.imageUrl);
   revalidateTag("maps");
   revalidatePath("/admin");
   revalidatePath("/maps");
   redirect("/admin?status=map-deleted");
 }
 
-export async function createRaceAction(formData: FormData) {
+export async function createRaceAction(prevState: FormState, formData: FormData): Promise<FormState> {
   await requireAdminMutationContext();
+  const fields = extractFields(formData);
+  const nextKey = (prevState?.key ?? 0) + 1;
   const input = formDataToAdminRaceInput(formData);
-  const file = formData.get("imageUpload");
-  if (file instanceof File && file.size > 0) input.imageUrl = await uploadImage(file, "Races");
   const parsed = adminRaceSchema.safeParse(input);
-  if (!parsed.success) throw new Error("Invalid race form submission.");
-  const race = await createRace(parsed.data);
-  if (!race) throw new Error("Race creation failed.");
+  if (!parsed.success) return { error: parsed.error.errors[0]?.message ?? "Please fill all the fields.", fields, key: nextKey };
+  const file = formData.get("imageUpload");
+  if (file instanceof File && file.size > 0) parsed.data.imageUrl = await uploadImage(file, "Races", String(formData.get("name") ?? "").trim() || undefined);
+  let race;
+  try {
+    race = await createRace(parsed.data);
+  } catch {
+    await deleteImageByUrl(parsed.data.imageUrl);
+    return { error: "Could not save — the Page URL may already be taken.", fields, key: nextKey };
+  }
+  if (!race) return { error: "Race creation failed.", fields, key: nextKey };
   revalidateTag("races");
   revalidatePath("/admin");
   revalidatePath("/races");
@@ -408,13 +515,21 @@ export async function updateRaceAction(formData: FormData) {
   await requireAdminMutationContext();
   const raceId = Number.parseInt(String(formData.get("raceId") ?? ""), 10);
   if (!Number.isFinite(raceId) || raceId < 1) throw new Error("Invalid race id.");
+  const currentSlug = String(formData.get("currentSlug") ?? "");
   const input = formDataToAdminRaceInput(formData);
+  const oldImageUrl = input.imageUrl;
   const file = formData.get("imageUpload");
   if (file instanceof File && file.size > 0) input.imageUrl = await uploadImage(file, "Races");
   const parsed = adminRaceSchema.safeParse(input);
-  if (!parsed.success) throw new Error("Invalid race form submission.");
-  const race = await updateRace(raceId, parsed.data);
-  if (!race) throw new Error("Race not found.");
+  if (!parsed.success) redirect(`/admin/races/${currentSlug}/edit?error=${encodeURIComponent(parsed.error.errors[0]?.message ?? "Please fill all the fields.")}`);
+  let race;
+  try {
+    race = await updateRace(raceId, parsed.data);
+  } catch {
+    redirect(`/admin/races/${currentSlug}/edit?error=${encodeURIComponent("Could not save — the Page URL may already be taken.")}`);
+  }
+  if (!race) redirect(`/admin/races/${currentSlug}/edit?error=${encodeURIComponent("Race not found.")}`);
+  if (parsed.data.imageUrl !== oldImageUrl) await deleteImageByUrl(oldImageUrl);
   revalidateTag("races");
   revalidatePath("/admin");
   revalidatePath("/races");
@@ -430,11 +545,24 @@ export async function deleteRaceAction(formData: FormData) {
     throw new Error("Invalid race id.");
   }
 
-  await deleteRace(raceId);
+  const deps = await countActiveRaceDependencies(raceId);
+  const parts = [
+    deps.heroes > 0 ? `${deps.heroes} hero${deps.heroes !== 1 ? "es" : ""}` : null,
+    deps.units > 0 ? `${deps.units} unit${deps.units !== 1 ? "s" : ""}` : null,
+    deps.buildings > 0 ? `${deps.buildings} building${deps.buildings !== 1 ? "s" : ""}` : null,
+    deps.matchups > 0 ? `${deps.matchups} matchup${deps.matchups !== 1 ? "s" : ""}` : null,
+    deps.builds > 0 ? `${deps.builds} build${deps.builds !== 1 ? "s" : ""}` : null,
+  ].filter(Boolean);
+  if (parts.length > 0) {
+    redirect(`/admin/races?error=${encodeURIComponent(`Cannot delete this race. Please delete first: ${parts.join(", ")}.`)}`);
+  }
+
+  const removed = await deleteRace(raceId);
+  await deleteImageByUrl(removed?.imageUrl);
   revalidateTag("races");
   revalidatePath("/admin");
   revalidatePath("/races");
-  redirect("/admin?status=race-deleted");
+  redirect(`/admin/races?status=race-deleted`);
 }
 
 // ── Buildings ────────────────────────────────────────────────────────────────
@@ -443,18 +571,25 @@ export async function ensureAdminBuildingEditor(id: number) {
   return getAdminBuildingById(id);
 }
 
-export async function createBuildingAction(formData: FormData) {
+export async function createBuildingAction(prevState: FormState, formData: FormData): Promise<FormState> {
   await requireAdminMutationContext();
+  const fields = extractFields(formData);
+  const nextKey = (prevState?.key ?? 0) + 1;
   const input = formDataToAdminBuildingInput(formData);
+  const parsed = adminBuildingSchema.safeParse(input);
+  if (!parsed.success) return { error: parsed.error.errors[0]?.message ?? "Please fill all the fields.", fields, key: nextKey };
   const file = formData.get("imageUpload");
   if (file instanceof File && file.size > 0) {
     const url = await uploadImage(file, "Buildings");
-    if (url) input.imageFile = url.split("/").pop()?.replace(/\.[^.]+$/, "") ?? input.imageFile;
+    if (url) parsed.data.imageFile = url.split("/").pop() ?? parsed.data.imageFile;
   }
-  const parsed = adminBuildingSchema.safeParse(input);
-  if (!parsed.success) throw new Error("Invalid building form submission.");
-  const building = await createBuilding(parsed.data);
-  if (!building) throw new Error("Building creation failed.");
+  let building;
+  try {
+    building = await createBuilding(parsed.data);
+  } catch {
+    return { error: "Could not save — the Page URL may already be taken.", fields, key: nextKey };
+  }
+  if (!building) return { error: "Building creation failed.", fields, key: nextKey };
   revalidatePath("/admin");
   redirect(`/admin/buildings/${building.id}/edit?status=created`);
 }
@@ -464,15 +599,22 @@ export async function updateBuildingAction(formData: FormData) {
   const buildingId = Number.parseInt(String(formData.get("buildingId") ?? ""), 10);
   if (!Number.isFinite(buildingId) || buildingId < 1) throw new Error("Invalid building id.");
   const input = formDataToAdminBuildingInput(formData);
+  const oldImageFile = input.imageFile;
   const file = formData.get("imageUpload");
   if (file instanceof File && file.size > 0) {
     const url = await uploadImage(file, "Buildings");
-    if (url) input.imageFile = url.split("/").pop()?.replace(/\.[^.]+$/, "") ?? input.imageFile;
+    if (url) input.imageFile = url.split("/").pop() ?? input.imageFile;
   }
   const parsed = adminBuildingSchema.safeParse(input);
-  if (!parsed.success) throw new Error("Invalid building form submission.");
-  const building = await updateBuilding(buildingId, parsed.data);
-  if (!building) throw new Error("Building not found.");
+  if (!parsed.success) redirect(`/admin/buildings/${buildingId}/edit?error=${encodeURIComponent(parsed.error.errors[0]?.message ?? "Please fill all the fields.")}`);
+  let building;
+  try {
+    building = await updateBuilding(buildingId, parsed.data);
+  } catch {
+    redirect(`/admin/buildings/${buildingId}/edit?error=${encodeURIComponent("Could not save — the Page URL may already be taken.")}`);
+  }
+  if (!building) redirect(`/admin/buildings/${buildingId}/edit?error=${encodeURIComponent("Building not found.")}`);
+  if (parsed.data.imageFile !== oldImageFile) await deleteImageByFile("Buildings", oldImageFile);
   revalidatePath("/admin");
   redirect(`/admin/buildings/${building.id}/edit?status=updated`);
 }
@@ -481,7 +623,8 @@ export async function deleteBuildingAction(formData: FormData) {
   await requireAdminMutationContext();
   const buildingId = Number.parseInt(String(formData.get("buildingId") ?? ""), 10);
   if (!Number.isFinite(buildingId) || buildingId < 1) throw new Error("Invalid building id.");
-  await deleteBuilding(buildingId);
+  const removed = await deleteBuilding(buildingId);
+  await deleteImageByFile("Buildings", removed?.imageFile);
   revalidatePath("/admin");
   redirect("/admin?status=building-deleted");
 }
@@ -492,18 +635,25 @@ export async function ensureAdminItemEditor(id: number) {
   return getAdminItemById(id);
 }
 
-export async function createItemAction(formData: FormData) {
+export async function createItemAction(prevState: FormState, formData: FormData): Promise<FormState> {
   await requireAdminMutationContext();
+  const fields = extractFields(formData);
+  const nextKey = (prevState?.key ?? 0) + 1;
   const input = formDataToAdminItemInput(formData);
+  const parsed = adminItemSchema.safeParse(input);
+  if (!parsed.success) return { error: parsed.error.errors[0]?.message ?? "Please fill all the fields.", fields, key: nextKey };
   const file = formData.get("imageUpload");
   if (file instanceof File && file.size > 0) {
     const url = await uploadImage(file, "Items");
-    if (url) input.imageFile = url.split("/").pop()?.replace(/\.[^.]+$/, "") ?? input.imageFile;
+    if (url) parsed.data.imageFile = url.split("/").pop() ?? parsed.data.imageFile;
   }
-  const parsed = adminItemSchema.safeParse(input);
-  if (!parsed.success) throw new Error("Invalid item form submission.");
-  const item = await createItem(parsed.data);
-  if (!item) throw new Error("Item creation failed.");
+  let item;
+  try {
+    item = await createItem(parsed.data);
+  } catch {
+    return { error: "Could not save — the Page URL may already be taken.", fields, key: nextKey };
+  }
+  if (!item) return { error: "Item creation failed.", fields, key: nextKey };
   revalidatePath("/admin");
   redirect(`/admin/items/${item.id}/edit?status=created`);
 }
@@ -513,15 +663,22 @@ export async function updateItemAction(formData: FormData) {
   const itemId = Number.parseInt(String(formData.get("itemId") ?? ""), 10);
   if (!Number.isFinite(itemId) || itemId < 1) throw new Error("Invalid item id.");
   const input = formDataToAdminItemInput(formData);
+  const oldImageFile = input.imageFile;
   const file = formData.get("imageUpload");
   if (file instanceof File && file.size > 0) {
     const url = await uploadImage(file, "Items");
-    if (url) input.imageFile = url.split("/").pop()?.replace(/\.[^.]+$/, "") ?? input.imageFile;
+    if (url) input.imageFile = url.split("/").pop() ?? input.imageFile;
   }
   const parsed = adminItemSchema.safeParse(input);
-  if (!parsed.success) throw new Error("Invalid item form submission.");
-  const item = await updateItem(itemId, parsed.data);
-  if (!item) throw new Error("Item not found.");
+  if (!parsed.success) redirect(`/admin/items/${itemId}/edit?error=${encodeURIComponent(parsed.error.errors[0]?.message ?? "Please fill all the fields.")}`);
+  let item;
+  try {
+    item = await updateItem(itemId, parsed.data);
+  } catch {
+    redirect(`/admin/items/${itemId}/edit?error=${encodeURIComponent("Could not save — the Page URL may already be taken.")}`);
+  }
+  if (!item) redirect(`/admin/items/${itemId}/edit?error=${encodeURIComponent("Item not found.")}`);
+  if (parsed.data.imageFile !== oldImageFile) await deleteImageByFile("Items", oldImageFile);
   revalidatePath("/admin");
   redirect(`/admin/items/${item.id}/edit?status=updated`);
 }
@@ -530,7 +687,8 @@ export async function deleteItemAction(formData: FormData) {
   await requireAdminMutationContext();
   const itemId = Number.parseInt(String(formData.get("itemId") ?? ""), 10);
   if (!Number.isFinite(itemId) || itemId < 1) throw new Error("Invalid item id.");
-  await deleteItem(itemId);
+  const removed = await deleteItem(itemId);
+  await deleteImageByFile("Items", removed?.imageFile);
   revalidatePath("/admin");
   redirect("/admin?status=item-deleted");
 }

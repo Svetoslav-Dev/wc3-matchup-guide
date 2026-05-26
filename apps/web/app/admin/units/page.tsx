@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { AdminSearchInput } from "../../../components/admin-search-input";
 import Image from "next/image";
 import { redirect } from "next/navigation";
 import { hasDatabaseUrl } from "@warcraft3-guide-hub/db";
@@ -30,10 +31,7 @@ export default async function AdminUnitsPage({ searchParams }: Props) {
       </div>
 
       <div className="admin-toolbar">
-        <form className="admin-toolbar__search" method="get">
-          <input className="admin-toolbar__input" name="q" defaultValue={q ?? ""} placeholder="Search units by name…" autoComplete="off" />
-          <button className="button button--ghost button--sm" type="submit">Search</button>
-        </form>
+        <AdminSearchInput placeholder="Search units by name…" />
         <p className="admin-toolbar__count">{records.length} result{records.length !== 1 ? "s" : ""}</p>
       </div>
 

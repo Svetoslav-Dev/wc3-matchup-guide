@@ -14,9 +14,10 @@ const RACE_FALLBACK_ICONS: Record<string, string> = {
 
 type Props = {
   params: Promise<{ slug: string }>;
+  searchParams?: Promise<{ status?: string; error?: string }>;
 };
 
-export default async function EditAdminRacePage({ params }: Props) {
+export default async function EditAdminRacePage({ params, searchParams }: Props) {
   if (!hasDatabaseUrl() || !process.env.JWT_SECRET) {
     return <div className="page-shell page-stack"><div className="section-head"><p className="section-label">Admin Race Editor</p><h1 className="page-title">Race editing requires backend configuration.</h1></div></div>;
   }
@@ -27,6 +28,7 @@ export default async function EditAdminRacePage({ params }: Props) {
   }
 
   const { slug } = await params;
+  const { error, status } = (await searchParams) ?? {};
   const race = await ensureAdminRaceEditor(slug);
 
   if (!race) {
@@ -45,8 +47,15 @@ export default async function EditAdminRacePage({ params }: Props) {
         </div>
       </div>
 
+      {(status === "updated" || status === "created") && (
+        <div className="status-banner status-banner--success">Race {status === "created" ? "created" : "updated"}.</div>
+      )}
+      {error && (
+        <div className="status-banner status-banner--error">{decodeURIComponent(error)}</div>
+      )}
       <form action={updateRaceAction} className="admin-edit-form">
         <input type="hidden" name="raceId" value={race.id} />
+        <input type="hidden" name="currentSlug" value={race.slug} />
         <input type="hidden" name="imageUrl" value={race.imageUrl ?? ""} />
 
         <div className="admin-edit-form__body">
@@ -57,7 +66,7 @@ export default async function EditAdminRacePage({ params }: Props) {
             </div>
             <div className="field">
               <label htmlFor="slug">
-                Slug <span className="admin-edit-form__hint">— used in the public URL: /races/<em>{race.slug}</em></span>
+                Page URL <span className="admin-edit-form__hint">— public URL: /races/<em>{race.slug}</em></span>
               </label>
               <input id="slug" name="slug" type="text" defaultValue={race.slug} />
             </div>
@@ -103,7 +112,6 @@ export default async function EditAdminRacePage({ params }: Props) {
 
         <div className="admin-edit-form__footer">
           <button className="button button--ghost" type="submit">Save Race</button>
-          <a href="/admin/races" className="button button--cancel">Cancel</a>
         </div>
       </form>
     </div>

@@ -7,10 +7,11 @@ import { getSessionUser } from "../../../../../lib/auth";
 import { listRaces } from "../../../../../lib/content";
 import { ensureAdminHeroEditor, updateHeroAction } from "../../../actions";
 import { RaceSelect } from "../../../../../components/race-select";
+import { AttributeSelect } from "../../../../../components/attribute-select";
 
-type Props = { params: Promise<{ slug: string }> };
+type Props = { params: Promise<{ slug: string }>; searchParams?: Promise<{ status?: string; error?: string }> };
 
-export default async function EditAdminHeroPage({ params }: Props) {
+export default async function EditAdminHeroPage({ params, searchParams }: Props) {
   if (!hasDatabaseUrl() || !process.env.JWT_SECRET) {
     return (
       <div className="page-shell page-stack">
@@ -35,9 +36,10 @@ export default async function EditAdminHeroPage({ params }: Props) {
   }
 
   const { slug } = await params;
+  const { error, status } = (await searchParams) ?? {};
   const [hero, raceResult] = await Promise.all([ensureAdminHeroEditor(slug), listRaces(1, 20)]);
   if (!hero) notFound();
-  const visibleRaces = raceResult.data.filter((r) => r.slug !== "neutral");
+  const visibleRaces = raceResult.data.map((r) => r.slug === "neutral" ? { ...r, name: "Tavern" } : r);
 
   const previewSrc = hero.imageUrl ?? getSharedHero(hero.slug)?.imageUrl ?? null;
 
@@ -53,8 +55,15 @@ export default async function EditAdminHeroPage({ params }: Props) {
         </div>
       </div>
 
+      {(status === "updated" || status === "created") && (
+        <div className="status-banner status-banner--success">Hero {status === "created" ? "created" : "updated"}.</div>
+      )}
+      {error && (
+        <div className="status-banner status-banner--error">{decodeURIComponent(error)}</div>
+      )}
       <form action={updateHeroAction} className="admin-edit-form">
         <input type="hidden" name="heroId" value={hero.id} />
+        <input type="hidden" name="currentSlug" value={hero.slug} />
         <input type="hidden" name="imageUrl" value={hero.imageUrl ?? ""} />
 
         <div className="admin-edit-form__body">
@@ -69,17 +78,25 @@ export default async function EditAdminHeroPage({ params }: Props) {
             </div>
             <div className="field">
               <label htmlFor="slug">
-                Slug <span className="admin-edit-form__hint">— used in the public URL: /heroes/<em>{hero.slug}</em></span>
+                Page URL <span className="admin-edit-form__hint">— public URL: /heroes/<em>{hero.slug}</em></span>
               </label>
               <input id="slug" name="slug" type="text" defaultValue={hero.slug} />
             </div>
             <div className="field">
               <label htmlFor="primaryAttribute">Primary attribute</label>
-              <input id="primaryAttribute" name="primaryAttribute" type="text" defaultValue={hero.primaryAttribute} />
+              <AttributeSelect defaultValue={hero.primaryAttribute} />
             </div>
             <div className="field">
               <label htmlFor="role">Role</label>
-              <input id="role" name="role" type="text" defaultValue={hero.role} />
+              <select id="role" name="role" defaultValue={hero.role}>
+                <option value="Fighter">Fighter</option>
+                <option value="Spellcaster">Spellcaster</option>
+                <option value="Support">Support</option>
+                <option value="Tank">Tank</option>
+                <option value="Assassin">Assassin</option>
+                <option value="Summoner">Summoner</option>
+                <option value="Ranged">Ranged</option>
+              </select>
             </div>
             <div className="field">
               <label htmlFor="description">Description</label>
@@ -116,7 +133,6 @@ export default async function EditAdminHeroPage({ params }: Props) {
 
         <div className="admin-edit-form__footer">
           <button className="button button--ghost" type="submit">Save Hero</button>
-          <a href="/admin/heroes" className="button button--cancel">Cancel</a>
         </div>
       </form>
     </div>

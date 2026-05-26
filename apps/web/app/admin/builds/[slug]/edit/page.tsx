@@ -5,12 +5,15 @@ import { getSessionUser } from "../../../../../lib/auth";
 import { listMatchups, listRaces } from "../../../../../lib/content";
 import { ensureAdminBuildEditor, updateBuildAction } from "../../../actions";
 import { RaceSelect } from "../../../../../components/race-select";
+import { MatchupSelect } from "../../../../../components/matchup-select";
+import { DifficultySelect } from "../../../../../components/difficulty-select";
 
 type Props = {
   params: Promise<{ slug: string }>;
+  searchParams?: Promise<{ status?: string; error?: string }>;
 };
 
-export default async function EditAdminBuildPage({ params }: Props) {
+export default async function EditAdminBuildPage({ params, searchParams }: Props) {
   if (!hasDatabaseUrl() || !process.env.JWT_SECRET) {
     return (
       <div className="page-shell page-stack">
@@ -36,6 +39,7 @@ export default async function EditAdminBuildPage({ params }: Props) {
   }
 
   const { slug } = await params;
+  const { error, status } = (await searchParams) ?? {};
   const [build, raceResult, matchupResult] = await Promise.all([
     ensureAdminBuildEditor(slug),
     listRaces(1, 20),
@@ -59,6 +63,12 @@ export default async function EditAdminBuildPage({ params }: Props) {
           <a href="/admin/builds" className="button button--ghost button--sm">← Back</a>
         </div>
       </div>
+      {(status === "updated" || status === "created") && (
+        <div className="status-banner status-banner--success">Build {status === "created" ? "created" : "updated"}.</div>
+      )}
+      {error && (
+        <div className="status-banner status-banner--error">{decodeURIComponent(error)}</div>
+      )}
       <p className="page-intro">
         For <strong>Build Steps</strong> use one line per step:<br />
         <code>[12f, 1:30] Build barracks and queue footmen</code><br />
@@ -66,6 +76,7 @@ export default async function EditAdminBuildPage({ params }: Props) {
       </p>
       <form action={updateBuildAction} className="form-grid">
         <input type="hidden" name="buildId" value={build.id} />
+        <input type="hidden" name="currentSlug" value={build.slug} />
         <section className="form-panel">
           <h2>Core Metadata</h2>
           <div className="field">
@@ -74,26 +85,19 @@ export default async function EditAdminBuildPage({ params }: Props) {
           </div>
           <div className="field">
             <label htmlFor="matchupSlug">Matchup</label>
-            <select id="matchupSlug" name="matchupSlug" defaultValue={build.matchupSlug ?? ""}>
-              <option value="">None</option>
-              {matchupResult.data.map((matchup) => (
-                <option key={matchup.slug} value={matchup.slug}>
-                  {matchup.title}
-                </option>
-              ))}
-            </select>
+            <MatchupSelect matchups={matchupResult.data} defaultValue={build.matchupSlug ?? ""} />
           </div>
           <div className="field">
             <label htmlFor="title">Title</label>
             <input id="title" name="title" type="text" defaultValue={build.title} />
           </div>
           <div className="field">
-            <label htmlFor="slug">Slug</label>
+            <label htmlFor="slug">Page URL <span className="admin-edit-form__hint">(e.g. /builds/orc-grunt-raider-timing)</span></label>
             <input id="slug" name="slug" type="text" defaultValue={build.slug} />
           </div>
           <div className="field">
             <label htmlFor="difficulty">Difficulty</label>
-            <input id="difficulty" name="difficulty" type="text" defaultValue={build.difficulty} />
+            <DifficultySelect defaultValue={build.difficulty} />
           </div>
           <div className="field">
             <label htmlFor="strategyType">Strategy type</label>
@@ -118,7 +122,7 @@ export default async function EditAdminBuildPage({ params }: Props) {
             <label htmlFor="stepsInput">Build steps</label>
             <textarea id="stepsInput" name="stepsInput" defaultValue={formatBuildStepsInput(build.steps)} />
           </div>
-          <div className="inline-actions">
+          <div style={{ marginTop: "0.5rem", display: "flex", justifyContent: "center" }}>
             <button className="button button--ghost" type="submit">Save Build</button>
           </div>
         </section>

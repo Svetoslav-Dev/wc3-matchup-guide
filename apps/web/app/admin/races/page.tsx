@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { AdminSearchInput } from "../../../components/admin-search-input";
 import Image from "next/image";
 import { redirect } from "next/navigation";
 import { hasDatabaseUrl } from "@warcraft3-guide-hub/db";
@@ -7,13 +8,13 @@ import { listAdminRaces } from "../../../lib/content";
 import { deleteRaceAction } from "../actions";
 import { ConfirmDelete } from "../../../components/confirm-delete";
 
-type Props = { searchParams?: Promise<{ q?: string }> };
+type Props = { searchParams?: Promise<{ q?: string; status?: string; error?: string }> };
 
 export default async function AdminRacesPage({ searchParams }: Props) {
   const user = await getSessionUser();
   if (!user || user.role !== "admin") redirect("/admin");
 
-  const { q } = (await searchParams) ?? {};
+  const { q, status, error } = (await searchParams) ?? {};
   const records = hasDatabaseUrl() ? await listAdminRaces(9999, q) : [];
 
   return (
@@ -29,11 +30,15 @@ export default async function AdminRacesPage({ searchParams }: Props) {
         </div>
       </div>
 
+      {status === "race-deleted" && (
+        <div className="status-banner status-banner--success">Successfully deleted race.</div>
+      )}
+      {error && (
+        <div className="status-banner status-banner--error">{decodeURIComponent(error)}</div>
+      )}
+
       <div className="admin-toolbar">
-        <form className="admin-toolbar__search" method="get">
-          <input className="admin-toolbar__input" name="q" defaultValue={q ?? ""} placeholder="Search races by name…" autoComplete="off" />
-          <button className="button button--ghost button--sm" type="submit">Search</button>
-        </form>
+        <AdminSearchInput placeholder="Search races by name…" />
         <p className="admin-toolbar__count">{records.length} result{records.length !== 1 ? "s" : ""}</p>
       </div>
 
@@ -49,10 +54,15 @@ export default async function AdminRacesPage({ searchParams }: Props) {
               <p className="admin-list-row__name">{race.name}</p>
               <span className="muted" style={{ fontSize: "0.78rem" }}>{race.slug}</span>
             </div>
-            <div className="inline-actions">
+            <div className="inline-actions" style={{ flexWrap: "nowrap", alignItems: "center" }}>
+              {race.slug === "neutral" && (
+                <span className="muted" style={{ fontSize: "0.78rem", fontWeight: 600, whiteSpace: "nowrap" }}>Tavern/mercenary placeholder — do not delete.</span>
+              )}
               <Link href={`/admin/races/${race.slug}/edit`} className="button button--edit button--sm">Edit</Link>
               <Link href={`/races/${race.slug}`} className="button button--view button--sm">View</Link>
-              <ConfirmDelete action={deleteRaceAction} itemName={race.name} hiddenFields={{ raceId: String(race.id) }} />
+              {race.slug !== "neutral" && (
+                <ConfirmDelete action={deleteRaceAction} itemName={race.name} hiddenFields={{ raceId: String(race.id) }} />
+              )}
             </div>
           </article>
         ))}

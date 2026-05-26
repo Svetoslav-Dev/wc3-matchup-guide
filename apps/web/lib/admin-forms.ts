@@ -25,7 +25,7 @@ export const parseBuildStepsInput = (value: string): BuildStep[] => {
     .filter(Boolean);
 
   return lines.map((line, index) => {
-    const match = line.match(/^\[(\d+)f,\s*(\d{1,2}):(\d{2})\]\s*(.+)$/);
+    const match = line.match(/^\[(\d+)f,\s*(\d{1,2}):(\d{1,2})\]\s*(.+)$/);
 
     if (!match) {
       throw new Error(`Line ${index + 1}: use the format [12f, 1:30] instruction.`);
@@ -44,7 +44,7 @@ export const parseBuildStepsInput = (value: string): BuildStep[] => {
       throw new Error(`Line ${index + 1}: "${match[2]}:${match[3]}" is not a valid time — seconds must be 00–59.`);
     }
 
-    const timing = `${minutes}:${match[3]}`;
+    const timing = `${minutes}:${String(seconds).padStart(2, "0")}`;
 
     return {
       stepNumber: index + 1,
@@ -71,7 +71,7 @@ export const formDataToAdminBuildInput = (formData: FormData): AdminBuildInput =
   raceSlug: String(formData.get("raceSlug") ?? ""),
   matchupSlug: String(formData.get("matchupSlug") ?? "").trim() || null,
   title: String(formData.get("title") ?? ""),
-  slug: String(formData.get("slug") ?? ""),
+  slug: String(formData.get("slug") ?? "").toLowerCase().trim(),
   summary: String(formData.get("summary") ?? ""),
   difficulty: String(formData.get("difficulty") ?? ""),
   strategyType: String(formData.get("strategyType") ?? ""),
@@ -84,7 +84,7 @@ export const formDataToAdminMatchupInput = (formData: FormData): AdminMatchupInp
   raceASlug: String(formData.get("raceASlug") ?? ""),
   raceBSlug: String(formData.get("raceBSlug") ?? ""),
   title: String(formData.get("title") ?? ""),
-  slug: String(formData.get("slug") ?? ""),
+  slug: String(formData.get("slug") ?? "").toLowerCase().trim(),
   summary: String(formData.get("summary") ?? ""),
   difficulty: String(formData.get("difficulty") ?? ""),
   earlyGamePlan: String(formData.get("earlyGamePlan") ?? ""),
@@ -96,7 +96,7 @@ export const formDataToAdminMatchupInput = (formData: FormData): AdminMatchupInp
 export const formDataToAdminHeroInput = (formData: FormData): AdminHeroInput => ({
   raceSlug: String(formData.get("raceSlug") ?? ""),
   name: String(formData.get("name") ?? ""),
-  slug: String(formData.get("slug") ?? ""),
+  slug: String(formData.get("slug") ?? "").toLowerCase().trim(),
   description: String(formData.get("description") ?? ""),
   primaryAttribute: String(formData.get("primaryAttribute") ?? ""),
   role: String(formData.get("role") ?? ""),
@@ -107,7 +107,7 @@ export const formDataToAdminHeroInput = (formData: FormData): AdminHeroInput => 
 export const formDataToAdminUnitInput = (formData: FormData): AdminUnitInput => ({
   raceSlug: String(formData.get("raceSlug") ?? ""),
   name: String(formData.get("name") ?? ""),
-  slug: String(formData.get("slug") ?? ""),
+  slug: String(formData.get("slug") ?? "").toLowerCase().trim(),
   description: String(formData.get("description") ?? ""),
   unitType: String(formData.get("unitType") ?? ""),
   strengths: parseCommonMistakesInput(String(formData.get("strengthsInput") ?? "")),
@@ -117,7 +117,7 @@ export const formDataToAdminUnitInput = (formData: FormData): AdminUnitInput => 
 
 export const formDataToAdminMapInput = (formData: FormData): AdminMapInput => ({
   name: String(formData.get("name") ?? ""),
-  slug: String(formData.get("slug") ?? ""),
+  slug: String(formData.get("slug") ?? "").toLowerCase().trim(),
   description: String(formData.get("description") ?? ""),
   creepNotes: String(formData.get("creepNotes") ?? ""),
   expansionNotes: String(formData.get("expansionNotes") ?? ""),
@@ -126,7 +126,7 @@ export const formDataToAdminMapInput = (formData: FormData): AdminMapInput => ({
 
 export const formDataToAdminRaceInput = (formData: FormData): AdminRaceInput => ({
   name: String(formData.get("name") ?? ""),
-  slug: String(formData.get("slug") ?? ""),
+  slug: String(formData.get("slug") ?? "").toLowerCase().trim(),
   description: String(formData.get("description") ?? ""),
   identity: String(formData.get("identity") ?? ""),
   ladderFocus: String(formData.get("ladderFocus") ?? ""),

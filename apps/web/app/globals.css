@@ -392,7 +392,7 @@ button, input, select, textarea { font: inherit; }
 .card h3,
 .form-panel h2 { @apply mt-0; }
 .detail-panel h2 { @apply mt-0 mb-3; color: var(--color-gold); }
-.form-grid .form-panel h2 { @apply pb-2 border-b border-line mb-1; }
+.form-grid .form-panel h2 { @apply pb-2 border-b border-line mb-1; color: var(--color-gold); }
 
 /* ─── Pill ──────────────────────────────────────────────────────────────── */
 .pill {
@@ -612,6 +612,11 @@ a.icon-card:hover {
   border-color:rgba(220,60,60,0.35);
   color:#f87171;
 }
+.status-banner--success {
+  background:rgba(124,195,136,0.12);
+  border-color:rgba(124,195,136,0.35);
+  color:#7cc388;
+}
 
 /* ─── Auth ──────────────────────────────────────────────────────────────── */
 .auth-trigger          { @apply flex gap-1.5; }
@@ -722,7 +727,7 @@ a.icon-card:hover {
 
 /* ─── Forms ─────────────────────────────────────────────────────────────── */
 .field          { @apply grid gap-2.5; }
-.form-grid .form-panel { @apply flex flex-col gap-6 p-7; }
+.form-grid .form-panel { @apply flex flex-col gap-8 p-7; }
 .field input,
 .field select,
 .field textarea {
@@ -919,7 +924,7 @@ a.icon-card:hover {
   gap: 2rem;
   align-items: start;
 }
-.admin-edit-form__fields { @apply flex flex-col gap-5; }
+.admin-edit-form__fields { @apply flex flex-col gap-7; }
 .admin-edit-form__hint { @apply text-muted font-normal; font-size: 0.8rem; }
 
 .admin-edit-form__sidebar { @apply flex flex-col gap-4; }
@@ -940,7 +945,7 @@ a.icon-card:hover {
 }
 
 .admin-edit-form__footer {
-  @apply flex items-center gap-4;
+  @apply flex items-center justify-center gap-4;
   padding-top: 1.25rem;
   margin-top: 0.5rem;
   border-top: 1px solid var(--color-line);
