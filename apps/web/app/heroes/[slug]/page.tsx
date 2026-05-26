@@ -33,8 +33,8 @@ export default async function HeroDetailPage({ params }: Props) {
   const attrIcon  = ATTR_ICON[hero.primaryAttribute]  ?? "◆";
 
   return (
-    <div className="page-shell page-stack">
-      <div className="flex justify-start pt-4">
+    <div className="page-shell page-stack" style={{ paddingTop: "1.5rem" }}>
+      <div className="flex justify-start">
         <Link href="/heroes" className="button button--ghost button--sm">← Heroes</Link>
       </div>
 
@@ -76,18 +76,16 @@ export default async function HeroDetailPage({ params }: Props) {
 
       {/* detail-grid: Hero Stats (full-width), then Spells (left) | Best Items (right) */}
       <div className="detail-grid" style={{ alignItems: "stretch" }}>
-        <article className="detail-panel unit-stats-card" style={{ gridColumn: "1 / -1" }}>
-          <p className="section-label">Hero Stats</p>
-          <div className="unit-stats-card__costs">
-            <div className="unit-stat-row">
-              <span className="unit-stat-row__label">Role</span>
-              <span className="unit-stat-row__value">{hero.role}</span>
+        <article className="detail-panel" style={{ gridColumn: "1 / -1" }}>
+          <h2>Hero Stats</h2>
+          <div className="flex flex-wrap gap-3">
+            <div className="flex flex-col gap-0.5 flex-1 min-w-[160px] rounded-[12px] border border-line px-4 py-3" style={{ background: "rgba(201,163,91,0.06)", borderColor: "rgba(201,163,91,0.2)" }}>
+              <span className="text-muted uppercase tracking-widest" style={{ fontSize: "0.65rem", fontWeight: 700 }}>Role</span>
+              <span className="text-text font-bold" style={{ fontSize: "1rem" }}>{hero.role}</span>
             </div>
-            <div className="unit-stat-row">
-              <span className="unit-stat-row__label">Attribute</span>
-              <span className="unit-stat-row__value" style={{ color: attrColor }}>
-                {attrIcon} {hero.primaryAttribute}
-              </span>
+            <div className="flex flex-col gap-0.5 flex-1 min-w-[160px] rounded-[12px] border px-4 py-3" style={{ background: `${attrColor}0f`, borderColor: `${attrColor}33`, color: attrColor }}>
+              <span className="uppercase tracking-widest opacity-70" style={{ fontSize: "0.65rem", fontWeight: 700, color: attrColor }}>Primary Attribute</span>
+              <span className="font-bold" style={{ fontSize: "1rem" }}>{attrIcon} {hero.primaryAttribute}</span>
             </div>
           </div>
         </article>

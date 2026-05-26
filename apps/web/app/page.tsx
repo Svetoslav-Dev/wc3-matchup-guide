@@ -155,6 +155,7 @@ export default async function HomePage() {
             </svg>
           </div>
           <div>
+            <p className="section-label m-0">Race Roster</p>
             <strong>{stats.raceTotal}</strong>
             <span className="muted">Playable races</span>
           </div>
@@ -166,6 +167,7 @@ export default async function HomePage() {
             </svg>
           </div>
           <div>
+            <p className="section-label m-0">Hero Library</p>
             <strong>{stats.heroTotal}</strong>
             <span className="muted">Featured heroes</span>
           </div>
@@ -177,6 +179,7 @@ export default async function HomePage() {
             </svg>
           </div>
           <div>
+            <p className="section-label m-0">Matchup Guides</p>
             <strong>{stats.matchupTotal}</strong>
             <span className="muted">Matchup pages</span>
           </div>
@@ -188,6 +191,7 @@ export default async function HomePage() {
             </svg>
           </div>
           <div>
+            <p className="section-label m-0">Build Library</p>
             <strong>{stats.buildTotal}</strong>
             <span className="muted">Build orders</span>
           </div>

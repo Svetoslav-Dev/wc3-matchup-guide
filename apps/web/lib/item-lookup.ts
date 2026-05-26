@@ -27,7 +27,7 @@ export const itemLookup: Record<string, ItemInfo> = {
   "Khadgar's Pipe of Insight": { imageFile: "KhadgarsPipeOfInsight", source: "Drop / Shop" },
   "Lion Horn of Stormwind": { imageFile: "LionHornOfStormwind", source: "Drop / Shop" },
   "Mantle of Intelligence": { imageFile: "MantleOfIntelligence", source: "Shop" },
-  "Mask of Death": { imageFile: null, source: "Drop" },
+  "Mask of Death": { imageFile: "MaskOfDeath", source: "Drop" },
   "Medallion of Courage": { imageFile: "MedallionOfCourage", source: "Shop" },
   "Orb of Corruption": { imageFile: "OrbOfCorruption", source: "Shop" },
   "Orb of Fire": { imageFile: "OrbOfFire", source: "Drop" },

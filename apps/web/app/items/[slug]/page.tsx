@@ -85,7 +85,7 @@ const SHOP_ICON: Record<string, string> = {
   orc:               "/images/Buildings/VoodooLounge.png",
   undead:            "/images/Buildings/TombOfRelics.png",
   "night-elf":       "/images/Buildings/AncientOfWonders.png",
-  "goblin-merchant": "/images/Buildings/GoblinLaboratory.png",
+  "goblin-merchant": "/images/Buildings/GoblinMerchant.png",
 };
 
 const CATEGORY_LABEL: Record<string, string> = {

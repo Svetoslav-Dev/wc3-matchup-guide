@@ -52,7 +52,7 @@ export default async function HeroesPage() {
     .filter((group) => group.heroes.length > 0);
 
   return (
-    <div className="page-shell page-stack">
+    <div className="page-shell page-stack" style={{ paddingTop: "1.5rem" }}>
       <div className="section-head">
         <p className="section-label">Hero Library</p>
         <h1 className="page-title">Every hero path, from race staples to tavern pivots</h1>

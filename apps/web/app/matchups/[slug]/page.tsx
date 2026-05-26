@@ -3,6 +3,7 @@ import Link from "next/link";
 import { getMatchupBySlug } from "../../../lib/content";
 import { GameImage } from "../../../components/game-image";
 import { DifficultyBadge } from "../../../components/difficulty-badge";
+import { heroes } from "../../../lib/static-content";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -50,6 +51,16 @@ const heroImages: Record<string, string> = {
   "Pit Lord":              "/images/Heroes/PitLord.png",
 };
 
+const attrIcon: Record<string, string> = {
+  Strength:     "💪",
+  Agility:      "⚡",
+  Intelligence: "🔮",
+};
+
+const heroNameAlias: Record<string, string> = {
+  "Dreadlord": "Dread Lord",
+};
+
 export default async function MatchupDetailPage({ params }: Props) {
   const { slug } = await params;
   const matchup = await getMatchupBySlug(slug);
@@ -59,10 +70,10 @@ export default async function MatchupDetailPage({ params }: Props) {
   const [slugA = "", slugB = ""] = slug.split("-vs-");
 
   return (
-    <div className="page-shell page-stack">
+    <div className="page-shell page-stack" style={{ paddingTop: "1.5rem" }}>
 
       {/* Top nav */}
-      <div className="flex justify-end pt-4">
+      <div className="flex justify-start">
         <Link href="/matchups" className="button button--ghost button--sm">
           ← Back to Matchups
         </Link>
@@ -103,49 +114,64 @@ export default async function MatchupDetailPage({ params }: Props) {
 
       {/* Game plan + Hero focus */}
       <div className="detail-grid">
-        <article className="detail-panel">
+        <article className="detail-panel" style={{ alignSelf: "stretch", display: "flex", flexDirection: "column" }}>
           <h2 className="flex items-center gap-2">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="shrink-0 opacity-80" style={{ color: "#c9a35b" }}>
               <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
             </svg>
             Game Plan
           </h2>
-          <div className="flex flex-col gap-3">
-            <div className="flex gap-2.5">
+          <div className="flex flex-col gap-3" style={{ flex: 1 }}>
+            <div className="flex gap-2.5 rounded-[10px] border border-line bg-white/[0.02] p-2.5" style={{ flex: 1 }}>
               <span className="shrink-0 mt-0.5 flex items-center justify-center rounded-full text-[0.6rem] font-bold uppercase tracking-wide" style={{ width: 20, height: 20, minWidth: 20, background: "rgba(201,163,91,0.15)", color: "#c9a35b", border: "1px solid rgba(201,163,91,0.3)" }}>E</span>
               <p className="m-0 text-muted leading-relaxed" style={{ fontSize: "0.88rem" }}>{matchup.earlyGamePlan}</p>
             </div>
-            <div className="flex gap-2.5">
+            <div className="flex gap-2.5 rounded-[10px] border border-line bg-white/[0.02] p-2.5" style={{ flex: 1 }}>
               <span className="shrink-0 mt-0.5 flex items-center justify-center rounded-full text-[0.6rem] font-bold uppercase tracking-wide" style={{ width: 20, height: 20, minWidth: 20, background: "rgba(96,165,250,0.12)", color: "#60a5fa", border: "1px solid rgba(96,165,250,0.25)" }}>M</span>
               <p className="m-0 text-muted leading-relaxed" style={{ fontSize: "0.88rem" }}>{matchup.midGamePlan}</p>
             </div>
-            <div className="flex gap-2.5">
+            <div className="flex gap-2.5 rounded-[10px] border border-line bg-white/[0.02] p-2.5" style={{ flex: 1 }}>
               <span className="shrink-0 mt-0.5 flex items-center justify-center rounded-full text-[0.6rem] font-bold uppercase tracking-wide" style={{ width: 20, height: 20, minWidth: 20, background: "rgba(167,139,250,0.12)", color: "#a78bfa", border: "1px solid rgba(167,139,250,0.25)" }}>L</span>
               <p className="m-0 text-muted leading-relaxed" style={{ fontSize: "0.88rem" }}>{matchup.lateGamePlan}</p>
             </div>
           </div>
         </article>
 
-        <article className="detail-panel">
+        <article className="detail-panel" style={{ alignSelf: "stretch", display: "flex", flexDirection: "column" }}>
           <h2 className="flex items-center gap-2">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="shrink-0 opacity-80" style={{ color: "#c9a35b" }}>
               <path d="M14.5 17.5L3 6V3h3l11.5 11.5"/><path d="M13 19l6-6"/><path d="M16 16l4 4"/><path d="M19 21l2-2"/>
             </svg>
             Hero Focus
           </h2>
-          <div className="grid grid-cols-2 gap-x-4 gap-y-3">
-            {matchup.heroChoices.map((hero) => (
-              <div key={hero} className="flex items-center gap-2.5 min-w-0">
-                <GameImage
-                  src={heroImages[hero] ?? "/placeholder.svg"}
-                  alt={hero}
-                  width={32}
-                  height={32}
-                  className="rounded-[6px] shrink-0 object-cover border border-line"
-                />
-                <span className="text-muted leading-snug truncate" style={{ fontSize: "0.82rem" }}>{hero}</span>
-              </div>
-            ))}
+          <div className="grid grid-cols-2 gap-2" style={{ flex: 1, gridTemplateRows: `repeat(${Math.ceil(matchup.heroChoices.length / 2)}, 1fr)` }}>
+            {matchup.heroChoices.map((hero) => {
+              const heroData = heroes.find((h) => h.name === (heroNameAlias[hero] ?? hero));
+              const attr = heroData?.primaryAttribute;
+              return (
+                <Link
+                  key={hero}
+                  href={`/heroes/${heroData?.slug ?? hero.toLowerCase().replace(/\s+/g, "-")}`}
+                  className="flex flex-col items-center justify-center gap-1.5 rounded-[10px] border border-line bg-white/[0.02] p-2 hero-focus-card"
+                >
+                  <div className="relative w-full" style={{ maxWidth: 64, aspectRatio: "1/1" }}>
+                    <GameImage
+                      src={heroImages[hero] ?? "/placeholder.svg"}
+                      alt={hero}
+                      width={64}
+                      height={64}
+                      className="w-full h-full rounded-[6px] object-cover border border-line"
+                    />
+                  </div>
+                  <span className="text-text text-center leading-snug font-semibold" style={{ fontSize: "0.75rem" }}>{hero}</span>
+                  {attr && (
+                    <span className="text-muted text-center leading-none" style={{ fontSize: "0.68rem" }}>
+                      <span aria-hidden="true">{attrIcon[attr]} </span>{attr}
+                    </span>
+                  )}
+                </Link>
+              );
+            })}
           </div>
         </article>
       </div>
