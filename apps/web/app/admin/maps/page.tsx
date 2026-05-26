@@ -40,7 +40,7 @@ export default async function AdminMapsPage({ searchParams }: Props) {
           <article key={map.slug} className="admin-list-row">
             <div className="admin-list-row__img">
               {map.imageUrl ? (
-                <Image src={map.imageUrl} alt={map.name} width={48} height={48} style={{ objectFit: "contain" }} />
+                <Image src={map.imageUrl} alt={map.name} width={48} height={48} style={{ objectFit: "contain" }} unoptimized />
               ) : <div className="admin-list-row__img-placeholder" />}
             </div>
             <div className="admin-list-row__info">

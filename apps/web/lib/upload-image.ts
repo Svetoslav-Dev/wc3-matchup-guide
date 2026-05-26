@@ -47,7 +47,7 @@ export async function uploadImage(file: File, folder: ImageFolder, customName?: 
 
   if (blobEnabled()) {
     const { put } = await import("@vercel/blob");
-    const { url } = await put(`${folder}/${fileName}`, file, { access: "public", addRandomSuffix: false });
+    const { url } = await put(`${folder}/${fileName}`, file, { access: "public", addRandomSuffix: true });
     return url;
   }
 

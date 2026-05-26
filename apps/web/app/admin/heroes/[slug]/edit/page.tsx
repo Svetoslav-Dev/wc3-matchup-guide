@@ -119,6 +119,7 @@ export default async function EditAdminHeroPage({ params, searchParams }: Props)
                   height={120}
                   style={{ objectFit: "contain" }}
                   className="admin-edit-form__preview-img"
+                  unoptimized
                 />
               ) : (
                 <div className="admin-edit-form__preview-empty">No image set</div>

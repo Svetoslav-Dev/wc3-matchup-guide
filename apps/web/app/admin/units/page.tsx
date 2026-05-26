@@ -40,7 +40,7 @@ export default async function AdminUnitsPage({ searchParams }: Props) {
           <article key={unit.slug} className="admin-list-row">
             <div className="admin-list-row__img">
               {unit.imageUrl ? (
-                <Image src={unit.imageUrl} alt={unit.name} width={48} height={48} style={{ objectFit: "contain" }} />
+                <Image src={unit.imageUrl} alt={unit.name} width={48} height={48} style={{ objectFit: "contain" }} unoptimized />
               ) : <div className="admin-list-row__img-placeholder" />}
             </div>
             <div className="admin-list-row__info">

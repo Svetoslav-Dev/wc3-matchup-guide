@@ -73,7 +73,7 @@ export default async function EditAdminItemPage({ params, searchParams }: Props)
           <div className="field">
             <label htmlFor="imageUpload">Image (saves to /images/Items/)</label>
             {imagePreviewUrl ? (
-              <Image src={imagePreviewUrl} alt={item.name} className="admin-img-preview" width={80} height={80} style={{ objectFit: "contain" }} />
+              <Image src={imagePreviewUrl} alt={item.name} className="admin-img-preview" width={80} height={80} style={{ objectFit: "contain" }} unoptimized />
             ) : (
               <div className="admin-edit-form__preview-empty">No image set</div>
             )}

@@ -65,7 +65,7 @@ export default async function AdminHeroesPage({ searchParams }: Props) {
           <article key={hero.slug} className="admin-list-row">
             <div className="admin-list-row__img">
               {hero.imageUrl ? (
-                <Image src={hero.imageUrl} alt={hero.name} width={48} height={48} style={{ objectFit: "contain" }} />
+                <Image src={hero.imageUrl} alt={hero.name} width={48} height={48} style={{ objectFit: "contain" }} unoptimized />
               ) : <div className="admin-list-row__img-placeholder" />}
             </div>
             <div className="admin-list-row__info">

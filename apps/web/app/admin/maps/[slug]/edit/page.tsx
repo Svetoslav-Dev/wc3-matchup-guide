@@ -46,7 +46,7 @@ export default async function EditAdminMapPage({ params, searchParams }: Props) 
           <input type="hidden" name="imageUrl" value={map.imageUrl ?? ""} />
           <div className="field">
             <label htmlFor="imageUpload">Image (saves to /images/Maps/)</label>
-            {map.imageUrl ? <Image src={map.imageUrl} alt={map.name} className="admin-img-preview" width={80} height={80} /> : null}
+            {map.imageUrl ? <Image src={map.imageUrl} alt={map.name} className="admin-img-preview" width={80} height={80} unoptimized /> : null}
             <input id="imageUpload" name="imageUpload" type="file" accept="image/*" />
           </div>
         </section>

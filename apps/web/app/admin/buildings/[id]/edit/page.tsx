@@ -86,6 +86,7 @@ export default async function EditAdminBuildingPage({ params, searchParams }: Pr
                   height={120}
                   style={{ objectFit: "contain" }}
                   className="admin-edit-form__preview-img"
+                  unoptimized
                 />
               ) : (
                 <div className="admin-edit-form__preview-empty">No image set</div>
