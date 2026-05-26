@@ -1077,6 +1077,26 @@ export const updateRace = async (id: number, input: AdminRaceInput) => {
   return findRaceBySlug(input.slug);
 };
 
+export const countActiveRaceDependencies = async (raceId: number) => {
+  const db = getDb();
+  const race = await db.query.races.findFirst({ where: eq(races.id, raceId), columns: { slug: true } });
+  const raceSlug = race?.slug ?? "";
+  const [heroRows, unitRows, buildingRows, matchupRows, buildRows] = await Promise.all([
+    db.select({ n: count() }).from(heroes).where(and(eq(heroes.raceId, raceId), isNull(heroes.deletedAt))),
+    db.select({ n: count() }).from(units).where(and(eq(units.raceId, raceId), isNull(units.deletedAt))),
+    db.select({ n: count() }).from(buildingsTable).where(and(eq(buildingsTable.race, raceSlug), isNull(buildingsTable.deletedAt))),
+    db.select({ n: count() }).from(matchups).where(and(or(eq(matchups.raceAId, raceId), eq(matchups.raceBId, raceId)), isNull(matchups.deletedAt))),
+    db.select({ n: count() }).from(builds).where(and(eq(builds.raceId, raceId), isNull(builds.deletedAt))),
+  ]);
+  return {
+    heroes: heroRows[0]?.n ?? 0,
+    units: unitRows[0]?.n ?? 0,
+    buildings: buildingRows[0]?.n ?? 0,
+    matchups: matchupRows[0]?.n ?? 0,
+    builds: buildRows[0]?.n ?? 0,
+  };
+};
+
 export const deleteRace = async (id: number) => {
   const db = getDb();
   const [removed] = await db.update(races).set({ deletedAt: new Date() }).where(eq(races.id, id)).returning();

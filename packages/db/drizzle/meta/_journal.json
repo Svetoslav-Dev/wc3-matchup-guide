@@ -36,6 +36,13 @@
       "when": 1779395098570,
       "tag": "0004_eager_paibok",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1779823681821,
+      "tag": "0005_bumpy_randall",
+      "breakpoints": true
     }
   ]
 }

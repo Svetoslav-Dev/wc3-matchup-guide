@@ -1,5 +1,16 @@
 import { z } from "zod";
 
+const slugField = (maxLen = 160) =>
+  z
+    .string()
+    .trim()
+    .min(1, "Page URL is required.")
+    .max(maxLen, `Page URL must be ${maxLen} characters or fewer.`)
+    .regex(
+      /^[a-z0-9]+(?:-[a-z0-9]+)*$/,
+      "Page URL may only contain lowercase letters, numbers, and hyphens — no spaces or special characters (e.g. twisted-meadows)."
+    );
+
 export const registerSchema = z.object({
   email: z.string().trim().email().max(255),
   username: z.string().trim().min(3).max(50),
@@ -26,7 +37,7 @@ export const adminBuildSchema = z.object({
   raceSlug: z.string().trim().min(1).max(120),
   matchupSlug: z.string().trim().max(160).optional().nullable(),
   title: z.string().trim().min(1).max(180),
-  slug: z.string().trim().min(1).max(180),
+  slug: slugField(180),
   summary: z.string().trim().min(1).max(2000),
   difficulty: z.string().trim().min(1).max(50),
   strategyType: z.string().trim().min(1).max(80),
@@ -39,7 +50,7 @@ export const adminMatchupSchema = z.object({
   raceASlug: z.string().trim().min(1).max(120),
   raceBSlug: z.string().trim().min(1).max(120),
   title: z.string().trim().min(1).max(160),
-  slug: z.string().trim().min(1).max(160),
+  slug: slugField(160),
   summary: z.string().trim().min(1).max(2000),
   difficulty: z.string().trim().min(1).max(50),
   earlyGamePlan: z.string().trim().min(1).max(4000),
@@ -51,7 +62,7 @@ export const adminMatchupSchema = z.object({
 export const adminHeroSchema = z.object({
   raceSlug: z.string().trim().min(1).max(120),
   name: z.string().trim().min(1).max(120),
-  slug: z.string().trim().min(1).max(120),
+  slug: slugField(120),
   description: z.string().trim().min(1).max(2000),
   primaryAttribute: z.string().trim().min(1).max(40),
   role: z.string().trim().min(1).max(80),
@@ -62,7 +73,7 @@ export const adminHeroSchema = z.object({
 export const adminUnitSchema = z.object({
   raceSlug: z.string().trim().min(1).max(120),
   name: z.string().trim().min(1).max(120),
-  slug: z.string().trim().min(1).max(120),
+  slug: slugField(120),
   description: z.string().trim().min(1).max(2000),
   unitType: z.string().trim().min(1).max(80),
   strengths: z.array(z.string().trim().min(1).max(500)).max(20),
@@ -72,7 +83,7 @@ export const adminUnitSchema = z.object({
 
 export const adminMapSchema = z.object({
   name: z.string().trim().min(1).max(120),
-  slug: z.string().trim().min(1).max(120),
+  slug: slugField(120),
   description: z.string().trim().min(1).max(2000),
   creepNotes: z.string().trim().min(1).max(4000),
   expansionNotes: z.string().trim().min(1).max(4000),
@@ -81,7 +92,7 @@ export const adminMapSchema = z.object({
 
 export const adminRaceSchema = z.object({
   name: z.string().trim().min(1).max(100),
-  slug: z.string().trim().min(1).max(120),
+  slug: slugField(120),
   description: z.string().trim().min(1).max(2000),
   identity: z.string().trim().min(1).max(2000),
   ladderFocus: z.string().trim().min(1).max(4000),

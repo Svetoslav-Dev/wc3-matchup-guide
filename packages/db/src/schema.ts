@@ -1,4 +1,4 @@
-import { relations } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 import {
   boolean,
   index,
@@ -47,7 +47,7 @@ export const races = pgTable(
     deletedAt: timestamp("deleted_at"),
     ...timestamps,
   },
-  (table) => [uniqueIndex("races_slug_idx").on(table.slug)],
+  (table) => [uniqueIndex("races_slug_idx").on(table.slug).where(sql`deleted_at is null`)],
 );
 
 export const heroes = pgTable(
@@ -66,7 +66,7 @@ export const heroes = pgTable(
     deletedAt: timestamp("deleted_at"),
     ...timestamps,
   },
-  (table) => [uniqueIndex("heroes_slug_idx").on(table.slug), index("heroes_race_id_idx").on(table.raceId)],
+  (table) => [uniqueIndex("heroes_slug_idx").on(table.slug).where(sql`deleted_at is null`), index("heroes_race_id_idx").on(table.raceId)],
 );
 
 export const units = pgTable(
@@ -86,7 +86,7 @@ export const units = pgTable(
     deletedAt: timestamp("deleted_at"),
     ...timestamps,
   },
-  (table) => [uniqueIndex("units_slug_idx").on(table.slug), index("units_race_id_idx").on(table.raceId)],
+  (table) => [uniqueIndex("units_slug_idx").on(table.slug).where(sql`deleted_at is null`), index("units_race_id_idx").on(table.raceId)],
 );
 
 export const maps = pgTable(
@@ -102,7 +102,7 @@ export const maps = pgTable(
     deletedAt: timestamp("deleted_at"),
     ...timestamps,
   },
-  (table) => [uniqueIndex("maps_slug_idx").on(table.slug)],
+  (table) => [uniqueIndex("maps_slug_idx").on(table.slug).where(sql`deleted_at is null`)],
 );
 
 export const matchups = pgTable(
@@ -127,7 +127,7 @@ export const matchups = pgTable(
     ...timestamps,
   },
   (table) => [
-    uniqueIndex("matchups_slug_idx").on(table.slug),
+    uniqueIndex("matchups_slug_idx").on(table.slug).where(sql`deleted_at is null`),
     index("matchups_race_a_id_idx").on(table.raceAId),
     index("matchups_race_b_id_idx").on(table.raceBId),
   ],
@@ -155,7 +155,7 @@ export const builds = pgTable(
     ...timestamps,
   },
   (table) => [
-    uniqueIndex("builds_slug_idx").on(table.slug),
+    uniqueIndex("builds_slug_idx").on(table.slug).where(sql`deleted_at is null`),
     index("builds_race_id_idx").on(table.raceId),
     index("builds_matchup_id_idx").on(table.matchupId),
     index("builds_created_by_user_id_idx").on(table.createdByUserId),
