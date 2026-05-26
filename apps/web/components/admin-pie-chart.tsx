@@ -21,8 +21,6 @@ const CustomTooltip = ({ active, payload }: { active?: boolean; payload?: { name
 };
 
 export function AdminPieChart({ data, colors }: Props) {
-  const total = data.reduce((sum, d) => sum + d.value, 0);
-
   return (
     <div className="publish-donut">
       <ResponsiveContainer width="100%" height={280}>

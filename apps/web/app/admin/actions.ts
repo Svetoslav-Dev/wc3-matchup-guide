@@ -81,6 +81,8 @@ const extractFields = (formData: FormData): Record<string, string> => {
   return out;
 };
 
+const firstErrorMessage = (message: string | undefined) => message ?? "Please fill all the fields.";
+
 export async function createBuildAction(prevState: FormState, formData: FormData): Promise<FormState> {
   const user = await requireAdminMutationContext();
   const fields = extractFields(formData);
@@ -95,7 +97,7 @@ export async function createBuildAction(prevState: FormState, formData: FormData
   const parsed = adminBuildSchema.safeParse(input);
 
   if (!parsed.success) {
-    return { error: parsed.error.errors[0]?.message ?? "Please fill all the fields.", fields, key: nextKey };
+    return { error: firstErrorMessage(parsed.error.issues[0]?.message), fields, key: nextKey };
   }
 
   let build;
@@ -136,7 +138,7 @@ export async function updateBuildAction(formData: FormData) {
   const parsed = adminBuildSchema.safeParse(input);
 
   if (!parsed.success) {
-    redirect(`/admin/builds/${currentSlug}/edit?error=${encodeURIComponent(parsed.error.errors[0]?.message ?? "Please fill all the fields.")}`);
+    redirect(`/admin/builds/${currentSlug}/edit?error=${encodeURIComponent(firstErrorMessage(parsed.error.issues[0]?.message))}`);
   }
 
   let build;
@@ -164,7 +166,7 @@ export async function createMatchupAction(prevState: FormState, formData: FormDa
   const parsed = adminMatchupSchema.safeParse(input);
 
   if (!parsed.success) {
-    return { error: parsed.error.errors[0]?.message ?? "Please fill all the fields.", fields, key: nextKey };
+    return { error: firstErrorMessage(parsed.error.issues[0]?.message), fields, key: nextKey };
   }
 
   const existing = await getAdminMatchupBySlug(parsed.data.slug);
@@ -202,7 +204,7 @@ export async function updateMatchupAction(formData: FormData) {
   const parsed = adminMatchupSchema.safeParse(input);
 
   if (!parsed.success) {
-    redirect(`/admin/matchups/${currentSlug}/edit?error=${encodeURIComponent(parsed.error.errors[0]?.message ?? "Please fill all the fields.")}`);
+    redirect(`/admin/matchups/${currentSlug}/edit?error=${encodeURIComponent(firstErrorMessage(parsed.error.issues[0]?.message))}`);
   }
 
   let matchup;
@@ -288,7 +290,7 @@ export async function createHeroAction(prevState: FormState, formData: FormData)
   const nextKey = (prevState?.key ?? 0) + 1;
   const input = formDataToAdminHeroInput(formData);
   const parsed = adminHeroSchema.safeParse(input);
-  if (!parsed.success) return { error: parsed.error.errors[0]?.message ?? "Please fill all the fields.", fields, key: nextKey };
+  if (!parsed.success) return { error: firstErrorMessage(parsed.error.issues[0]?.message), fields, key: nextKey };
   const file = formData.get("imageUpload");
   if (file instanceof File && file.size > 0) {
     parsed.data.imageUrl = await uploadImage(file, "Heroes", String(formData.get("name") ?? "").trim() || undefined);
@@ -319,7 +321,7 @@ export async function updateHeroAction(formData: FormData) {
     input.imageUrl = await uploadImage(file, "Heroes");
   }
   const parsed = adminHeroSchema.safeParse(input);
-  if (!parsed.success) redirect(`/admin/heroes/${currentSlug}/edit?error=${encodeURIComponent(parsed.error.errors[0]?.message ?? "Please fill all the fields.")}`);
+  if (!parsed.success) redirect(`/admin/heroes/${currentSlug}/edit?error=${encodeURIComponent(firstErrorMessage(parsed.error.issues[0]?.message))}`);
   let hero;
   try {
     hero = await updateHero(heroId, parsed.data);
@@ -357,7 +359,7 @@ export async function createUnitAction(prevState: FormState, formData: FormData)
   const nextKey = (prevState?.key ?? 0) + 1;
   const input = formDataToAdminUnitInput(formData);
   const parsed = adminUnitSchema.safeParse(input);
-  if (!parsed.success) return { error: parsed.error.errors[0]?.message ?? "Please fill all the fields.", fields, key: nextKey };
+  if (!parsed.success) return { error: firstErrorMessage(parsed.error.issues[0]?.message), fields, key: nextKey };
   const file = formData.get("imageUpload");
   if (file instanceof File && file.size > 0) parsed.data.imageUrl = await uploadImage(file, "Units", String(formData.get("name") ?? "").trim() || undefined);
   let unit;
@@ -384,7 +386,7 @@ export async function updateUnitAction(formData: FormData) {
   const file = formData.get("imageUpload");
   if (file instanceof File && file.size > 0) input.imageUrl = await uploadImage(file, "Units");
   const parsed = adminUnitSchema.safeParse(input);
-  if (!parsed.success) redirect(`/admin/units/${currentSlug}/edit?error=${encodeURIComponent(parsed.error.errors[0]?.message ?? "Please fill all the fields.")}`);
+  if (!parsed.success) redirect(`/admin/units/${currentSlug}/edit?error=${encodeURIComponent(firstErrorMessage(parsed.error.issues[0]?.message))}`);
   let unit;
   try {
     unit = await updateUnit(unitId, parsed.data);
@@ -422,7 +424,7 @@ export async function createMapAction(prevState: FormState, formData: FormData):
   const nextKey = (prevState?.key ?? 0) + 1;
   const input = formDataToAdminMapInput(formData);
   const parsed = adminMapSchema.safeParse(input);
-  if (!parsed.success) return { error: parsed.error.errors[0]?.message ?? "Please fill all the fields.", fields, key: nextKey };
+  if (!parsed.success) return { error: firstErrorMessage(parsed.error.issues[0]?.message), fields, key: nextKey };
   const file = formData.get("imageUpload");
   if (file instanceof File && file.size > 0) parsed.data.imageUrl = await uploadImage(file, "Maps", String(formData.get("name") ?? "").trim() || undefined);
   let map;
@@ -451,7 +453,7 @@ export async function updateMapAction(formData: FormData) {
   const parsed = adminMapSchema.safeParse(input);
 
   if (!parsed.success) {
-    redirect(`/admin/maps/${currentSlug}/edit?error=${encodeURIComponent(parsed.error.errors[0]?.message ?? "Please fill all the fields.")}`);
+    redirect(`/admin/maps/${currentSlug}/edit?error=${encodeURIComponent(firstErrorMessage(parsed.error.issues[0]?.message))}`);
   }
 
   let map;
@@ -494,7 +496,7 @@ export async function createRaceAction(prevState: FormState, formData: FormData)
   const nextKey = (prevState?.key ?? 0) + 1;
   const input = formDataToAdminRaceInput(formData);
   const parsed = adminRaceSchema.safeParse(input);
-  if (!parsed.success) return { error: parsed.error.errors[0]?.message ?? "Please fill all the fields.", fields, key: nextKey };
+  if (!parsed.success) return { error: firstErrorMessage(parsed.error.issues[0]?.message), fields, key: nextKey };
   const file = formData.get("imageUpload");
   if (file instanceof File && file.size > 0) parsed.data.imageUrl = await uploadImage(file, "Races", String(formData.get("name") ?? "").trim() || undefined);
   let race;
@@ -521,7 +523,7 @@ export async function updateRaceAction(formData: FormData) {
   const file = formData.get("imageUpload");
   if (file instanceof File && file.size > 0) input.imageUrl = await uploadImage(file, "Races");
   const parsed = adminRaceSchema.safeParse(input);
-  if (!parsed.success) redirect(`/admin/races/${currentSlug}/edit?error=${encodeURIComponent(parsed.error.errors[0]?.message ?? "Please fill all the fields.")}`);
+  if (!parsed.success) redirect(`/admin/races/${currentSlug}/edit?error=${encodeURIComponent(firstErrorMessage(parsed.error.issues[0]?.message))}`);
   let race;
   try {
     race = await updateRace(raceId, parsed.data);
@@ -577,7 +579,7 @@ export async function createBuildingAction(prevState: FormState, formData: FormD
   const nextKey = (prevState?.key ?? 0) + 1;
   const input = formDataToAdminBuildingInput(formData);
   const parsed = adminBuildingSchema.safeParse(input);
-  if (!parsed.success) return { error: parsed.error.errors[0]?.message ?? "Please fill all the fields.", fields, key: nextKey };
+  if (!parsed.success) return { error: firstErrorMessage(parsed.error.issues[0]?.message), fields, key: nextKey };
   const file = formData.get("imageUpload");
   if (file instanceof File && file.size > 0) {
     const url = await uploadImage(file, "Buildings");
@@ -606,7 +608,7 @@ export async function updateBuildingAction(formData: FormData) {
     if (url) input.imageFile = url.split("/").pop() ?? input.imageFile;
   }
   const parsed = adminBuildingSchema.safeParse(input);
-  if (!parsed.success) redirect(`/admin/buildings/${buildingId}/edit?error=${encodeURIComponent(parsed.error.errors[0]?.message ?? "Please fill all the fields.")}`);
+  if (!parsed.success) redirect(`/admin/buildings/${buildingId}/edit?error=${encodeURIComponent(firstErrorMessage(parsed.error.issues[0]?.message))}`);
   let building;
   try {
     building = await updateBuilding(buildingId, parsed.data);
@@ -641,7 +643,7 @@ export async function createItemAction(prevState: FormState, formData: FormData)
   const nextKey = (prevState?.key ?? 0) + 1;
   const input = formDataToAdminItemInput(formData);
   const parsed = adminItemSchema.safeParse(input);
-  if (!parsed.success) return { error: parsed.error.errors[0]?.message ?? "Please fill all the fields.", fields, key: nextKey };
+  if (!parsed.success) return { error: firstErrorMessage(parsed.error.issues[0]?.message), fields, key: nextKey };
   const file = formData.get("imageUpload");
   if (file instanceof File && file.size > 0) {
     const url = await uploadImage(file, "Items");
@@ -670,7 +672,7 @@ export async function updateItemAction(formData: FormData) {
     if (url) input.imageFile = url.split("/").pop() ?? input.imageFile;
   }
   const parsed = adminItemSchema.safeParse(input);
-  if (!parsed.success) redirect(`/admin/items/${itemId}/edit?error=${encodeURIComponent(parsed.error.errors[0]?.message ?? "Please fill all the fields.")}`);
+  if (!parsed.success) redirect(`/admin/items/${itemId}/edit?error=${encodeURIComponent(firstErrorMessage(parsed.error.issues[0]?.message))}`);
   let item;
   try {
     item = await updateItem(itemId, parsed.data);

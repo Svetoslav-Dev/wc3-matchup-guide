@@ -26,8 +26,6 @@ export function PublishDonut({ published, draft }: Props) {
     { name: "Draft",     value: draft },
   ];
 
-  const total = published + draft;
-
   return (
     <div className="publish-donut">
       <ResponsiveContainer width="100%" height={280}>

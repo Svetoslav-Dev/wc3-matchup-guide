@@ -7,7 +7,7 @@ import { MatchupSelect } from "./matchup-select";
 import { DifficultySelect } from "./difficulty-select";
 
 type Race = { slug: string; name: string; imageUrl?: string | null };
-type Matchup = { slug: string; title: string; raceASlug: string; raceBSlug: string };
+type Matchup = { slug: string; title: string };
 type Props = { races: Race[]; matchups: Matchup[] };
 
 export function NewBuildForm({ races, matchups }: Props) {
