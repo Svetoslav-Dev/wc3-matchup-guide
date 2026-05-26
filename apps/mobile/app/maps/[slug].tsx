@@ -1,4 +1,5 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
+import { useEffect, useState } from "react";
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import { GhostBadge, PageIntro, PageTitle, SectionLabel } from "../../components/mobile-ui";
 import { ScreenShell } from "../../components/screen-shell";
@@ -9,6 +10,27 @@ import { colors } from "../../lib/theme";
 const itemImageMap: Record<string, string> = Object.fromEntries(
   items.map((i) => [i.name, i.imageFile]),
 );
+
+function getItemSourceLabel(itemName: string) {
+  const item = items.find((entry) => entry.name === itemName);
+
+  if (!item) {
+    return "Drop / Shop";
+  }
+
+  const hasDrop = item.shops.includes("creep-drop");
+  const hasShop = item.shops.some((shop) => shop !== "creep-drop");
+
+  if (hasDrop && hasShop) {
+    return "Drop / Shop";
+  }
+
+  if (hasDrop) {
+    return "Drop";
+  }
+
+  return "Shop";
+}
 
 const RACE_COLORS: Record<string, string> = {
   Human:     "#60a5fa",
@@ -30,6 +52,11 @@ export default function MapDetailScreen() {
   const { slug } = useLocalSearchParams<{ slug: string }>();
   const router = useRouter();
   const { data: map, loading } = useMapContent(slug);
+  const [showAllItems, setShowAllItems] = useState(false);
+
+  useEffect(() => {
+    setShowAllItems(false);
+  }, [slug]);
 
   if (!map) {
     return (
@@ -38,6 +65,10 @@ export default function MapDetailScreen() {
       </ScreenShell>
     );
   }
+
+  const visibleItems = map.availableItems.filter((itemName) => itemImageMap[itemName]);
+  const previewItems = showAllItems ? visibleItems : visibleItems.slice(0, 6);
+  const hasMoreItems = visibleItems.length > 6;
 
   return (
     <ScreenShell>
@@ -83,21 +114,35 @@ export default function MapDetailScreen() {
         <Text style={{ color: colors.muted, lineHeight: 22 }}>{map.expansionNotes}</Text>
       </View>
 
-      {map.availableItems.length > 0 ? (
+      {visibleItems.length > 0 ? (
         <View style={panelStyle}>
-          <Text style={{ color: colors.text, fontSize: 16, fontWeight: "700" }}>Available Items</Text>
-          {map.availableItems.filter((itemName) => itemImageMap[itemName]).map((itemName) => {
+          <Text style={{ color: colors.text, fontSize: 16, fontWeight: "700" }}>Drops / Shop Items</Text>
+          {previewItems.map((itemName) => {
             const imageFile = itemImageMap[itemName];
+            const sourceLabel = getItemSourceLabel(itemName);
             return (
               <View key={itemName} style={styles.itemRow}>
                 <Image
                   source={{ uri: `/images/Items/${imageFile}.png` }}
                   style={styles.itemIcon}
                 />
-                <Text style={{ color: colors.muted }}>{itemName}</Text>
+                <Text style={styles.itemName}>{itemName}</Text>
+                <View style={styles.itemSourceTag}>
+                  <Text style={styles.itemSourceText}>{sourceLabel}</Text>
+                </View>
               </View>
             );
           })}
+          {hasMoreItems ? (
+            <Pressable
+              onPress={() => setShowAllItems((current) => !current)}
+              style={({ pressed }) => [styles.moreBtn, pressed ? styles.moreBtnActive : null]}
+            >
+              <Text style={styles.moreBtnText}>
+                {showAllItems ? "Show less" : `Show more (${visibleItems.length - 6})`}
+              </Text>
+            </Pressable>
+          ) : null}
         </View>
       ) : null}
     </ScreenShell>
@@ -157,9 +202,44 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 10,
   },
+  itemName: {
+    flex: 1,
+    color: colors.muted,
+  },
   itemIcon: {
     width: 28,
     height: 28,
     borderRadius: 4,
+  },
+  itemSourceTag: {
+    borderWidth: 1,
+    borderColor: colors.line,
+    borderRadius: 999,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    backgroundColor: colors.bgSoft,
+  },
+  itemSourceText: {
+    color: colors.text,
+    fontSize: 11,
+    fontWeight: "700",
+  },
+  moreBtn: {
+    alignSelf: "flex-start",
+    marginTop: 4,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: colors.line,
+    backgroundColor: colors.bgSoft,
+  },
+  moreBtnActive: {
+    borderColor: colors.gold,
+  },
+  moreBtnText: {
+    color: colors.text,
+    fontSize: 13,
+    fontWeight: "700",
   },
 });
