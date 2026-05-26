@@ -6,10 +6,10 @@ import {
   formatBuildStepsInput,
   parseBuildStepsInput,
   parseCommonMistakesInput,
-} from "../apps/web/lib/admin-forms.ts";
+} from "../../apps/web/lib/admin-forms.ts";
 
 test("parseBuildStepsInput preserves instruction pipes and numeric fields", () => {
-  const steps = parseBuildStepsInput("1 | 10 | 0:35 | Queue peon | scout left\n2 | 20 | 2:15 | Tech to tier 2");
+  const steps = parseBuildStepsInput("[10f, 0:35] Queue peon | scout left\n[20f, 2:15] Tech to tier 2");
 
   assert.deepEqual(steps, [
     {
@@ -27,16 +27,19 @@ test("parseBuildStepsInput preserves instruction pipes and numeric fields", () =
   ]);
   assert.equal(
     formatBuildStepsInput(steps),
-    "1 | 10 | 0:35 | Queue peon | scout left\n2 | 20 | 2:15 | Tech to tier 2",
+    "[10f, 0:35] Queue peon | scout left\n[20f, 2:15] Tech to tier 2",
   );
 });
 
 test("parseBuildStepsInput rejects malformed step lines", () => {
   assert.throws(
     () => parseBuildStepsInput("1 | 10 | missing instruction"),
-    /Invalid build step format on line 1/,
+    /Line 1: use the format \[12f, 1:30\] instruction\./,
   );
-  assert.throws(() => parseBuildStepsInput("0 | 10 | 0:35 | Open altar"), /Invalid step number on line 1/);
+  assert.throws(
+    () => parseBuildStepsInput("[10f, 0:75] Open altar"),
+    /seconds must be 00–59/,
+  );
 });
 
 test("formDataToAdminBuildInput normalizes checkbox and matchup values", () => {
@@ -50,7 +53,7 @@ test("formDataToAdminBuildInput normalizes checkbox and matchup values", () => {
   formData.set("strategyType", "Timing");
   formData.set("body", "Pressure the expansion before breakers arrive.");
   formData.set("isPublished", "on");
-  formData.set("stepsInput", "1 | 10 | 0:35 | Queue peon");
+  formData.set("stepsInput", "[10f, 0:35] Queue peon");
 
   assert.deepEqual(formDataToAdminBuildInput(formData), {
     raceSlug: "orc",

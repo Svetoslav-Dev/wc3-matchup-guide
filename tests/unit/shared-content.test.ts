@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { builds, filterBuilds, paginate, queryBuilds } from "../packages/shared/src/index.ts";
+import { builds, filterBuilds, paginate, queryBuilds } from "../../packages/shared/src/index.ts";
 
 test("filterBuilds narrows by race, matchup, and search", () => {
   const results = filterBuilds(builds, {

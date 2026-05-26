@@ -7,7 +7,7 @@ import {
   favoriteMutationSchema,
   loginSchema,
   registerSchema,
-} from "../apps/web/lib/validation.ts";
+} from "../../apps/web/lib/validation.ts";
 
 test("registerSchema trims inputs and enforces email/password requirements", () => {
   const parsed = registerSchema.parse({
