@@ -39,13 +39,13 @@ Most game art is served from `apps/web/public/images`. The database also support
 ### Web app
 
 **Content pages**
-- Home page with featured races, worst/best matchup cards per race, and top builds by race
+- Home page with stat counters (Race Roster, Hero Library, Matchup Guides, Build Library), featured races, worst/best matchup cards per race, and top builds by race
 - Races, heroes, units, buildings, items, maps, matchups, and builds listing pages
 - Race detail, hero detail, unit detail, and map detail pages
-- Hero detail pages with best items and spell breakdowns
+- Hero detail pages with primary attribute chip (colored by Strength/Agility/Intelligence), role chip, best items with source badges, and spell breakdowns with Ultimate badge
 - Unit pages grouped by race category, with heroes shown beneath each race roster
-- Map detail pages with creep notes, expansion notes, shop types, and item icons/source labels
-- Matchup listing with race filters and difficulty/perspective cards
+- Map detail pages with creep notes, expansion notes, shop icon-grid (links to building pages), race advantage card (balanced fallback when no advantage exists), and mercenary cards with food/gold/lumber cost chips
+- Matchup detail pages with Game Plan, Hero Focus cards (race attribute icons, links to hero pages, hover effects), win-rate data, and difficulty badge
 - Build orders listing with AJAX load-more pagination, per-page selector (20 / 50 / 100), title search, and race images
 - Build detail with step-by-step supply/timing instructions and save/remove favorite
 
@@ -53,8 +53,37 @@ Most game art is served from `apps/web/public/images`. The database also support
 - Login and register modal with a full-page blur/dim overlay
 - Signed-in username dropdown with favorites, submitted builds, build submission, and logout actions
 - Protected favorites page synced with `/api/me/favorites`
-- User build submission flow at `/builds/submit`
-- Submitted builds list with per-user deletion for owned builds
+- User build submission flow at `/builds/submit` with:
+  - Race dropdown with race icons
+  - Matchup dropdown with side-by-side race icons (e.g. Human icon vs Orc icon)
+  - Custom difficulty selector with color-coded dots (Easy, Medium, Hard, Very Hard)
+  - Auto-generated URL slug from the title (uniqueness guaranteed server-side with `-2`, `-3` suffix)
+  - Live URL preview below the title field
+  - All form fields preserved on validation error — no data lost on a failed submit
+  - Specific validation error messages (e.g. `Line 3: "0:70" is not a valid time — seconds must be 00–59.`)
+- Submitted builds list at `/builds/my-builds` with per-user edit and delete for owned builds
+- Favorites heart icon persists across page loads
+
+**Build steps format**
+
+Each line in the Build Steps field follows:
+
+```
+[food f, timing] instruction
+```
+
+For example:
+
+```
+[12f, 0:00] Queue peasants and send one to scout
+[14f, 0:45] Build an Altar of Kings
+[18f, 1:30] Build Barracks and queue Footmen
+```
+
+- `food` — food/supply count at this step
+- `timing` — timestamp in `m:ss` format (seconds must be 00–59)
+- `instruction` — what to do
+- Step number is inferred from line order
 
 **Admin**
 - Admin mutation APIs for races, heroes, units, maps, builds, and matchups
@@ -85,12 +114,12 @@ Most game art is served from `apps/web/public/images`. The database also support
 ```txt
 wc3-matchup-guide/
 ├── apps/
-│   ├── mobile/
-│   └── web/
+│   ├── mobile/          # Expo React Native app
+│   └── web/             # Next.js 15 web app
 ├── packages/
-│   ├── db/
-│   ├── shared/
-│   └── ui/
+│   ├── db/              # Drizzle schema, migrations, queries, seed
+│   ├── shared/          # Domain types, reference content, mock fallbacks
+│   └── ui/              # Shared component primitives
 ├── AGENTS.md
 ├── README.md
 ├── drizzle.config.ts
@@ -100,12 +129,11 @@ wc3-matchup-guide/
 
 ## Architecture
 
-- `apps/web`
-  Next.js App Router web app, public pages, REST API routes, auth flows, user build submission, and admin editors
-- `packages/db`
-  Drizzle schema, generated migrations, database client, content queries, buildings/items CRUD helpers, and seed script
-- `packages/shared`
-  Shared domain types, seeded reference content, and mock fallback content
+- `apps/web` — Next.js App Router web app, public pages, REST API routes, auth flows, user build submission, and admin editors
+- `apps/mobile` — Expo React Native app, API-backed screens, auth flow with AsyncStorage
+- `packages/db` — Drizzle schema, generated migrations, database client, content queries, buildings/items CRUD helpers, and seed script
+- `packages/shared` — Shared domain types, seeded reference content, and mock fallback content
+- `packages/ui` — Shared UI component primitives used across apps
 
 ## Database schema overview
 
@@ -195,22 +223,36 @@ erDiagram
 
 ## Environment variables
 
-Copy `.env.example` to `.env.local` for local development.
+Two env files are required for local development:
+
+**Root `.env` or `.env.local`** (monorepo-level, read by the seed script and mobile app):
 
 ```txt
 DATABASE_URL=postgresql://USER:PASSWORD@HOST/DB?sslmode=require
 JWT_SECRET=replace-with-a-long-random-secret
-NEXT_PUBLIC_API_URL=http://localhost:3000/api
-NEXT_PUBLIC_APP_URL=http://localhost:3000
-EXPO_PUBLIC_API_URL=http://localhost:3000/api
+NEXT_PUBLIC_API_URL=http://localhost:3001/api
+NEXT_PUBLIC_APP_URL=http://localhost:3001
+EXPO_PUBLIC_API_URL=http://localhost:3001/api
+SMOKE_BASE_URL=http://localhost:3001
+SMOKE_API_URL=http://localhost:3001/api
+SMOKE_ADMIN_EMAIL=admin@example.com
+SMOKE_ADMIN_PASSWORD=demo123
 ```
 
-Notes:
+**`apps/web/.env.local`** (required for Next.js middleware to verify JWTs):
 
-- `DATABASE_URL` is required for database-backed features
+```txt
+DATABASE_URL=postgresql://USER:PASSWORD@HOST/DB?sslmode=require
+JWT_SECRET=replace-with-a-long-random-secret
+```
+
+> **Important:** `JWT_SECRET` must be present in `apps/web/.env.local`. Next.js middleware runs in an Edge Runtime context and only loads env files from the project directory (`apps/web`). Without this file the middleware cannot verify session tokens and protected routes (`/builds/submit`, `/builds/my-builds`, `/favorites`) will redirect all users to the home page regardless of login status.
+
+Notes:
+- `DATABASE_URL` is required for all database-backed features
 - `JWT_SECRET` is required for auth, favorites, and admin protection
 - `EXPO_PUBLIC_API_URL` is required for the Expo app to use live auth and favorites
-- without these, the public web UI still renders but protected features remain unavailable
+- Without these, the public web UI still renders but protected features remain unavailable
 
 ## Local setup
 
@@ -225,13 +267,16 @@ Expected runtime:
 npm install
 ```
 
-2. Create local env
+2. Create env files
 
 ```bash
 cp .env.example .env.local
+cp .env.example apps/web/.env.local
 ```
 
-3. Generate migration files if you change schema
+Edit both files and set `DATABASE_URL` and `JWT_SECRET`.
+
+3. Generate migration files if you change the schema
 
 ```bash
 npm run db:generate
@@ -255,6 +300,8 @@ npm run db:seed
 npm run dev
 ```
 
+The web app starts at `http://localhost:3001` by default (port 3000 may already be in use on some machines; Next.js will automatically pick the next available port and print it at startup).
+
 7. Start the Expo app
 
 ```bash
@@ -266,15 +313,6 @@ npm run mobile:dev
 ```bash
 npm run mobile:web
 ```
-
-9. Open the web app at `http://localhost:3000` unless your local env points it to another port
-
-## Demo credentials
-
-- Admin: `admin@example.com` / `demo123`
-- User: `user@example.com` / `demo123`
-
-These only work after the database is migrated and seeded.
 
 ## Validation commands
 
@@ -324,8 +362,7 @@ Recommended target: Vercel
 
 - Framework preset: `Next.js`
 - Root directory: repo root or `apps/web` depending on your Vercel setup preference
-- Repo host config:
-  - [vercel.json](vercel.json)
+- Repo host config: [vercel.json](vercel.json)
 - Build command:
 
 ```bash
@@ -388,8 +425,7 @@ npm run mobile:export
 apps/mobile/dist
 ```
 
-- Required public env:
-  - `EXPO_PUBLIC_API_URL`
+- Required public env: `EXPO_PUBLIC_API_URL`
 - Export helper files generated automatically:
   - `_redirects` for static host deep-link fallback
   - `_headers` for Expo asset caching
@@ -398,22 +434,6 @@ apps/mobile/dist
   - web app: [vercel.json](vercel.json)
   - [apps/mobile/vercel.json](apps/mobile/vercel.json)
   - [apps/mobile/netlify.toml](apps/mobile/netlify.toml)
-
-## Final submission record
-
-Fill these in after deployment:
-
-- Web app URL: `https://...`
-- Expo web URL: `https://...`
-- GitHub repo URL: `https://github.com/...`
-
-Before submission:
-
-- run `npm run deploy:check`
-- run `npm run deploy:smoke`
-- confirm `/api/health` reports healthy readiness flags
-- capture screenshots for the main web and Expo flows
-- copy final URLs into [docs/SUBMISSION_TEMPLATE.md](docs/SUBMISSION_TEMPLATE.md)
 
 ## Important routes
 
