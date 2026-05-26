@@ -16,6 +16,7 @@ export default async function AdminRacesPage({ searchParams }: Props) {
 
   const { q, status, error } = (await searchParams) ?? {};
   const records = hasDatabaseUrl() ? await listAdminRaces(9999, q) : [];
+  const visibleRecords = records.filter((race) => race.slug !== "neutral");
 
   return (
     <div className="page-shell page-stack">
@@ -39,11 +40,11 @@ export default async function AdminRacesPage({ searchParams }: Props) {
 
       <div className="admin-toolbar">
         <AdminSearchInput placeholder="Search races by name…" />
-        <p className="admin-toolbar__count">{records.length} result{records.length !== 1 ? "s" : ""}</p>
+        <p className="admin-toolbar__count">{visibleRecords.length} result{visibleRecords.length !== 1 ? "s" : ""}</p>
       </div>
 
       <div className="admin-list">
-        {records.map((race) => (
+        {visibleRecords.map((race) => (
           <article key={race.slug} className="admin-list-row">
             <div className="admin-list-row__img">
               {race.imageUrl ? (
@@ -55,14 +56,9 @@ export default async function AdminRacesPage({ searchParams }: Props) {
               <span className="muted" style={{ fontSize: "0.78rem" }}>{race.slug}</span>
             </div>
             <div className="inline-actions" style={{ flexWrap: "nowrap", alignItems: "center" }}>
-              {race.slug === "neutral" && (
-                <span className="muted" style={{ fontSize: "0.78rem", fontWeight: 600, whiteSpace: "nowrap" }}>Tavern/mercenary placeholder — do not delete.</span>
-              )}
               <Link href={`/admin/races/${race.slug}/edit`} className="button button--edit button--sm">Edit</Link>
               <Link href={`/races/${race.slug}`} className="button button--view button--sm">View</Link>
-              {race.slug !== "neutral" && (
-                <ConfirmDelete action={deleteRaceAction} itemName={race.name} hiddenFields={{ raceId: String(race.id) }} />
-              )}
+              <ConfirmDelete action={deleteRaceAction} itemName={race.name} hiddenFields={{ raceId: String(race.id) }} />
             </div>
           </article>
         ))}

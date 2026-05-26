@@ -2,21 +2,27 @@
 
 import { useActionState } from "react";
 import { createMapAction } from "../app/admin/actions";
+import { useImageUploadValidation } from "./use-image-upload-validation";
 
 export function NewMapForm() {
   const [state, formAction] = useActionState(createMapAction, null);
+  const { imageError, imageLimitLabel, onImageChange, onSubmit } = useImageUploadValidation("Maps");
   const f = state?.fields ?? {};
   return (
     <>
       {state?.error && (
         <div className="status-banner status-banner--error">{state.error}</div>
       )}
-      <form key={state?.key ?? 0} action={formAction} className="form-grid">
+      {imageError ? <div className="status-banner status-banner--error">{imageError}</div> : null}
+      <form key={state?.key ?? 0} action={formAction} className="form-grid" onSubmit={onSubmit}>
         <section className="form-panel">
           <h2>Core Metadata</h2>
           <div className="field"><label htmlFor="name">Name</label><input id="name" name="name" type="text" placeholder="Twisted Meadows" defaultValue={f.name ?? ""} /></div>
           <div className="field"><label htmlFor="slug">Page URL <span className="admin-edit-form__hint">(e.g. /maps/twisted-meadows)</span></label><input id="slug" name="slug" type="text" placeholder="twisted-meadows" defaultValue={f.slug ?? ""} /></div>
-          <div className="field"><label htmlFor="imageUpload">Image</label><input id="imageUpload" name="imageUpload" type="file" accept="image/*" /></div>
+          <div className="field">
+            <label htmlFor="imageUpload">Image <span className="admin-edit-form__hint">(max {imageLimitLabel})</span></label>
+            <input id="imageUpload" name="imageUpload" type="file" accept="image/*" onChange={onImageChange} />
+          </div>
         </section>
         <section className="form-panel">
           <h2>Guide Content</h2>

@@ -4,19 +4,22 @@ import { useActionState } from "react";
 import { createHeroAction } from "../app/admin/actions";
 import { RaceSelect } from "./race-select";
 import { AttributeSelect } from "./attribute-select";
+import { useImageUploadValidation } from "./use-image-upload-validation";
 
 type Race = { slug: string; name: string; imageUrl?: string | null };
 type Props = { races: Race[] };
 
 export function NewHeroForm({ races }: Props) {
   const [state, formAction] = useActionState(createHeroAction, null);
+  const { imageError, imageLimitLabel, selectedFileName, onImageChange, onSubmit } = useImageUploadValidation("Heroes");
   const f = state?.fields ?? {};
   return (
     <>
-      {state?.error && (
+      {state?.error ? (
         <div className="status-banner status-banner--error">{state.error}</div>
-      )}
-      <form key={state?.key ?? 0} action={formAction} className="form-grid">
+      ) : null}
+      {imageError ? <div className="status-banner status-banner--error">{imageError}</div> : null}
+      <form key={state?.key ?? 0} action={formAction} className="form-grid" onSubmit={onSubmit}>
         <section className="form-panel">
           <h2>Core Metadata</h2>
           <div className="field">
@@ -41,7 +44,13 @@ export function NewHeroForm({ races }: Props) {
               <option value="Ranged">Ranged</option>
             </select>
           </div>
-          <div className="field"><label htmlFor="imageUpload">Image</label><input id="imageUpload" name="imageUpload" type="file" accept="image/*" /></div>
+          <div className="field">
+            <label htmlFor="imageUpload">Image <span className="admin-edit-form__hint">(max {imageLimitLabel})</span></label>
+            <input id="imageUpload" name="imageUpload" type="file" accept="image/*" onChange={onImageChange} />
+            {selectedFileName ? (
+              <span className="muted" style={{ fontSize: "0.8rem" }}>{selectedFileName}</span>
+            ) : null}
+          </div>
         </section>
         <section className="form-panel">
           <h2>Guide Content</h2>

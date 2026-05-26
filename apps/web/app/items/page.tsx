@@ -1,4 +1,4 @@
-import { items } from "../../lib/static-content";
+import { listItems } from "../../lib/content";
 import { ItemsClient } from "../../components/items-client";
 
 export const revalidate = 3600;
@@ -10,6 +10,7 @@ type Props = {
 export default async function ItemsPage({ searchParams }: Props) {
   const params = (await searchParams) ?? {};
   const initialTab = params.tab ?? "all";
+  const items = await listItems();
 
   return (
     <div className="page-shell page-stack">

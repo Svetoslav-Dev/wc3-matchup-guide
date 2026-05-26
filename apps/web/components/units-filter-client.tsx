@@ -20,6 +20,26 @@ const tierRank: Record<string, number> = {
 
 type Props = { units: Unit[] };
 
+const displayUnitType = (unit: Unit, activeFilter: string) => {
+  if (activeFilter !== "Neutral" || unit.raceName !== "Neutral") {
+    return unit.unitType;
+  }
+
+  if (unit.unitType === "Neutral") {
+    return "Mercenary";
+  }
+
+  return unit.unitType.replace(/^Neutral\b/, "Mercenary");
+};
+
+const displayTier = (unit: Unit, activeFilter: string) => {
+  if (activeFilter === "Neutral" && unit.raceName === "Neutral" && unit.tier === "Neutral") {
+    return null;
+  }
+
+  return unit.tier;
+};
+
 export function UnitsFilterClient({ units }: Props) {
   const [active, setActive] = useState<string>("all");
 
@@ -65,8 +85,8 @@ export function UnitsFilterClient({ units }: Props) {
               <div className="title-stack">
                 <h2>{unit.name}</h2>
                 <div className="list-meta">
-                  <span>{unit.tier}</span>
-                  <span>{unit.unitType}</span>
+                  {displayTier(unit, active) ? <span>{displayTier(unit, active)}</span> : null}
+                  <span>{displayUnitType(unit, active)}</span>
                 </div>
               </div>
             </div>

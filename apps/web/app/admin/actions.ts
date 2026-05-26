@@ -82,6 +82,8 @@ const extractFields = (formData: FormData): Record<string, string> => {
 };
 
 const firstErrorMessage = (message: string | undefined) => message ?? "Please fill all the fields.";
+const uploadErrorMessage = (error: unknown) =>
+  error instanceof Error ? error.message : "Image upload failed.";
 
 export async function createBuildAction(prevState: FormState, formData: FormData): Promise<FormState> {
   const user = await requireAdminMutationContext();
@@ -293,7 +295,11 @@ export async function createHeroAction(prevState: FormState, formData: FormData)
   if (!parsed.success) return { error: firstErrorMessage(parsed.error.issues[0]?.message), fields, key: nextKey };
   const file = formData.get("imageUpload");
   if (file instanceof File && file.size > 0) {
-    parsed.data.imageUrl = await uploadImage(file, "Heroes", String(formData.get("name") ?? "").trim() || undefined);
+    try {
+      parsed.data.imageUrl = await uploadImage(file, "Heroes", String(formData.get("name") ?? "").trim() || undefined);
+    } catch (error) {
+      return { error: uploadErrorMessage(error), fields, key: nextKey };
+    }
   }
   let hero;
   try {
@@ -318,7 +324,11 @@ export async function updateHeroAction(formData: FormData) {
   const oldImageUrl = input.imageUrl;
   const file = formData.get("imageUpload");
   if (file instanceof File && file.size > 0) {
-    input.imageUrl = await uploadImage(file, "Heroes");
+    try {
+      input.imageUrl = await uploadImage(file, "Heroes");
+    } catch (error) {
+      redirect(`/admin/heroes/${currentSlug}/edit?error=${encodeURIComponent(uploadErrorMessage(error))}`);
+    }
   }
   const parsed = adminHeroSchema.safeParse(input);
   if (!parsed.success) redirect(`/admin/heroes/${currentSlug}/edit?error=${encodeURIComponent(firstErrorMessage(parsed.error.issues[0]?.message))}`);
@@ -361,7 +371,13 @@ export async function createUnitAction(prevState: FormState, formData: FormData)
   const parsed = adminUnitSchema.safeParse(input);
   if (!parsed.success) return { error: firstErrorMessage(parsed.error.issues[0]?.message), fields, key: nextKey };
   const file = formData.get("imageUpload");
-  if (file instanceof File && file.size > 0) parsed.data.imageUrl = await uploadImage(file, "Units", String(formData.get("name") ?? "").trim() || undefined);
+  if (file instanceof File && file.size > 0) {
+    try {
+      parsed.data.imageUrl = await uploadImage(file, "Units", String(formData.get("name") ?? "").trim() || undefined);
+    } catch (error) {
+      return { error: uploadErrorMessage(error), fields, key: nextKey };
+    }
+  }
   let unit;
   try {
     unit = await createUnit(parsed.data);
@@ -384,7 +400,13 @@ export async function updateUnitAction(formData: FormData) {
   const input = formDataToAdminUnitInput(formData);
   const oldImageUrl = input.imageUrl;
   const file = formData.get("imageUpload");
-  if (file instanceof File && file.size > 0) input.imageUrl = await uploadImage(file, "Units");
+  if (file instanceof File && file.size > 0) {
+    try {
+      input.imageUrl = await uploadImage(file, "Units");
+    } catch (error) {
+      redirect(`/admin/units/${currentSlug}/edit?error=${encodeURIComponent(uploadErrorMessage(error))}`);
+    }
+  }
   const parsed = adminUnitSchema.safeParse(input);
   if (!parsed.success) redirect(`/admin/units/${currentSlug}/edit?error=${encodeURIComponent(firstErrorMessage(parsed.error.issues[0]?.message))}`);
   let unit;
@@ -426,7 +448,13 @@ export async function createMapAction(prevState: FormState, formData: FormData):
   const parsed = adminMapSchema.safeParse(input);
   if (!parsed.success) return { error: firstErrorMessage(parsed.error.issues[0]?.message), fields, key: nextKey };
   const file = formData.get("imageUpload");
-  if (file instanceof File && file.size > 0) parsed.data.imageUrl = await uploadImage(file, "Maps", String(formData.get("name") ?? "").trim() || undefined);
+  if (file instanceof File && file.size > 0) {
+    try {
+      parsed.data.imageUrl = await uploadImage(file, "Maps", String(formData.get("name") ?? "").trim() || undefined);
+    } catch (error) {
+      return { error: uploadErrorMessage(error), fields, key: nextKey };
+    }
+  }
   let map;
   try {
     map = await createMap(parsed.data);
@@ -449,7 +477,13 @@ export async function updateMapAction(formData: FormData) {
   const input = formDataToAdminMapInput(formData);
   const oldImageUrl = input.imageUrl;
   const file = formData.get("imageUpload");
-  if (file instanceof File && file.size > 0) input.imageUrl = await uploadImage(file, "Maps");
+  if (file instanceof File && file.size > 0) {
+    try {
+      input.imageUrl = await uploadImage(file, "Maps");
+    } catch (error) {
+      redirect(`/admin/maps/${currentSlug}/edit?error=${encodeURIComponent(uploadErrorMessage(error))}`);
+    }
+  }
   const parsed = adminMapSchema.safeParse(input);
 
   if (!parsed.success) {
@@ -498,7 +532,13 @@ export async function createRaceAction(prevState: FormState, formData: FormData)
   const parsed = adminRaceSchema.safeParse(input);
   if (!parsed.success) return { error: firstErrorMessage(parsed.error.issues[0]?.message), fields, key: nextKey };
   const file = formData.get("imageUpload");
-  if (file instanceof File && file.size > 0) parsed.data.imageUrl = await uploadImage(file, "Races", String(formData.get("name") ?? "").trim() || undefined);
+  if (file instanceof File && file.size > 0) {
+    try {
+      parsed.data.imageUrl = await uploadImage(file, "Races", String(formData.get("name") ?? "").trim() || undefined);
+    } catch (error) {
+      return { error: uploadErrorMessage(error), fields, key: nextKey };
+    }
+  }
   let race;
   try {
     race = await createRace(parsed.data);
@@ -521,7 +561,13 @@ export async function updateRaceAction(formData: FormData) {
   const input = formDataToAdminRaceInput(formData);
   const oldImageUrl = input.imageUrl;
   const file = formData.get("imageUpload");
-  if (file instanceof File && file.size > 0) input.imageUrl = await uploadImage(file, "Races");
+  if (file instanceof File && file.size > 0) {
+    try {
+      input.imageUrl = await uploadImage(file, "Races");
+    } catch (error) {
+      redirect(`/admin/races/${currentSlug}/edit?error=${encodeURIComponent(uploadErrorMessage(error))}`);
+    }
+  }
   const parsed = adminRaceSchema.safeParse(input);
   if (!parsed.success) redirect(`/admin/races/${currentSlug}/edit?error=${encodeURIComponent(firstErrorMessage(parsed.error.issues[0]?.message))}`);
   let race;
@@ -582,8 +628,12 @@ export async function createBuildingAction(prevState: FormState, formData: FormD
   if (!parsed.success) return { error: firstErrorMessage(parsed.error.issues[0]?.message), fields, key: nextKey };
   const file = formData.get("imageUpload");
   if (file instanceof File && file.size > 0) {
-    const url = await uploadImage(file, "Buildings");
-    if (url) parsed.data.imageFile = url.split("/").pop() ?? parsed.data.imageFile;
+    try {
+      const url = await uploadImage(file, "Buildings");
+      if (url) parsed.data.imageFile = url.split("/").pop() ?? parsed.data.imageFile;
+    } catch (error) {
+      return { error: uploadErrorMessage(error), fields, key: nextKey };
+    }
   }
   let building;
   try {
@@ -604,8 +654,12 @@ export async function updateBuildingAction(formData: FormData) {
   const oldImageFile = input.imageFile;
   const file = formData.get("imageUpload");
   if (file instanceof File && file.size > 0) {
-    const url = await uploadImage(file, "Buildings");
-    if (url) input.imageFile = url.split("/").pop() ?? input.imageFile;
+    try {
+      const url = await uploadImage(file, "Buildings");
+      if (url) input.imageFile = url.split("/").pop() ?? input.imageFile;
+    } catch (error) {
+      redirect(`/admin/buildings/${buildingId}/edit?error=${encodeURIComponent(uploadErrorMessage(error))}`);
+    }
   }
   const parsed = adminBuildingSchema.safeParse(input);
   if (!parsed.success) redirect(`/admin/buildings/${buildingId}/edit?error=${encodeURIComponent(firstErrorMessage(parsed.error.issues[0]?.message))}`);
@@ -646,8 +700,12 @@ export async function createItemAction(prevState: FormState, formData: FormData)
   if (!parsed.success) return { error: firstErrorMessage(parsed.error.issues[0]?.message), fields, key: nextKey };
   const file = formData.get("imageUpload");
   if (file instanceof File && file.size > 0) {
-    const url = await uploadImage(file, "Items");
-    if (url) parsed.data.imageFile = url.split("/").pop() ?? parsed.data.imageFile;
+    try {
+      const url = await uploadImage(file, "Items");
+      if (url) parsed.data.imageFile = url.split("/").pop() ?? parsed.data.imageFile;
+    } catch (error) {
+      return { error: uploadErrorMessage(error), fields, key: nextKey };
+    }
   }
   let item;
   try {
@@ -668,8 +726,12 @@ export async function updateItemAction(formData: FormData) {
   const oldImageFile = input.imageFile;
   const file = formData.get("imageUpload");
   if (file instanceof File && file.size > 0) {
-    const url = await uploadImage(file, "Items");
-    if (url) input.imageFile = url.split("/").pop() ?? input.imageFile;
+    try {
+      const url = await uploadImage(file, "Items");
+      if (url) input.imageFile = url.split("/").pop() ?? input.imageFile;
+    } catch (error) {
+      redirect(`/admin/items/${itemId}/edit?error=${encodeURIComponent(uploadErrorMessage(error))}`);
+    }
   }
   const parsed = adminItemSchema.safeParse(input);
   if (!parsed.success) redirect(`/admin/items/${itemId}/edit?error=${encodeURIComponent(firstErrorMessage(parsed.error.issues[0]?.message))}`);

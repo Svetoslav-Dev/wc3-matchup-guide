@@ -3,26 +3,32 @@
 import { useActionState } from "react";
 import { createUnitAction } from "../app/admin/actions";
 import { RaceSelect } from "./race-select";
+import { useImageUploadValidation } from "./use-image-upload-validation";
 
 type Race = { slug: string; name: string; imageUrl?: string | null };
 type Props = { races: Race[] };
 
 export function NewUnitForm({ races }: Props) {
   const [state, formAction] = useActionState(createUnitAction, null);
+  const { imageError, imageLimitLabel, onImageChange, onSubmit } = useImageUploadValidation("Units");
   const f = state?.fields ?? {};
   return (
     <>
       {state?.error && (
         <div className="status-banner status-banner--error">{state.error}</div>
       )}
-      <form key={state?.key ?? 0} action={formAction} className="form-grid">
+      {imageError ? <div className="status-banner status-banner--error">{imageError}</div> : null}
+      <form key={state?.key ?? 0} action={formAction} className="form-grid" onSubmit={onSubmit}>
         <section className="form-panel">
           <h2>Core Metadata</h2>
           <div className="field"><label htmlFor="raceSlug">Race</label><RaceSelect races={races} defaultValue={f.raceSlug ?? races[0]?.slug ?? ""} /></div>
           <div className="field"><label htmlFor="name">Name</label><input id="name" name="name" type="text" placeholder="Footman" defaultValue={f.name ?? ""} /></div>
           <div className="field"><label htmlFor="slug">Page URL <span className="admin-edit-form__hint">(e.g. /units/footman)</span></label><input id="slug" name="slug" type="text" placeholder="footman" defaultValue={f.slug ?? ""} /></div>
           <div className="field"><label htmlFor="unitType">Unit type</label><input id="unitType" name="unitType" type="text" placeholder="Melee" defaultValue={f.unitType ?? ""} /></div>
-          <div className="field"><label htmlFor="imageUpload">Image</label><input id="imageUpload" name="imageUpload" type="file" accept="image/*" /></div>
+          <div className="field">
+            <label htmlFor="imageUpload">Image <span className="admin-edit-form__hint">(max {imageLimitLabel})</span></label>
+            <input id="imageUpload" name="imageUpload" type="file" accept="image/*" onChange={onImageChange} />
+          </div>
         </section>
         <section className="form-panel">
           <h2>Guide Content</h2>

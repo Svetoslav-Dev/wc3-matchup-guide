@@ -12,6 +12,9 @@ const RACE_FALLBACK_ICONS: Record<string, string> = {
   neutral:    "/images/Races/Neutral.png",
 };
 
+const isSafeLocalImage = (value: string | null | undefined) =>
+  typeof value === "string" && value.startsWith("/images/");
+
 type Props = {
   params: Promise<{ slug: string }>;
   searchParams?: Promise<{ status?: string; error?: string }>;
@@ -88,7 +91,9 @@ export default async function EditAdminRacePage({ params, searchParams }: Props)
             <div className="admin-edit-form__preview-card">
               <p className="section-label">Race Image</p>
               {(() => {
-                const src = race.imageUrl ?? RACE_FALLBACK_ICONS[race.slug] ?? null;
+                const src = isSafeLocalImage(race.imageUrl)
+                  ? race.imageUrl
+                  : RACE_FALLBACK_ICONS[race.slug] ?? null;
                 return src ? (
                   <Image
                     src={src}

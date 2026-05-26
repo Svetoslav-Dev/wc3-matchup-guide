@@ -31,10 +31,13 @@ import {
   listAdminMatchups as listDatabaseAdminMatchups,
   listAdminRaces as listDatabaseAdminRaces,
   listAdminUnits as listDatabaseAdminUnits,
+  listBuildings as listDatabaseBuildings,
   listBuildSubmissionsForUser as listDatabaseBuildSubmissionsForUser,
   listFavoriteBuildsForUser as listDatabaseFavoriteBuildsForUser,
   listBuilds as listDatabaseBuilds,
+  listItems as listDatabaseItems,
   getTopBuildPerRace as getDatabaseTopBuildPerRace,
+  getRandomBuildPerRace as getDatabaseRandomBuildPerRace,
   listHeroes as listDatabaseHeroes,
   listMaps as listDatabaseMaps,
   listMatchups as listDatabaseMatchups,
@@ -46,6 +49,7 @@ import {
 } from "@warcraft3-guide-hub/db";
 import {
   favoriteBuilds as mockFavoriteBuilds,
+  buildings as mockBuildings,
   getBuildBySlug as getMockBuildBySlug,
   getHeroBySlug as getMockHeroBySlug,
   getMapBySlug as getMockMapBySlug,
@@ -53,6 +57,7 @@ import {
   getRaceBySlug as getMockRaceBySlug,
   getUnitBySlug as getMockUnitBySlug,
   heroes as mockHeroes,
+  items as mockItems,
   maps as mockMaps,
   matchups as mockMatchups,
   queryBuilds,
@@ -120,6 +125,36 @@ export const getMapBySlug = unstable_cache(
     hasDatabaseUrl() ? findDatabaseMapBySlug(slug) : getMockMapBySlug(slug),
   ["map"],
   { revalidate: 3600, tags: ["maps"] },
+);
+
+export const listBuildings = unstable_cache(
+  async () => hasDatabaseUrl() ? listDatabaseBuildings() : mockBuildings,
+  ["buildings"],
+  { revalidate: 3600, tags: ["buildings"] },
+);
+
+export const getBuildingBySlug = unstable_cache(
+  async (slug: string) => {
+    const buildings = hasDatabaseUrl() ? await listDatabaseBuildings() : mockBuildings;
+    return buildings.find((building) => `${building.race}-${building.imageFile.toLowerCase()}` === slug);
+  },
+  ["building"],
+  { revalidate: 3600, tags: ["buildings"] },
+);
+
+export const listItems = unstable_cache(
+  async () => hasDatabaseUrl() ? listDatabaseItems() : mockItems,
+  ["items"],
+  { revalidate: 3600, tags: ["items"] },
+);
+
+export const getItemBySlug = unstable_cache(
+  async (slug: string) => {
+    const items = hasDatabaseUrl() ? await listDatabaseItems() : mockItems;
+    return items.find((item) => item.name.toLowerCase().replace(/'/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") === slug);
+  },
+  ["item"],
+  { revalidate: 3600, tags: ["items"] },
 );
 
 export const listMatchups = unstable_cache(
@@ -259,6 +294,20 @@ export const getTopBuildPerRace = unstable_cache(
   ["top-build-per-race"],
   { revalidate: 300, tags: ["builds"] },
 );
+
+export const getRandomBuildPerRace = async (raceSlugs: string[]) => {
+  if (hasDatabaseUrl()) {
+    return getDatabaseRandomBuildPerRace(raceSlugs);
+  }
+
+  return raceSlugs
+    .map((raceSlug) => {
+      const builds = queryBuilds({ race: raceSlug, page: 1, pageSize: 200 }).data;
+      if (builds.length === 0) return null;
+      return builds[Math.floor(Math.random() * builds.length)] ?? null;
+    })
+    .filter((build): build is NonNullable<typeof build> => Boolean(build));
+};
 
 export const getHomeStats = unstable_cache(
   async () => {

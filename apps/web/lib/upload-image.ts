@@ -6,6 +6,17 @@ import { join } from "node:path";
 
 type ImageFolder = "Heroes" | "Units" | "Maps" | "Races" | "Buildings" | "Items";
 
+const MAX_UPLOAD_BYTES: Record<ImageFolder, number> = {
+  Heroes: 2 * 1024 * 1024,
+  Units: 2 * 1024 * 1024,
+  Races: 2 * 1024 * 1024,
+  Buildings: 2 * 1024 * 1024,
+  Items: 2 * 1024 * 1024,
+  Maps: 4 * 1024 * 1024,
+};
+
+const ALLOWED_EXTENSIONS = ["jpg", "jpeg", "png", "gif", "webp"] as const;
+
 const getPublicRoot = () => {
   const candidates = [
     join(process.cwd(), "public"),
@@ -19,7 +30,15 @@ export async function uploadImage(file: File, folder: ImageFolder, customName?: 
   if (!file || file.size === 0) return null;
 
   const ext = file.name.split(".").pop()?.toLowerCase();
-  if (!ext || !["jpg", "jpeg", "png", "gif", "webp"].includes(ext)) return null;
+  if (!ext || !ALLOWED_EXTENSIONS.includes(ext as (typeof ALLOWED_EXTENSIONS)[number])) {
+    throw new Error(`Unsupported image format. Use: ${ALLOWED_EXTENSIONS.join(", ")}.`);
+  }
+
+  const maxBytes = MAX_UPLOAD_BYTES[folder];
+  if (file.size > maxBytes) {
+    const limitMb = Math.round((maxBytes / (1024 * 1024)) * 10) / 10;
+    throw new Error(`Image is too large. ${folder === "Maps" ? "Map images" : "Images"} must be ${limitMb}MB or smaller.`);
+  }
 
   const raw = customName ?? file.name.replace(/\.[^.]+$/, "");
   const baseName = raw.replace(/[^a-zA-Z0-9_-]/g, "_");

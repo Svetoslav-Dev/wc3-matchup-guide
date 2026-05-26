@@ -30,6 +30,13 @@ import { PublishDonut } from "../../components/publish-donut";
 import { AdminPieChart } from "../../components/admin-pie-chart";
 
 const RECENT_LIMIT = 6;
+const DIFFICULTY_ORDER = ["Easy", "Medium", "Hard", "Very Hard"] as const;
+const DIFFICULTY_COLORS: Record<string, string> = {
+  Easy: "#6bdb8d",
+  Medium: "#f5c842",
+  Hard: "#f5923c",
+  "Very Hard": "#f87171",
+};
 
 const statusMessages: Record<string, string> = {
   "build-deleted":    "Build deleted.",
@@ -113,6 +120,11 @@ export default async function AdminPage({ searchParams }: Props) {
     ]);
 
   const statusMessage = params.status ? statusMessages[params.status] : undefined;
+  const sortedDifficultyStats = [...difficultyStats].sort((a, b) => {
+    const aIndex = DIFFICULTY_ORDER.indexOf(a.name as (typeof DIFFICULTY_ORDER)[number]);
+    const bIndex = DIFFICULTY_ORDER.indexOf(b.name as (typeof DIFFICULTY_ORDER)[number]);
+    return (aIndex === -1 ? Number.MAX_SAFE_INTEGER : aIndex) - (bIndex === -1 ? Number.MAX_SAFE_INTEGER : bIndex);
+  });
 
   return (
     <div className="page-shell page-stack">
@@ -161,8 +173,8 @@ export default async function AdminPage({ searchParams }: Props) {
         <div>
           <p className="section-label" style={{ marginBottom: "0.75rem", textAlign: "center" }}>Builds by Difficulty</p>
           <AdminPieChart
-            data={difficultyStats}
-            colors={["#6bdb8d", "#f5c842", "#f5923c", "#f87171"]}
+            data={sortedDifficultyStats}
+            colors={sortedDifficultyStats.map((slice) => DIFFICULTY_COLORS[slice.name] ?? "#94a3b8")}
           />
         </div>
       </div>
@@ -180,9 +192,18 @@ export default async function AdminPage({ searchParams }: Props) {
               <div className="admin-row__info">
                 <p className="admin-row__title">{build.title}</p>
                 <div className="admin-card-meta">
+                  <span
+                    className="admin-difficulty-badge"
+                    style={{
+                      color: DIFFICULTY_COLORS[build.difficulty] ?? "var(--color-muted)",
+                      borderColor: `${DIFFICULTY_COLORS[build.difficulty] ?? "var(--color-line)"}55`,
+                      background: `${DIFFICULTY_COLORS[build.difficulty] ?? "transparent"}18`,
+                    }}
+                  >
+                    {build.difficulty}
+                  </span>
                   <span className="pill pill--race">{build.raceName}</span>
-                  <DifficultyBadge value={build.difficulty} />
-                  <span className="muted">{build.isPublished ? "Published" : "Draft"}</span>
+                  {!build.isPublished && <span className="pill pill--draft">Draft</span>}
                 </div>
               </div>
               <div className="inline-actions">

@@ -1,10 +1,8 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { buildings } from "../../../lib/static-content";
+import { getBuildingBySlug } from "../../../lib/content";
 import { GameImage } from "../../../components/game-image";
-
-const toSlug = (b: { race: string; imageFile: string }) =>
-  `${b.race}-${b.imageFile.toLowerCase()}`;
+import type { Building } from "@warcraft3-guide-hub/shared";
 
 const RACE_LABEL: Record<string, string> = {
   human: "Human", orc: "Orc", undead: "Undead", "night-elf": "Night Elf", neutral: "Neutral",
@@ -129,7 +127,7 @@ type Props = { params: Promise<{ slug: string }> };
 
 export default async function BuildingDetailPage({ params }: Props) {
   const { slug } = await params;
-  const building = buildings.find((b) => toSlug(b) === slug);
+  const building = await getBuildingBySlug(slug);
 
   if (!building) notFound();
 
@@ -221,7 +219,7 @@ export default async function BuildingDetailPage({ params }: Props) {
               Trains &amp; Upgrades
             </h2>
             <ul className="list-none pl-0 flex flex-col gap-2 mt-2">
-              {building.produces.map((line) => {
+              {building.produces.map((line: Building["produces"][number]) => {
                 const trainName    = extractTrainedUnit(line);
                 const upgradeName  = extractUpgradeTarget(line);
                 const unlockName   = extractUnlockTarget(line);

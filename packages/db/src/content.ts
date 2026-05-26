@@ -26,10 +26,12 @@ import type {
   AdminUnitRecord,
   AuthUser,
   Build,
+  Building,
   BuildFilters,
   BuildStep,
   FavoriteBuild,
   Hero,
+  Item,
   MapGuide,
   ListResponse,
   Matchup,
@@ -38,7 +40,9 @@ import type {
   Unit,
 } from "@warcraft3-guide-hub/shared";
 import {
+  buildings as sharedBuildings,
   getBuildBySlug as getSharedBuildBySlug,
+  items as sharedItems,
   getHeroBySlug as getSharedHeroBySlug,
   getMapBySlug as getSharedMapBySlug,
   getMatchupBySlug as getSharedMatchupBySlug,
@@ -105,6 +109,36 @@ const enrichUnit = (record: typeof units.$inferSelect, raceName: string): Unit =
     strengths: shared?.strengths ?? record.strengths.split(",").map((value) => value.trim()),
     weaknesses: shared?.weaknesses ?? record.weaknesses.split(",").map((value) => value.trim()),
     imageUrl: record.imageUrl ?? shared?.imageUrl ?? null,
+  };
+};
+
+const enrichBuilding = (record: typeof buildingsTable.$inferSelect): Building => {
+  const shared = sharedBuildings.find((building) =>
+    building.race === record.race
+    && (building.imageFile === record.imageFile || building.name === record.name),
+  );
+
+  return {
+    name: record.name,
+    race: record.race,
+    description: record.description,
+    imageFile: record.imageFile,
+    gold: shared?.gold ?? 0,
+    lumber: shared?.lumber ?? 0,
+    tip: shared?.tip ?? record.description,
+    produces: shared?.produces ?? [],
+  };
+};
+
+const enrichItem = (record: typeof gameItems.$inferSelect): Item => {
+  const shared = sharedItems.find((item) => item.name === record.name);
+
+  return {
+    name: record.name,
+    category: record.category as Item["category"],
+    shops: JSON.parse(record.shops) as string[],
+    description: record.description,
+    imageFile: record.imageFile || shared?.imageFile || "",
   };
 };
 
@@ -307,6 +341,28 @@ export const findMapBySlug = async (slug: string) => {
   return map ? enrichMap(map) : undefined;
 };
 
+export const listBuildings = async (): Promise<Building[]> => {
+  const db = getDb();
+  const records = await db
+    .select()
+    .from(buildingsTable)
+    .where(isNull(buildingsTable.deletedAt))
+    .orderBy(asc(buildingsTable.race), asc(buildingsTable.name));
+
+  return records.map(enrichBuilding);
+};
+
+export const listItems = async (): Promise<Item[]> => {
+  const db = getDb();
+  const records = await db
+    .select()
+    .from(gameItems)
+    .where(isNull(gameItems.deletedAt))
+    .orderBy(asc(gameItems.name));
+
+  return records.map(enrichItem);
+};
+
 export const listMatchups = async (page = 1, pageSize = 20): Promise<ListResponse<Matchup>> => {
   const db = getDb();
   const total = await db.$count(matchups, isNull(matchups.deletedAt));
@@ -456,6 +512,27 @@ export const getTopBuildPerRace = async (raceSlugs: string[]): Promise<Build[]> 
       }),
     ),
   );
+  return results
+    .filter((b): b is NonNullable<typeof b> => Boolean(b))
+    .map((b) => enrichBuild(b, b.race.name, b.race.slug, b.matchup?.title));
+};
+
+export const getRandomBuildPerRace = async (raceSlugs: string[]): Promise<Build[]> => {
+  const db = getDb();
+  const results = await Promise.all(
+    raceSlugs.map((raceSlug) =>
+      db.query.builds.findFirst({
+        where: and(
+          eq(builds.isPublished, true),
+          isNull(builds.deletedAt),
+          inArray(builds.raceId, db.select({ id: races.id }).from(races).where(eq(races.slug, raceSlug))),
+        ),
+        with: { race: true, matchup: true },
+        orderBy: sql`random()`,
+      }),
+    ),
+  );
+
   return results
     .filter((b): b is NonNullable<typeof b> => Boolean(b))
     .map((b) => enrichBuild(b, b.race.name, b.race.slug, b.matchup?.title));

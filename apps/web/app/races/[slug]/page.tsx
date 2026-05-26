@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getRaceBySlug, listBuilds } from "../../../lib/content";
+import { heroes } from "../../../lib/static-content";
 import { GameImage } from "../../../components/game-image";
 import { DifficultyBadge } from "../../../components/difficulty-badge";
 
@@ -46,6 +47,8 @@ export default async function RaceDetailPage({ params }: Props) {
   if (!race) {
     notFound();
   }
+
+  const heroSlugByName = new Map(heroes.map((hero) => [hero.name, hero.slug]));
 
   return (
     <div className="page-shell page-stack">
@@ -99,7 +102,11 @@ export default async function RaceDetailPage({ params }: Props) {
           </h2>
           <div className="grid grid-cols-2 gap-x-4 gap-y-2.5 mt-3">
             {race.signatureHeroes.map((hero) => (
-              <div key={hero} className="flex items-center gap-2.5 min-w-0">
+              <Link
+                key={hero}
+                href={heroSlugByName.get(hero) ? `/heroes/${heroSlugByName.get(hero)}` : "/heroes"}
+                className="signature-hero-link"
+              >
                 <GameImage
                   src={heroImages[hero] ?? "/placeholder.svg"}
                   alt={hero}
@@ -108,7 +115,7 @@ export default async function RaceDetailPage({ params }: Props) {
                   height={36}
                 />
                 <span className="text-muted leading-snug text-sm truncate">{hero}</span>
-              </div>
+              </Link>
             ))}
           </div>
         </article>

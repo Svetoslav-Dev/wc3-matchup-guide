@@ -9,6 +9,10 @@ type Props = {
   params: Promise<{ slug: string }>;
 };
 
+function slugifyItemName(name: string) {
+  return name.toLowerCase().replace(/'/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+}
+
 const RACE_ICON: Record<string, string> = {
   Human:       "/images/Races/Humans_Icon.png",
   Orc:         "/images/Races/Orcs_Icon.png",
@@ -168,7 +172,7 @@ export default async function MapDetailPage({ params }: Props) {
                 const source = getItemInfo(item.name).source;
                 const isShop = source === "Drop / Shop";
                 return (
-                  <div key={item.name} className="map-drop-card">
+                  <Link key={item.name} href={`/items/${slugifyItemName(item.name)}`} className="map-drop-card">
                     <GameImage
                       src={`/images/Items/${item.imageFile}.png`}
                       alt=""
@@ -180,7 +184,7 @@ export default async function MapDetailPage({ params }: Props) {
                     {isShop ? (
                       <span className="map-drop-badge map-drop-badge--shop">Shop</span>
                     ) : null}
-                  </div>
+                  </Link>
                 );
               })}
             </div>

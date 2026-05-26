@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { GameImage } from "../../components/game-image";
-import { buildings } from "../../lib/static-content";
+import { listBuildings } from "../../lib/content";
 
 const raceFilters = [
   { slug: "all",       label: "All" },
@@ -21,6 +21,7 @@ type Props = {
 export default async function BuildingsPage({ searchParams }: Props) {
   const params = (await searchParams) ?? {};
   const activeRace = params.race ?? "all";
+  const buildings = await listBuildings();
   const visible = activeRace === "all" ? buildings : buildings.filter((b) => b.race === activeRace);
 
   return (

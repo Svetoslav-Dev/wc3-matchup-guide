@@ -1,11 +1,8 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { items } from "../../../lib/static-content";
+import { getItemBySlug, listBuildings } from "../../../lib/content";
 import { GameImage } from "../../../components/game-image";
-
-function slugify(name: string): string {
-  return name.toLowerCase().replace(/'/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
-}
+import type { Building, Item } from "@warcraft3-guide-hub/shared";
 
 type ItemDetail = {
   goldCost?: number;
@@ -94,19 +91,26 @@ const CATEGORY_LABEL: Record<string, string> = {
   tome:       "Tome",
 };
 
+function toBuildingSlug(building: { race: string; imageFile: string }) {
+  return `${building.race}-${building.imageFile.toLowerCase()}`;
+}
+
 type Props = { params: Promise<{ slug: string }> };
 
 export default async function ItemDetailPage({ params }: Props) {
   const { slug } = await params;
-  const item = items.find((i) => slugify(i.name) === slug);
+  const [item, buildings] = await Promise.all([getItemBySlug(slug), listBuildings()]);
 
   if (!item) notFound();
 
   const detail = ITEM_DETAIL[item.name];
-  const shopSources = item.shops.filter((s) => s !== "creep-drop");
+  const shopSources = item.shops.filter((s: Item["shops"][number]) => s !== "creep-drop");
   const isCreepDrop = item.shops.includes("creep-drop");
   const isTome = item.category === "tome";
   const tomeStat = isTome ? TOME_STAT[item.name] : null;
+  const shopBuildings = shopSources
+    .map((source: Item["shops"][number]) => buildings.find((building: Building) => building.name === SHOP_DISPLAY[source]))
+    .filter((building): building is Building => Boolean(building));
 
   return (
     <div className="page-shell page-stack">
@@ -195,16 +199,26 @@ export default async function ItemDetailPage({ params }: Props) {
             {shopSources.length > 0 ? (
               <>
                 <p className="section-label" style={{ fontSize: "0.7rem", marginBottom: "0.5rem" }}>Shops</p>
-                <ul className="list-none pl-0 flex flex-col gap-2 mb-4">
-                  {shopSources.map((s) => (
-                    <li key={s} className="flex items-center gap-3">
-                      {SHOP_ICON[s] ? (
-                        <GameImage src={SHOP_ICON[s]} alt={SHOP_DISPLAY[s] ?? s} width={24} height={24} className="rounded-[4px] shrink-0 object-contain" />
-                      ) : null}
-                      <span className="text-muted" style={{ fontSize: "0.9rem" }}>{SHOP_DISPLAY[s] ?? s}</span>
-                    </li>
+                <div className="icon-grid mb-4">
+                  {shopBuildings.map((shop: Building) => (
+                    <Link
+                      key={shop.name}
+                      href={`/buildings/${toBuildingSlug(shop)}`}
+                      className="icon-card icon-card--xs"
+                    >
+                      <GameImage
+                        src={SHOP_ICON[shop.race] ?? `/images/Buildings/${shop.imageFile}.png`}
+                        alt={shop.name}
+                        width={28}
+                        height={28}
+                        className="game-image--icon-xs"
+                      />
+                      <div className="icon-card__body">
+                        <p className="icon-card__name">{shop.name}</p>
+                      </div>
+                    </Link>
                   ))}
-                </ul>
+                </div>
               </>
             ) : null}
 

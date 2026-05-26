@@ -1,8 +1,8 @@
 import Link from "next/link";
-import { getMatchupsBySlugs, listRaces, getTopBuildPerRace, getHomeStats } from "../lib/content";
+import { getMatchupsBySlugs, listRaces, getRandomBuildPerRace, getHomeStats } from "../lib/content";
 import { fetchMatchupWinRates } from "../lib/w3c-stats";
+import { unstable_noStore as noStore } from "next/cache";
 
-export const revalidate = 3600;
 import { GameImage } from "../components/game-image";
 import { DifficultyBadge } from "../components/difficulty-badge";
 import { FeaturedBuild } from "../components/featured-build";
@@ -102,13 +102,14 @@ const bestMatchupReasons: Record<string, string> = {
 };
 
 export default async function HomePage() {
+  noStore();
   const neededMatchupSlugs = [...Object.values(worstMatchupSlugs), ...Object.values(bestMatchupSlugs)];
 
   const [stats, raceResult, matchupList, topBuilds, winRates] = await Promise.all([
     getHomeStats(),
     listRaces(1, 20),
     getMatchupsBySlugs(neededMatchupSlugs),
-    getTopBuildPerRace(raceOrder),
+    getRandomBuildPerRace(raceOrder),
     fetchMatchupWinRates(),
   ]);
   const featuredRaces = raceOrder
