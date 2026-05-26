@@ -16,7 +16,7 @@
     "mobile:export": "npm run export:web --workspace mobile",
     "mobile:typecheck": "npm run typecheck --workspace mobile",
     "test": "node --import tsx --test tests/unit/*.test.ts",
-    "test:integration": "node --import tsx --test tests/integration/*.test.ts",
+    "test:integration": "NODE_ENV=test node --import tsx --test tests/integration/*.test.ts",
     "build": "npm run build --workspace web",
     "lint": "npm run lint --workspace web",
     "typecheck": "npm run typecheck --workspace web && npm run typecheck --workspace @warcraft3-guide-hub/db",

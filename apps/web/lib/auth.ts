@@ -10,6 +10,11 @@ import { createUser, findUserByEmail, findUserById, findUserByUsername, sanitize
 const AUTH_COOKIE_NAME = "wc3_auth";
 const ONE_WEEK_IN_SECONDS = 60 * 60 * 24 * 7;
 
+declare global {
+  // Test-only session override for server actions executed outside the Next request runtime.
+  var __wc3TestSessionUser: AuthUser | null | undefined;
+}
+
 type AuthTokenPayload = {
   sub: string;
   role: UserRole;
@@ -119,7 +124,19 @@ export const removeAuthCookie = async () => {
 
 export const authRuntimeReady = () => hasDatabaseUrl() && Boolean(process.env.JWT_SECRET);
 
+export const setTestSessionUser = (user: AuthUser | null) => {
+  if (process.env.NODE_ENV !== "test") {
+    throw new Error("Test session overrides are only available in NODE_ENV=test.");
+  }
+
+  globalThis.__wc3TestSessionUser = user;
+};
+
 export const getSessionUser = async () => {
+  if (process.env.NODE_ENV === "test" && globalThis.__wc3TestSessionUser !== undefined) {
+    return globalThis.__wc3TestSessionUser;
+  }
+
   const token = (await cookies()).get(AUTH_COOKIE_NAME)?.value;
 
   if (!token || !process.env.JWT_SECRET) {
