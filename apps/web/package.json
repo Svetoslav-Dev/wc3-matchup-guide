@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "@tailwindcss/postcss": "^4.3.0",
+    "@vercel/blob": "^2.4.0",
     "@warcraft3-guide-hub/db": "*",
     "@warcraft3-guide-hub/shared": "*",
     "bcryptjs": "^3.0.3",

@@ -82,11 +82,16 @@ export default async function AdminBuildingsPage({ searchParams }: Props) {
           <article key={building.id} className="admin-list-row">
             <div className="admin-list-row__img">
               {(() => {
-                const base = building.imageFile.replace(/\.[^.]+$/, "");
-                const filename = building.imageFile.includes(".") ? building.imageFile : (imageIndex.get(base) ?? `${base}.png`);
-                return building.imageFile ? (
-                  <Image src={`/images/Buildings/${filename}`} alt={building.name} width={48} height={48} style={{ objectFit: "contain" }} />
-                ) : <div className="admin-list-row__img-placeholder" />;
+                const f = building.imageFile;
+                if (!f) return <div className="admin-list-row__img-placeholder" />;
+                const src = (f.startsWith("http") || f.startsWith("/"))
+                  ? f
+                  : f.includes(".")
+                    ? `/images/Buildings/${f}`
+                    : imageIndex.get(f) ? `/images/Buildings/${imageIndex.get(f)}` : null;
+                return src
+                  ? <Image src={src} alt={building.name} width={48} height={48} style={{ objectFit: "contain" }} />
+                  : <div className="admin-list-row__img-placeholder" />;
               })()}
             </div>
             <div className="admin-list-row__info">

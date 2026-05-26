@@ -22,9 +22,10 @@ const getPublicRoot = () => {
     join(process.cwd(), "public"),
     join(process.cwd(), "apps", "web", "public"),
   ];
-
   return candidates.find((path) => existsSync(path)) ?? candidates[1];
 };
+
+const blobEnabled = () => !!process.env.BLOB_READ_WRITE_TOKEN;
 
 export async function uploadImage(file: File, folder: ImageFolder, customName?: string): Promise<string | null> {
   if (!file || file.size === 0) return null;
@@ -43,26 +44,40 @@ export async function uploadImage(file: File, folder: ImageFolder, customName?: 
   const raw = customName ?? file.name.replace(/\.[^.]+$/, "");
   const baseName = raw.replace(/[^a-zA-Z0-9_-]/g, "_");
   const fileName = `${baseName}.${ext}`;
+
+  if (blobEnabled()) {
+    const { put } = await import("@vercel/blob");
+    const { url } = await put(`${folder}/${fileName}`, file, { access: "public", addRandomSuffix: false });
+    return url;
+  }
+
   const publicDir = join(getPublicRoot(), "images", folder);
   const filePath = join(publicDir, fileName);
-
   const bytes = await file.arrayBuffer();
   await writeFile(filePath, Buffer.from(bytes));
-
   return `/images/${folder}/${fileName}`;
 }
 
-// Deletes a file given its URL path, e.g. /images/Heroes/Archmage.png
 export async function deleteImageByUrl(urlPath: string | null | undefined): Promise<void> {
   if (!urlPath) return;
   try {
+    if (urlPath.startsWith("http")) {
+      const { del } = await import("@vercel/blob");
+      await del(urlPath);
+      return;
+    }
     await unlink(join(getPublicRoot(), urlPath));
   } catch { /* file may not exist */ }
 }
 
-// Deletes a file given its base name (no extension), scanning the folder for a match
 export async function deleteImageByFile(folder: ImageFolder, imageFile: string | null | undefined): Promise<void> {
   if (!imageFile) return;
+  // Full URL (Vercel Blob) or absolute path — delegate to deleteImageByUrl
+  if (imageFile.startsWith("http") || imageFile.startsWith("/")) {
+    await deleteImageByUrl(imageFile);
+    return;
+  }
+  // Legacy short filename — scan local directory
   const dir = join(getPublicRoot(), "images", folder);
   try {
     const files = await readdir(dir);

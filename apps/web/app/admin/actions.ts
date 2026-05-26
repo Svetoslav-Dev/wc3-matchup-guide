@@ -630,7 +630,7 @@ export async function createBuildingAction(prevState: FormState, formData: FormD
   if (file instanceof File && file.size > 0) {
     try {
       const url = await uploadImage(file, "Buildings");
-      if (url) parsed.data.imageFile = url.split("/").pop() ?? parsed.data.imageFile;
+      if (url) parsed.data.imageFile = url;
     } catch (error) {
       return { error: uploadErrorMessage(error), fields, key: nextKey };
     }
@@ -656,7 +656,7 @@ export async function updateBuildingAction(formData: FormData) {
   if (file instanceof File && file.size > 0) {
     try {
       const url = await uploadImage(file, "Buildings");
-      if (url) input.imageFile = url.split("/").pop() ?? input.imageFile;
+      if (url) input.imageFile = url;
     } catch (error) {
       redirect(`/admin/buildings/${buildingId}/edit?error=${encodeURIComponent(uploadErrorMessage(error))}`);
     }
@@ -702,7 +702,7 @@ export async function createItemAction(prevState: FormState, formData: FormData)
   if (file instanceof File && file.size > 0) {
     try {
       const url = await uploadImage(file, "Items");
-      if (url) parsed.data.imageFile = url.split("/").pop() ?? parsed.data.imageFile;
+      if (url) parsed.data.imageFile = url;
     } catch (error) {
       return { error: uploadErrorMessage(error), fields, key: nextKey };
     }
@@ -728,7 +728,7 @@ export async function updateItemAction(formData: FormData) {
   if (file instanceof File && file.size > 0) {
     try {
       const url = await uploadImage(file, "Items");
-      if (url) input.imageFile = url.split("/").pop() ?? input.imageFile;
+      if (url) input.imageFile = url;
     } catch (error) {
       redirect(`/admin/items/${itemId}/edit?error=${encodeURIComponent(uploadErrorMessage(error))}`);
     }

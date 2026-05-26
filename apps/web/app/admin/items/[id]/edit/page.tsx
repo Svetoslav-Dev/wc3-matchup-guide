@@ -9,6 +9,7 @@ import { updateItemAction } from "../../../actions";
 
 async function resolveItemImageUrl(imageFile: string): Promise<string | null> {
   if (!imageFile) return null;
+  if (imageFile.startsWith("http") || imageFile.startsWith("/")) return imageFile;
   if (imageFile.includes(".")) return `/images/Items/${imageFile}`;
   const dirs = [join(process.cwd(), "public"), join(process.cwd(), "apps", "web", "public")];
   for (const base of dirs) {
