@@ -6,7 +6,11 @@ import { deleteUserBuildAction } from "../user-actions";
 import { DifficultyBadge } from "../../../components/difficulty-badge";
 import { ConfirmDelete } from "../../../components/confirm-delete";
 
-export default async function MyBuildsPage() {
+type Props = {
+  searchParams?: Promise<{ status?: string }>;
+};
+
+export default async function MyBuildsPage({ searchParams }: Props) {
   if (!hasDatabaseUrl() || !process.env.JWT_SECRET) {
     return (
       <div className="page-shell page-stack">
@@ -38,7 +42,15 @@ export default async function MyBuildsPage() {
     );
   }
 
+  const params = (await searchParams) ?? {};
   const submissions = await listBuildSubmissionsForUser(user.id);
+
+  const statusMessage =
+    params.status === "published" ? { text: "Build published successfully.", isSuccess: true }
+    : params.status === "draft"   ? { text: "Build saved as draft.", isSuccess: false }
+    : params.status === "updated" ? { text: "Build updated successfully.", isSuccess: false }
+    : params.status === "removed" ? { text: "Build deleted successfully.", isSuccess: true }
+    : null;
 
   return (
     <div className="page-shell page-stack">
@@ -49,6 +61,11 @@ export default async function MyBuildsPage() {
           Drafts stay off the public builds page until published by an admin. Published builds are
           visible to everyone.
         </p>
+        {statusMessage ? (
+          <p className={statusMessage.isSuccess ? "submit-success-msg" : "muted"}>
+            {statusMessage.text}
+          </p>
+        ) : null}
         <div className="hero-actions">
           <Link href="/builds/submit" className="button button--ghost">Submit a New Build</Link>
         </div>

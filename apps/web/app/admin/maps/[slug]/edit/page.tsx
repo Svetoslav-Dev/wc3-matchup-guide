@@ -21,7 +21,7 @@ export default async function EditAdminMapPage({ params }: Props) {
   return (
     <div className="page-shell page-stack">
       <div className="section-head"><p className="section-label">Admin Map Editor</p><h1 className="page-title">Edit {map.name}</h1></div>
-      <form action={updateMapAction} className="form-grid" encType="multipart/form-data">
+      <form action={updateMapAction} className="form-grid">
         <input type="hidden" name="mapId" value={map.id} />
         <section className="form-panel">
           <h2>Core Metadata</h2>

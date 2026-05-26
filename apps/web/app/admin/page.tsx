@@ -11,6 +11,9 @@ import {
 } from "./actions";
 import { getSessionUser } from "../../lib/auth";
 import {
+  getBuildPublishStats,
+  getBuildsByRaceStats,
+  getBuildsByDifficultyStats,
   getHomeStats,
   listAdminBuildings,
   listAdminBuilds,
@@ -23,6 +26,8 @@ import {
 } from "../../lib/content";
 import { deleteBuildingAction, deleteItemAction } from "./actions";
 import { ConfirmDelete } from "../../components/confirm-delete";
+import { PublishDonut } from "../../components/publish-donut";
+import { AdminPieChart } from "../../components/admin-pie-chart";
 
 const RECENT_LIMIT = 6;
 
@@ -91,9 +96,12 @@ export default async function AdminPage({ searchParams }: Props) {
   }
 
   const params = (await searchParams) ?? {};
-  const [stats, buildRecords, matchupRecords, heroRecords, unitRecords, mapRecords, raceRecords, buildingRecords, itemRecords] =
+  const [stats, publishStats, raceStats, difficultyStats, buildRecords, matchupRecords, heroRecords, unitRecords, mapRecords, raceRecords, buildingRecords, itemRecords] =
     await Promise.all([
       getHomeStats(),
+      getBuildPublishStats(),
+      getBuildsByRaceStats(),
+      getBuildsByDifficultyStats(),
       listAdminBuilds(RECENT_LIMIT),
       listAdminMatchups(RECENT_LIMIT),
       listAdminHeroes(RECENT_LIMIT),
@@ -130,11 +138,33 @@ export default async function AdminPage({ searchParams }: Props) {
             <span className="admin-mgmt-row__label">{label}</span>
             <span className="admin-mgmt-row__count">{count}</span>
             <div className="inline-actions">
-              <Link href={viewAll} className="button button--ghost admin-view-btn">View All</Link>
-              <Link href={newHref} className="button button--ghost">+ New</Link>
+              <Link href={viewAll} className="button button--ghost button--sm admin-view-btn">View All</Link>
+              <Link href={newHref} className="button button--ghost button--sm">+ New</Link>
             </div>
           </div>
         ))}
+      </div>
+
+      {/* ── Charts ── */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 320px))", gap: "1.5rem", margin: "1rem 0", justifyContent: "center" }}>
+        <div>
+          <p className="section-label" style={{ marginBottom: "0.75rem", textAlign: "center" }}>Build Readiness</p>
+          <PublishDonut published={publishStats.published} draft={publishStats.draft} />
+        </div>
+        <div>
+          <p className="section-label" style={{ marginBottom: "0.75rem", textAlign: "center" }}>Builds per Race</p>
+          <AdminPieChart
+            data={raceStats}
+            colors={["#60a5fa", "#f97316", "#a78bfa", "#94a3b8"]}
+          />
+        </div>
+        <div>
+          <p className="section-label" style={{ marginBottom: "0.75rem", textAlign: "center" }}>Builds by Difficulty</p>
+          <AdminPieChart
+            data={difficultyStats}
+            colors={["#6bdb8d", "#f5c842", "#f5923c", "#f87171"]}
+          />
+        </div>
       </div>
 
       {/* ── Recent records ── */}

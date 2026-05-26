@@ -29,6 +29,7 @@ export async function saveFavoriteAction(formData: FormData) {
 
   await addFavoriteBuildForUser(user.id, buildSlug);
   revalidatePath(`/builds/${buildSlug}`);
+  revalidatePath("/builds");
   revalidatePath("/favorites");
 }
 
@@ -56,6 +57,7 @@ export async function removeFavoriteAction(formData: FormData) {
   }
 
   revalidatePath(`/builds/${buildSlug}`);
+  revalidatePath("/builds");
   revalidatePath("/favorites");
 }
 

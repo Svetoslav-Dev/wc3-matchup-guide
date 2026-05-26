@@ -6,6 +6,7 @@ import { formatLineItemsInput } from "../../../../../lib/admin-forms";
 import { getSessionUser } from "../../../../../lib/auth";
 import { listRaces } from "../../../../../lib/content";
 import { ensureAdminHeroEditor, updateHeroAction } from "../../../actions";
+import { RaceSelect } from "../../../../../components/race-select";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -36,6 +37,7 @@ export default async function EditAdminHeroPage({ params }: Props) {
   const { slug } = await params;
   const [hero, raceResult] = await Promise.all([ensureAdminHeroEditor(slug), listRaces(1, 20)]);
   if (!hero) notFound();
+  const visibleRaces = raceResult.data.filter((r) => r.slug !== "neutral");
 
   const previewSrc = hero.imageUrl ?? getSharedHero(hero.slug)?.imageUrl ?? null;
 
@@ -59,11 +61,7 @@ export default async function EditAdminHeroPage({ params }: Props) {
           <div className="admin-edit-form__fields">
             <div className="field">
               <label htmlFor="raceSlug">Race</label>
-              <select id="raceSlug" name="raceSlug" defaultValue={hero.raceSlug}>
-                {raceResult.data.map((race) => (
-                  <option key={race.slug} value={race.slug}>{race.name}</option>
-                ))}
-              </select>
+              <RaceSelect races={visibleRaces} defaultValue={hero.raceSlug} />
             </div>
             <div className="field">
               <label htmlFor="name">Name</label>

@@ -155,13 +155,15 @@ button, input, select, textarea { font: inherit; }
 /* ─── Icon grid / card ──────────────────────────────────────────────────── */
 .icon-grid        { @apply grid gap-4; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); }
 .icon-card        { @apply flex items-start gap-3 bg-panel border border-line rounded-[14px] p-3.5; height: 120px; overflow: hidden; }
+.icon-card--sm    { height: auto; padding: 0.6rem 0.75rem; gap: 0.5rem; }
+.icon-card--xs    { height: 52px; padding: 0.5rem 0.65rem; gap: 0.5rem; }
 .icon-card__body  { @apply flex flex-col gap-0.5 min-w-0 overflow-hidden; }
 .icon-card__name  { @apply font-bold text-text leading-tight line-clamp-1; font-size:0.875rem; }
 .icon-card__type  { @apply text-[0.72rem] uppercase tracking-widest text-gold; }
 .icon-card__desc  { @apply text-muted leading-snug line-clamp-2; font-size:0.8rem; }
 
 /* ─── Hero section ──────────────────────────────────────────────────────── */
-.hero       { @apply grid gap-6 pt-[4.5rem] pb-8; }
+.hero       { @apply grid gap-6 pt-8 pb-8; }
 .hero--split { @apply items-end; grid-template-columns:1.35fr 0.95fr; }
 
 .section-label { @apply text-gold tracking-[0.12em] uppercase text-[0.74rem]; }
@@ -234,8 +236,8 @@ button, input, select, textarea { font: inherit; }
   @apply border-line text-text font-semibold;
   transition:background 160ms ease,color 160ms ease,border-color 160ms ease,transform 120ms ease;
 }
-.button--cancel:hover  { background:#f87171; border-color:#f87171; color:#0a0f0a; transform:translateY(-1px); }
-.button--cancel:active { background:#ef4444; border-color:#ef4444; color:#0a0f0a; transform:translateY(0); }
+.button--cancel:hover  { background:rgba(255,255,255,0.07); border-color:var(--color-text); transform:translateY(-1px); }
+.button--cancel:active { background:rgba(255,255,255,0.12); transform:translateY(0); }
 .button--publish {
   background: transparent;
   @apply border-line text-text font-semibold;
@@ -270,7 +272,8 @@ button, input, select, textarea { font: inherit; }
   -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
 }
 .admin-mgmt-list  { @apply border border-line rounded-2xl overflow-hidden; }
-.admin-mgmt-row   { @apply flex items-center gap-4 px-5 py-3 border-b border-line transition-colors duration-100; }
+.admin-mgmt-row   { @apply flex items-center gap-4 px-5 py-2.5 border-b border-line transition-colors duration-100; }
+.admin-mgmt-row .inline-actions { @apply gap-2; }
 .admin-mgmt-row:last-child { @apply border-b-0; }
 .admin-mgmt-row:hover { @apply bg-white/[.03]; }
 .admin-mgmt-row__label { @apply flex-1 font-semibold; font-size:0.95rem; }
@@ -296,6 +299,20 @@ button, input, select, textarea { font: inherit; }
   min-width:200px; font-size:0.9rem;
 }
 .admin-search__input:focus { @apply outline-none border-gold; }
+
+/* ─── Publish donut chart ───────────────────────────────────────────────── */
+.publish-donut {
+  @apply relative flex flex-col items-center;
+  border: 1px solid var(--color-line);
+  border-radius: 1.25rem;
+  padding: 2rem 1.5rem 1.5rem;
+  background: rgba(255,255,255,0.02);
+}
+.publish-donut__total {
+  @apply m-0 text-muted text-center;
+  font-size: 0.8rem;
+  padding-bottom: 0.5rem;
+}
 
 /* ─── Admin page header ─────────────────────────────────────────────────── */
 .admin-page-head {
@@ -373,8 +390,8 @@ button, input, select, textarea { font: inherit; }
 
 .hero-aside h2,
 .card h3,
-.detail-panel h2,
 .form-panel h2 { @apply mt-0; }
+.detail-panel h2 { @apply mt-0 mb-3; color: var(--color-gold); }
 .form-grid .form-panel h2 { @apply pb-2 border-b border-line mb-1; }
 
 /* ─── Pill ──────────────────────────────────────────────────────────────── */
@@ -389,7 +406,56 @@ button, input, select, textarea { font: inherit; }
   @apply px-2 py-0.5;
 }
 
+/* ─── Icon Select (Race / Matchup dropdowns) ────────────────────────────── */
+.icon-select__trigger {
+  @apply w-full flex items-center gap-2 px-4 py-3.5 border border-line rounded-[14px] text-text cursor-pointer text-left;
+  background: rgba(7,10,16,0.9);
+  font-size: inherit;
+}
+.icon-select__trigger:focus { outline: 2px solid rgba(201,163,91,0.5); outline-offset: 1px; }
+.icon-select__chevron { @apply ml-auto shrink-0 text-muted; }
+.icon-select__menu {
+  @apply absolute left-0 right-0 z-20 border border-line rounded-[14px] py-1 list-none m-0 p-1;
+  background: rgba(11,14,22,0.98);
+  backdrop-filter: blur(12px);
+  top: calc(100% + 4px);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.45);
+  max-height: 260px;
+  overflow-y: auto;
+}
+.icon-select__option {
+  @apply flex items-center gap-2 px-3 py-2 rounded-[10px] cursor-pointer text-muted;
+  font-size: 0.92rem;
+}
+.icon-select__option:hover { @apply bg-white/[0.04] text-text; }
+.icon-select__option--active { @apply text-text; background: rgba(201,163,91,0.08); }
+.icon-select__img { @apply rounded-[3px] shrink-0 object-contain; }
+.icon-select__pair { @apply flex items-center gap-1 shrink-0; }
+.icon-select__vs { @apply text-muted; font-size: 0.72rem; font-weight: 600; }
+
 /* ─── Difficulty ────────────────────────────────────────────────────────── */
+.difficulty-select__trigger {
+  @apply w-full flex items-center gap-2 px-4 py-3.5 border border-line rounded-[14px] text-text cursor-pointer text-left;
+  background: rgba(7,10,16,0.9);
+  font-size: inherit;
+}
+.difficulty-select__trigger:focus { outline: 2px solid rgba(201,163,91,0.5); outline-offset: 1px; }
+.difficulty-select__chevron { @apply ml-auto shrink-0 text-muted; }
+.difficulty-select__menu {
+  @apply absolute left-0 right-0 z-20 border border-line rounded-[14px] py-1 list-none m-0 p-1;
+  background: rgba(11,14,22,0.98);
+  backdrop-filter: blur(12px);
+  top: calc(100% + 4px);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.45);
+}
+.difficulty-select__option {
+  @apply flex items-center gap-2 px-3 py-2 rounded-[10px] cursor-pointer text-muted;
+  font-size: 0.92rem;
+}
+.difficulty-select__option:hover { @apply bg-white/[0.04] text-text; }
+.difficulty-select__option--active { @apply text-text; background: rgba(201,163,91,0.08); }
+.difficulty-select__dot { @apply w-2 h-2 rounded-full shrink-0; }
+
 .difficulty-badge      { @apply inline-flex items-center gap-1.5; }
 .difficulty-dot        { @apply w-2 h-2 rounded-full shrink-0; }
 .difficulty-dot--easy      { background:#6bdb8d; box-shadow:0 0 4px rgba(107,219,141,0.6); }
@@ -439,6 +505,17 @@ a.icon-card:hover {
 .card__footer-action--center { @apply justify-center; }
 
 /* ─── Heart button ──────────────────────────────────────────────────────── */
+.hero-focus-card {
+  transition: border-color 160ms ease, background 160ms ease, transform 140ms ease, box-shadow 160ms ease;
+  text-decoration: none;
+}
+.hero-focus-card:hover {
+  border-color: rgba(201,163,91,0.4);
+  background: linear-gradient(180deg,rgba(22,32,50,0.97),rgba(12,16,24,0.97));
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.3), 0 0 0 1px rgba(201,163,91,0.12);
+}
+
 .heart-btn {
   @apply absolute top-3 right-3 bg-transparent border-0 cursor-pointer text-muted p-1 rounded-md leading-none z-[1];
   transition:color 0.15s ease, transform 0.12s ease;
@@ -519,6 +596,12 @@ a.icon-card:hover {
   border:1px solid rgba(248,113,113,0.4);
   background:rgba(248,113,113,0.08);
   color:#f87171;
+}
+.submit-success-msg {
+  @apply px-4 py-3 rounded-xl leading-relaxed;
+  border:1px solid rgba(124,195,136,0.4);
+  background:rgba(124,195,136,0.08);
+  color:#7cc388;
 }
 .status-banner {
   @apply px-4 py-4 border border-line rounded-2xl text-text;
@@ -623,6 +706,13 @@ a.icon-card:hover {
 .map-item-list   { @apply list-none p-0 grid gap-2.5; }
 .map-item-list__item { @apply flex items-center gap-2.5 text-text; }
 .map-item-source { @apply ml-auto text-muted whitespace-nowrap text-[0.82rem]; }
+
+/* ─── Map drop grid ──────────────────────────────────────────────────────── */
+.map-drop-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(195px, 1fr)); gap: 0.4rem; }
+.map-drop-card { display: flex; align-items: center; gap: 0.5rem; padding: 0.45rem 0.65rem; background: rgba(255,255,255,0.02); border: 1px solid var(--color-line); border-radius: 10px; min-width: 0; }
+.map-drop-card__name { font-size: 0.82rem; color: var(--color-text); flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.map-drop-badge { font-size: 0.66rem; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--color-muted); background: rgba(255,255,255,0.05); padding: 0.15rem 0.4rem; border-radius: 4px; white-space: nowrap; flex-shrink: 0; }
+.map-drop-badge--shop { color: var(--color-gold); background: var(--color-gold-soft); }
 
 /* ─── Footer ────────────────────────────────────────────────────────────── */
 .footer { @apply border-t border-line pt-8 pb-12 text-muted text-center; }
@@ -741,7 +831,9 @@ a.icon-card:hover {
 /* ─── Game images ───────────────────────────────────────────────────────── */
 .game-image         { @apply block w-full h-auto rounded-xl border border-line object-cover; background:var(--panel); }
 .game-image--contain { @apply object-contain h-full; }
-.game-image--icon { @apply w-16 h-16 rounded-lg object-cover border border-line shrink-0; background:var(--panel); }
+.game-image--icon    { @apply w-16 h-16 rounded-lg object-cover border border-line shrink-0; background:var(--panel); }
+.game-image--icon-sm { @apply w-9 h-9 rounded-md object-cover border border-line shrink-0; background:var(--panel); }
+.game-image--icon-xs { @apply w-7 h-7 rounded object-cover border border-line shrink-0; background:var(--panel); }
 .game-image--item { @apply w-8 h-8 rounded-md object-cover border border-line shrink-0; background:var(--panel); }
 
 /* ─── Item entry ────────────────────────────────────────────────────────── */

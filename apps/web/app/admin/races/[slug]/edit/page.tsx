@@ -45,7 +45,7 @@ export default async function EditAdminRacePage({ params }: Props) {
         </div>
       </div>
 
-      <form action={updateRaceAction} className="admin-edit-form" encType="multipart/form-data">
+      <form action={updateRaceAction} className="admin-edit-form">
         <input type="hidden" name="raceId" value={race.id} />
         <input type="hidden" name="imageUrl" value={race.imageUrl ?? ""} />
 

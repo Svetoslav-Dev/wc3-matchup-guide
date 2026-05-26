@@ -4,6 +4,7 @@ import { formatBuildStepsInput } from "../../../../../lib/admin-forms";
 import { getSessionUser } from "../../../../../lib/auth";
 import { listMatchups, listRaces } from "../../../../../lib/content";
 import { ensureAdminBuildEditor, updateBuildAction } from "../../../actions";
+import { RaceSelect } from "../../../../../components/race-select";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -45,6 +46,8 @@ export default async function EditAdminBuildPage({ params }: Props) {
     notFound();
   }
 
+  const visibleRaces = raceResult.data.filter((r) => r.slug !== "neutral");
+
   return (
     <div className="page-shell page-stack">
       <div className="admin-page-head">
@@ -56,19 +59,18 @@ export default async function EditAdminBuildPage({ params }: Props) {
           <a href="/admin/builds" className="button button--ghost button--sm">← Back</a>
         </div>
       </div>
+      <p className="page-intro">
+        For <strong>Build Steps</strong> use one line per step:<br />
+        <code>[12f, 1:30] Build barracks and queue footmen</code><br />
+        <span style={{ fontSize: "0.85em" }}>( 🍖 food · ⏱ time · instruction ) — step number is inferred from line order</span>
+      </p>
       <form action={updateBuildAction} className="form-grid">
         <input type="hidden" name="buildId" value={build.id} />
         <section className="form-panel">
           <h2>Core Metadata</h2>
           <div className="field">
             <label htmlFor="raceSlug">Race</label>
-            <select id="raceSlug" name="raceSlug" defaultValue={build.raceSlug}>
-              {raceResult.data.map((race) => (
-                <option key={race.slug} value={race.slug}>
-                  {race.name}
-                </option>
-              ))}
-            </select>
+            <RaceSelect races={visibleRaces} defaultValue={build.raceSlug} />
           </div>
           <div className="field">
             <label htmlFor="matchupSlug">Matchup</label>

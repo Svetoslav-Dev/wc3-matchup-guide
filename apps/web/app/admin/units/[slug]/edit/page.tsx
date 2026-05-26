@@ -5,6 +5,7 @@ import { formatLineItemsInput } from "../../../../../lib/admin-forms";
 import { getSessionUser } from "../../../../../lib/auth";
 import { listRaces } from "../../../../../lib/content";
 import { ensureAdminUnitEditor, updateUnitAction } from "../../../actions";
+import { RaceSelect } from "../../../../../components/race-select";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -19,15 +20,16 @@ export default async function EditAdminUnitPage({ params }: Props) {
   const { slug } = await params;
   const [unit, raceResult] = await Promise.all([ensureAdminUnitEditor(slug), listRaces(1, 20)]);
   if (!unit) notFound();
+  const visibleRaces = raceResult.data.filter((r) => r.slug !== "neutral");
 
   return (
     <div className="page-shell page-stack">
       <div className="section-head"><p className="section-label">Admin Unit Editor</p><h1 className="page-title">Edit {unit.name}</h1></div>
-      <form action={updateUnitAction} className="form-grid" encType="multipart/form-data">
+      <form action={updateUnitAction} className="form-grid">
         <input type="hidden" name="unitId" value={unit.id} />
         <section className="form-panel">
           <h2>Core Metadata</h2>
-          <div className="field"><label htmlFor="raceSlug">Race</label><select id="raceSlug" name="raceSlug" defaultValue={unit.raceSlug}>{raceResult.data.map((race) => <option key={race.slug} value={race.slug}>{race.name}</option>)}</select></div>
+          <div className="field"><label htmlFor="raceSlug">Race</label><RaceSelect races={visibleRaces} defaultValue={unit.raceSlug} /></div>
           <div className="field"><label htmlFor="name">Name</label><input id="name" name="name" type="text" defaultValue={unit.name} /></div>
           <div className="field"><label htmlFor="slug">Slug</label><input id="slug" name="slug" type="text" defaultValue={unit.slug} /></div>
           <div className="field"><label htmlFor="unitType">Unit type</label><input id="unitType" name="unitType" type="text" defaultValue={unit.unitType} /></div>

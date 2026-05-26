@@ -4,10 +4,17 @@ import { hasDatabaseUrl } from "@warcraft3-guide-hub/db";
 import { getSessionUser } from "../../../../../lib/auth";
 import { getAdminBuildingById } from "../../../../../lib/content";
 import { updateBuildingAction } from "../../../actions";
+import { RaceSelect } from "../../../../../components/race-select";
 
 type Props = { params: Promise<{ id: string }> };
 
-const raceOptions = ["human", "orc", "undead", "night-elf", "neutral"];
+const allRaces = [
+  { slug: "human", name: "Human" },
+  { slug: "orc", name: "Orc" },
+  { slug: "undead", name: "Undead" },
+  { slug: "night-elf", name: "Night Elf" },
+  { slug: "neutral", name: "Neutral" },
+];
 
 export default async function EditAdminBuildingPage({ params }: Props) {
   if (!hasDatabaseUrl() || !process.env.JWT_SECRET) redirect("/admin");
@@ -30,7 +37,7 @@ export default async function EditAdminBuildingPage({ params }: Props) {
         </div>
       </div>
 
-      <form action={updateBuildingAction} className="admin-edit-form" encType="multipart/form-data">
+      <form action={updateBuildingAction} className="admin-edit-form">
         <input type="hidden" name="buildingId" value={building.id} />
 
         <div className="admin-edit-form__body">
@@ -41,9 +48,7 @@ export default async function EditAdminBuildingPage({ params }: Props) {
             </div>
             <div className="field">
               <label htmlFor="race">Race</label>
-              <select id="race" name="race" defaultValue={building.race}>
-                {raceOptions.map((r) => <option key={r} value={r}>{r}</option>)}
-              </select>
+              <RaceSelect races={allRaces} defaultValue={building.race} name="race" id="race" />
             </div>
             <div className="field">
               <label htmlFor="imageFile">Image filename <span className="admin-edit-form__hint">(without extension)</span></label>

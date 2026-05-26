@@ -1,7 +1,11 @@
 import { unstable_cache } from "next/cache";
 import {
+  getBuildPublishStats as getDatabaseBuildPublishStats,
+  getBuildsByRaceStats as getDatabaseBuildsByRaceStats,
+  getBuildsByDifficultyStats as getDatabaseBuildsByDifficultyStats,
   addFavoriteBuildForUser as addDatabaseFavoriteBuildForUser,
   findFavoriteForUserByBuildSlug as findDatabaseFavoriteForUserByBuildSlug,
+  buildSlugExists as databaseBuildSlugExists,
   getAdminBuildBySlug as getDatabaseAdminBuildBySlug,
   getUserBuildById as getDatabaseUserBuildById,
   getAdminBuildingById as getDatabaseAdminBuildingById,
@@ -156,6 +160,9 @@ export const getBuildBySlug = unstable_cache(
 export const listAdminBuilds = async (limit = 12, search?: string, race?: string, difficulty?: string) =>
   hasDatabaseUrl() ? listDatabaseAdminBuilds(limit, search, race, difficulty) : [];
 
+export const buildSlugExists = (slug: string, excludeId?: number) =>
+  databaseBuildSlugExists(slug, excludeId);
+
 export const getAdminBuildBySlug = async (slug: string) =>
   hasDatabaseUrl() ? getDatabaseAdminBuildBySlug(slug) : null;
 
@@ -227,6 +234,24 @@ export const removeFavoriteBuildForUser = async (userId: number, favoriteId: num
 
 export const deleteBuildForUser = async (userId: number, buildId: number) =>
   hasDatabaseUrl() ? deleteDatabaseBuildForUser(userId, buildId) : null;
+
+export const getBuildPublishStats = unstable_cache(
+  async () => hasDatabaseUrl() ? getDatabaseBuildPublishStats() : { published: 0, draft: 0 },
+  ["build-publish-stats"],
+  { revalidate: 60, tags: ["builds"] },
+);
+
+export const getBuildsByRaceStats = unstable_cache(
+  async () => hasDatabaseUrl() ? getDatabaseBuildsByRaceStats() : [],
+  ["builds-by-race-stats"],
+  { revalidate: 60, tags: ["builds", "races"] },
+);
+
+export const getBuildsByDifficultyStats = unstable_cache(
+  async () => hasDatabaseUrl() ? getDatabaseBuildsByDifficultyStats() : [],
+  ["builds-by-difficulty-stats"],
+  { revalidate: 60, tags: ["builds"] },
+);
 
 export const getTopBuildPerRace = unstable_cache(
   async (raceSlugs: string[]) =>

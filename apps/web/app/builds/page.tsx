@@ -26,9 +26,10 @@ export default async function BuildsPage({ searchParams }: Props) {
       : Promise.resolve([] as string[]),
   );
 
-  const [result, favoriteSlugs] = await Promise.all([
+  const [result, favoriteSlugs, sessionUser] = await Promise.all([
     listBuilds({ race: params.race, matchup: params.matchup, search: params.search, difficulty: params.difficulty, page, pageSize: 20 }),
     favoritesPromise,
+    sessionUserPromise,
   ]);
 
   return (
@@ -47,6 +48,7 @@ export default async function BuildsPage({ searchParams }: Props) {
         initialDifficulty={params.difficulty}
         initialSearch={params.search}
         favoriteSlugs={favoriteSlugs}
+        isLoggedIn={!!sessionUser}
       />
     </div>
   );

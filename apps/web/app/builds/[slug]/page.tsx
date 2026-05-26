@@ -68,7 +68,7 @@ export default async function BuildDetailPage({ params }: Props) {
         {steps.map((step) => (
           <article key={step.stepNumber} className="timeline-step">
             <strong>
-              Step {step.stepNumber} · {step.supply} supply · {step.timing}
+              Step {step.stepNumber} · <span aria-hidden="true">🍖</span> {step.supply} supply · <span aria-hidden="true">⏱️</span> {step.timing}
             </strong>
             <p>{step.instruction}</p>
           </article>

@@ -22,7 +22,7 @@ export default async function EditAdminItemPage({ params }: Props) {
         <p className="section-label">God Panel · Items</p>
         <h1 className="page-title">Edit {item.name}</h1>
       </div>
-      <form action={updateItemAction} className="form-grid" encType="multipart/form-data">
+      <form action={updateItemAction} className="form-grid">
         <input type="hidden" name="itemId" value={item.id} />
         <section className="form-panel">
           <h2>Details</h2>

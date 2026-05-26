@@ -1,3 +1,13 @@
+export const slugify = (text: string) =>
+  text
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "")
+    .slice(0, 100) || "build";
+
 import type {
   AdminBuildInput,
   AdminHeroInput,
@@ -15,31 +25,29 @@ export const parseBuildStepsInput = (value: string): BuildStep[] => {
     .filter(Boolean);
 
   return lines.map((line, index) => {
-    const parts = line.split("|").map((part) => part.trim());
+    const match = line.match(/^\[(\d+)f,\s*(\d{1,2}):(\d{2})\]\s*(.+)$/);
 
-    if (parts.length < 4) {
-      throw new Error(`Invalid build step format on line ${index + 1}. Use step|supply|timing|instruction.`);
+    if (!match) {
+      throw new Error(`Line ${index + 1}: use the format [12f, 1:30] instruction.`);
     }
 
-    const [stepNumberRaw, supplyRaw, timing, ...instructionParts] = parts;
-    const stepNumber = Number.parseInt(stepNumberRaw, 10);
-    const supply = Number.parseInt(supplyRaw, 10);
-    const instruction = instructionParts.join(" | ").trim();
-
-    if (!Number.isFinite(stepNumber) || stepNumber < 1) {
-      throw new Error(`Invalid step number on line ${index + 1}.`);
-    }
+    const supply = Number.parseInt(match[1], 10);
+    const minutes = Number.parseInt(match[2], 10);
+    const seconds = Number.parseInt(match[3], 10);
+    const instruction = match[4].trim();
 
     if (!Number.isFinite(supply) || supply < 0) {
-      throw new Error(`Invalid supply value on line ${index + 1}.`);
+      throw new Error(`Line ${index + 1}: food value must be a positive number.`);
     }
 
-    if (!timing || !instruction) {
-      throw new Error(`Missing timing or instruction on line ${index + 1}.`);
+    if (seconds > 59) {
+      throw new Error(`Line ${index + 1}: "${match[2]}:${match[3]}" is not a valid time — seconds must be 00–59.`);
     }
+
+    const timing = `${minutes}:${match[3]}`;
 
     return {
-      stepNumber,
+      stepNumber: index + 1,
       supply,
       timing,
       instruction,
@@ -48,7 +56,7 @@ export const parseBuildStepsInput = (value: string): BuildStep[] => {
 };
 
 export const formatBuildStepsInput = (steps: BuildStep[]) =>
-  steps.map((step) => `${step.stepNumber} | ${step.supply} | ${step.timing} | ${step.instruction}`).join("\n");
+  steps.map((step) => `[${step.supply}f, ${step.timing}] ${step.instruction}`).join("\n");
 
 export const parseCommonMistakesInput = (value: string) =>
   value

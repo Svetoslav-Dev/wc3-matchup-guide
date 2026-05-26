@@ -1,4 +1,4 @@
-import { and, asc, count, desc, eq, ilike, inArray, isNull, or, sql } from "drizzle-orm";
+import { and, asc, count, desc, eq, ilike, inArray, isNull, not, or, sql } from "drizzle-orm";
 import type {
   AdminBuildInput,
   AdminBuildListItem,
@@ -119,7 +119,9 @@ const enrichMap = (record: typeof maps.$inferSelect): MapGuide => {
     expansionNotes: shared?.expansionNotes ?? record.expansionNotes,
     availableItems: shared?.availableItems ?? [],
     shops: shared?.shops ?? [],
-    imageUrl: record.imageUrl ?? shared?.imageUrl ?? "/images/Maps/Wc3LostTempleRoC.png",
+    mercenaries: shared?.mercenaries ?? [],
+    raceAdvantage: shared?.raceAdvantage ?? null,
+    imageUrl: record.imageUrl ?? shared?.imageUrl ?? null,
   };
 };
 
@@ -497,6 +499,41 @@ export const getContentStats = async () => {
     buildingTotal,
     itemTotal,
   };
+};
+
+export const getBuildPublishStats = async (): Promise<{ published: number; draft: number }> => {
+  const db = getDb();
+  const [row] = await db.execute<{ published: string; draft: string }>(sql`
+    SELECT
+      (SELECT COUNT(*) FROM builds WHERE is_published = true  AND deleted_at IS NULL) AS published,
+      (SELECT COUNT(*) FROM builds WHERE is_published = false AND deleted_at IS NULL) AS draft
+  `);
+  return { published: Number(row.published), draft: Number(row.draft) };
+};
+
+export const getBuildsByRaceStats = async (): Promise<{ name: string; value: number }[]> => {
+  const db = getDb();
+  const rows = await db.execute<{ name: string; value: string }>(sql`
+    SELECT r.name, COUNT(b.id)::int AS value
+    FROM races r
+    LEFT JOIN builds b ON b.race_id = r.id AND b.deleted_at IS NULL
+    WHERE r.slug != 'neutral' AND r.deleted_at IS NULL
+    GROUP BY r.name
+    ORDER BY value DESC
+  `);
+  return rows.map((r) => ({ name: r.name, value: Number(r.value) }));
+};
+
+export const getBuildsByDifficultyStats = async (): Promise<{ name: string; value: number }[]> => {
+  const db = getDb();
+  const rows = await db.execute<{ name: string; value: string }>(sql`
+    SELECT difficulty AS name, COUNT(*)::int AS value
+    FROM builds
+    WHERE deleted_at IS NULL
+    GROUP BY difficulty
+    ORDER BY value DESC
+  `);
+  return rows.map((r) => ({ name: r.name, value: Number(r.value) }));
 };
 
 export const listFavoriteBuildsForUser = async (userId: number): Promise<FavoriteBuild[]> => {
@@ -1044,6 +1081,17 @@ export const deleteRace = async (id: number) => {
   const db = getDb();
   const [removed] = await db.update(races).set({ deletedAt: new Date() }).where(eq(races.id, id)).returning();
   return removed ?? null;
+};
+
+export const buildSlugExists = async (slug: string, excludeId?: number): Promise<boolean> => {
+  const db = getDb();
+  const build = await db.query.builds.findFirst({
+    where: excludeId
+      ? and(eq(builds.slug, slug), not(eq(builds.id, excludeId)))
+      : eq(builds.slug, slug),
+    columns: { id: true },
+  });
+  return !!build;
 };
 
 export const getAdminBuildBySlug = async (slug: string): Promise<AdminBuildRecord | null> => {

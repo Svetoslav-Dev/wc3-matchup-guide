@@ -2,6 +2,8 @@ import { hasDatabaseUrl } from "@warcraft3-guide-hub/db";
 import { listMatchups, listRaces } from "../../../../lib/content";
 import { getSessionUser } from "../../../../lib/auth";
 import { createBuildAction } from "../../actions";
+import { RaceSelect } from "../../../../components/race-select";
+import { MatchupSelect } from "../../../../components/matchup-select";
 
 export default async function NewAdminBuildPage() {
   if (!hasDatabaseUrl() || !process.env.JWT_SECRET) {
@@ -31,39 +33,34 @@ export default async function NewAdminBuildPage() {
   }
 
   const [raceResult, matchupResult] = await Promise.all([listRaces(1, 20), listMatchups(1, 50)]);
+  const visibleRaces = raceResult.data.filter((r) => r.slug !== "neutral");
 
   return (
     <div className="page-shell page-stack">
-      <div className="section-head">
-        <p className="section-label">Admin Build Editor</p>
-        <h1 className="page-title">Create a new build order.</h1>
-        <p className="page-intro">
-          Steps format: one step per line as <code>step | supply | timing | instruction</code>.
-        </p>
+      <div className="admin-page-head">
+        <div>
+          <p className="section-label">Admin Build Editor</p>
+          <h1 className="page-title">Create a new build order</h1>
+        </div>
+        <div className="admin-page-head__actions">
+          <a href="/admin/builds" className="button button--ghost button--sm">← Back</a>
+        </div>
       </div>
+      <p className="page-intro">
+        For <strong>Build Steps</strong> use one line per step:<br />
+        <code>[12f, 1:30] Build barracks and queue footmen</code><br />
+        <span style={{ fontSize: "0.85em" }}>( 🍖 food · ⏱ time · instruction ) — step number is inferred from line order</span>
+      </p>
       <form action={createBuildAction} className="form-grid">
         <section className="form-panel">
           <h2>Core Metadata</h2>
           <div className="field">
             <label htmlFor="raceSlug">Race</label>
-            <select id="raceSlug" name="raceSlug" defaultValue={raceResult.data[0]?.slug}>
-              {raceResult.data.map((race) => (
-                <option key={race.slug} value={race.slug}>
-                  {race.name}
-                </option>
-              ))}
-            </select>
+            <RaceSelect races={visibleRaces} defaultValue={visibleRaces[0]?.slug ?? ""} />
           </div>
           <div className="field">
             <label htmlFor="matchupSlug">Matchup</label>
-            <select id="matchupSlug" name="matchupSlug" defaultValue="">
-              <option value="">None</option>
-              {matchupResult.data.map((matchup) => (
-                <option key={matchup.slug} value={matchup.slug}>
-                  {matchup.title}
-                </option>
-              ))}
-            </select>
+            <MatchupSelect matchups={matchupResult.data} defaultValue="" />
           </div>
           <div className="field">
             <label htmlFor="title">Title</label>
@@ -101,11 +98,11 @@ export default async function NewAdminBuildPage() {
             <textarea
               id="stepsInput"
               name="stepsInput"
-              placeholder={"1 | 6 | 0:00 | Queue peons and scout.\n2 | 18 | 1:40 | Creep the first camp efficiently."}
+              placeholder={"[12f, 0:00] Queue peons and send one to scout\n[18f, 1:40] Creep the first camp efficiently"}
             />
           </div>
-          <div className="inline-actions">
-            <button className="button" type="submit">Create Build</button>
+          <div style={{ marginTop: "0.5rem", display: "flex", gap: "0.75rem", justifyContent: "center" }}>
+            <button className="button button--ghost" type="submit">Create Build</button>
           </div>
         </section>
       </form>

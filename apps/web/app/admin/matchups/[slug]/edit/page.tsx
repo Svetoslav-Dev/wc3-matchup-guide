@@ -4,6 +4,7 @@ import { formatCommonMistakesInput } from "../../../../../lib/admin-forms";
 import { getSessionUser } from "../../../../../lib/auth";
 import { listRaces } from "../../../../../lib/content";
 import { ensureAdminMatchupEditor, updateMatchupAction } from "../../../actions";
+import { RaceSelect } from "../../../../../components/race-select";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -54,23 +55,11 @@ export default async function EditAdminMatchupPage({ params }: Props) {
           <h2>Core Metadata</h2>
           <div className="field">
             <label htmlFor="raceASlug">Race A</label>
-            <select id="raceASlug" name="raceASlug" defaultValue={matchup.raceASlug}>
-              {raceResult.data.map((race) => (
-                <option key={race.slug} value={race.slug}>
-                  {race.name}
-                </option>
-              ))}
-            </select>
+            <RaceSelect races={raceResult.data} defaultValue={matchup.raceASlug} name="raceASlug" id="raceASlug" />
           </div>
           <div className="field">
             <label htmlFor="raceBSlug">Race B</label>
-            <select id="raceBSlug" name="raceBSlug" defaultValue={matchup.raceBSlug}>
-              {raceResult.data.map((race) => (
-                <option key={race.slug} value={race.slug}>
-                  {race.name}
-                </option>
-              ))}
-            </select>
+            <RaceSelect races={raceResult.data} defaultValue={matchup.raceBSlug} name="raceBSlug" id="raceBSlug" />
           </div>
           <div className="field">
             <label htmlFor="title">Title</label>

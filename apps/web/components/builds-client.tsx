@@ -12,6 +12,7 @@ type Props = {
   initialDifficulty?: string;
   initialSearch?: string;
   favoriteSlugs: string[];
+  isLoggedIn?: boolean;
 };
 
 async function fetchBuilds(params: {
@@ -32,7 +33,7 @@ async function fetchBuilds(params: {
   return res.json();
 }
 
-export function BuildsClient({ initialResult, initialRace, initialDifficulty, initialSearch, favoriteSlugs }: Props) {
+export function BuildsClient({ initialResult, initialRace, initialDifficulty, initialSearch, favoriteSlugs, isLoggedIn = false }: Props) {
   const router = useRouter();
   const pathname = usePathname();
   const [isPending, startTransition] = useTransition();
@@ -77,6 +78,7 @@ export function BuildsClient({ initialResult, initialRace, initialDifficulty, in
         difficulty={difficulty}
         search={initialSearch}
         favoriteSlugs={favoriteSlugs}
+        isLoggedIn={isLoggedIn}
       />
     </div>
   );

@@ -176,7 +176,7 @@ const seedBaseBuilds = async (
 const seedGeneratedBuilds = async (
   raceMap: Map<string, number>,
   matchupMap: Map<string, number>,
-  adminUserId: number,
+  regularUserId: number,
 ) => {
   const generatedBuilds = createGeneratedBuilds().map((build, index) => ({
     raceId: raceMap.get(build.raceSlug) ?? 0,
@@ -187,7 +187,7 @@ const seedGeneratedBuilds = async (
     difficulty: build.difficulty,
     strategyType: build.strategyType,
     body: `${build.summary}\n\nGenerated seed record ${index + 1}.`,
-    createdByUserId: adminUserId,
+    createdByUserId: regularUserId,
     isPublished: index % 5 !== 0,
   }));
 
@@ -360,7 +360,7 @@ async function main() {
   const matchupMap = new Map(seededMatchups.map((matchup) => [matchup.slug, matchup.id]));
 
   await seedBaseBuilds(raceMap, matchupMap, adminUser.id);
-  await seedGeneratedBuilds(raceMap, matchupMap, adminUser.id);
+  await seedGeneratedBuilds(raceMap, matchupMap, regularUser.id);
   await seedFavorites(regularUser.id);
   await seedBuildings();
   await seedGameItems();
