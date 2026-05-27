@@ -1,7 +1,7 @@
 import "./env";
 import bcrypt from "bcryptjs";
 import { desc, eq } from "drizzle-orm";
-import { getDb } from "./client";
+import { getDb, getSql } from "./client";
 import {
   buildSeeds,
   createGeneratedBuilds,
@@ -366,6 +366,7 @@ async function main() {
   await seedGameItems();
 
   console.log("Seed complete.");
+  await getSql().end();
 }
 
 main().catch((error) => {
