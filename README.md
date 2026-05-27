@@ -17,7 +17,7 @@ This project was built as a capstone submission for the "Full Stack Apps with AI
 
 Hero portraits, unit icons, and map previews are sourced from [Warcraft Wiki](https://warcraft.wiki.gg/wiki/) — the community wiki for Warcraft lore and game assets.
 
-Most game art is served from `apps/web/public/images`. The database also supports `imageUrl` fields for races, heroes, units, and maps when hosted assets are preferred.
+Static game art is bundled in `apps/web/public/images` and served at build time. Admin image uploads are stored in Vercel Blob when `BLOB_READ_WRITE_TOKEN` is set (production), and written to the local `public/images` directory otherwise (development). The database stores full URLs or paths in `imageUrl` / `imageFile` fields depending on the entity.
 
 ## Tech stack
 
@@ -32,6 +32,7 @@ Most game art is served from `apps/web/public/images`. The database also support
 | Validation | Zod |
 | Monorepo | Node.js workspaces |
 | CI | GitHub Actions |
+| File storage | Vercel Blob (production image uploads) |
 | Deployment | Vercel (web), Neon (database) |
 
 ## Features
@@ -86,14 +87,19 @@ For example:
 - Step number is inferred from line order
 
 **Admin**
-- Admin mutation APIs for races, heroes, units, maps, builds, and matchups
-- Admin dashboard with create, edit, and delete flows across races, heroes, units, maps, builds, and matchups
-- Admin reference management pages for buildings and items
+- Admin dashboard at `/admin` with entity counts, a pie chart of publish stats, and recent record previews across all content types
+- Create, edit, and delete flows for races, heroes, units, maps, builds, matchups, buildings, and items
+- Search input and per-page selector (20 / 50 / 100) on every admin list page
+- Image upload on all entity edit forms: uploads go to Vercel Blob in production and to `public/images` locally; the previous image is deleted automatically on replacement
+- Race deletion guard: deleting a race first counts its associated heroes, units, buildings, matchups, and builds, and blocks deletion with a descriptive message if any exist
+- Build list shows difficulty badge, race pill, and draft/published indicator
+- Admin reference management pages for buildings (with race filter) and items (with category filter)
 
 **Infrastructure**
-- Drizzle schema with `imageUrl` on races, heroes, units, and maps
+- Drizzle schema with `imageUrl` on races, heroes, units, and maps; `imageFile` on buildings and items
 - Automatic database migration on every Vercel deploy (`db:migrate` runs before `build`)
 - Seed script with demo users, Warcraft reference content, and 10,000 generated build records
+- Vercel Blob integration for image uploads — enabled automatically when `BLOB_READ_WRITE_TOKEN` is present; falls back to local filesystem when not set
 
 ### Mobile app (Expo)
 
@@ -239,11 +245,12 @@ SMOKE_ADMIN_EMAIL=admin@example.com
 SMOKE_ADMIN_PASSWORD=demo123
 ```
 
-**`apps/web/.env.local`** (required for Next.js middleware to verify JWTs):
+**`apps/web/.env.local`** (required for Next.js middleware to verify JWTs; add `BLOB_READ_WRITE_TOKEN` to enable image uploads):
 
 ```txt
 DATABASE_URL=postgresql://USER:PASSWORD@HOST/DB?sslmode=require
 JWT_SECRET=replace-with-a-long-random-secret
+BLOB_READ_WRITE_TOKEN=vercel_blob_rw_...   # optional; enables image uploads
 ```
 
 > **Important:** `JWT_SECRET` must be present in `apps/web/.env.local`. Next.js middleware runs in an Edge Runtime context and only loads env files from the project directory (`apps/web`). Without this file the middleware cannot verify session tokens and protected routes (`/builds/submit`, `/builds/my-builds`, `/favorites`) will redirect all users to the home page regardless of login status.
@@ -251,8 +258,9 @@ JWT_SECRET=replace-with-a-long-random-secret
 Notes:
 - `DATABASE_URL` is required for all database-backed features
 - `JWT_SECRET` is required for auth, favorites, and admin protection
+- `BLOB_READ_WRITE_TOKEN` enables admin image uploads to Vercel Blob; omitting it falls back to writing to the local `public/images` directory (which is read-only on Vercel at runtime)
 - `EXPO_PUBLIC_API_URL` is required for the Expo app to use live auth and favorites
-- Without these, the public web UI still renders but protected features remain unavailable
+- Without `DATABASE_URL` and `JWT_SECRET`, the public web UI still renders but protected features remain unavailable
 
 ## Local setup
 
@@ -382,6 +390,7 @@ Environment variables to set in Vercel:
 - `NEXT_PUBLIC_API_URL`
 - `NEXT_PUBLIC_APP_URL`
 - `EXPO_PUBLIC_API_URL`
+- `BLOB_READ_WRITE_TOKEN` — required for admin image uploads in production (create a Vercel Blob store and link it to the project)
 
 Recommended production values:
 

@@ -360,7 +360,7 @@ async function main() {
   const matchupMap = new Map(seededMatchups.map((matchup) => [matchup.slug, matchup.id]));
 
   await seedBaseBuilds(raceMap, matchupMap, adminUser.id);
-  await seedGeneratedBuilds(raceMap, matchupMap, regularUser.id);
+  if (!process.env.CI) await seedGeneratedBuilds(raceMap, matchupMap, regularUser.id);
   await seedFavorites(regularUser.id);
   await seedBuildings();
   await seedGameItems();

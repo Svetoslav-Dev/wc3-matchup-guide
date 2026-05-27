@@ -8,7 +8,7 @@ import {
   deleteImageByFile,
   deleteImageByUrl,
 } from "../../apps/web/lib/upload-image.ts";
-import { setTestSessionUser } from "../../apps/web/lib/auth.ts";
+import { setTestSessionUser } from "../../apps/web/lib/test-session.ts";
 import {
   createBuildAction,
   createBuildingAction,
@@ -129,12 +129,6 @@ const assertPublicImageExists = (urlPath: string | null | undefined) => {
   assert.ok(existsSync(join(webPublicDir, urlPath!.replace(/^\//, ""))), `Expected uploaded image ${urlPath} to exist.`);
 };
 
-const findImageFilePath = (folder: string, baseName: string) => {
-  const dir = join(webPublicDir, "images", folder);
-  const match = readdirSync(dir).find((name) => name.replace(/\.[^.]+$/, "") === baseName);
-  assert.ok(match, `Expected image file ${baseName} in ${dir}.`);
-  return join(dir, match);
-};
 
 test("admin build actions create, update, and delete builds", async () => {
   const key = uniqueKey("build");
@@ -469,7 +463,7 @@ test("admin building actions create, update, and delete buildings with uploaded 
     const created = (await listAdminBuildings(50, key)).find((entry) => entry.name === name);
     assert.ok(created);
     originalImageFile = created.imageFile;
-    assert.ok(existsSync(findImageFilePath("Buildings", created.imageFile)));
+    assertPublicImageExists(created.imageFile);
 
     const updateForm = appendFields(new FormData(), {
       buildingId: String(created.id),
@@ -485,7 +479,7 @@ test("admin building actions create, update, and delete buildings with uploaded 
     const updated = await getAdminBuildingById(created.id);
     assert.equal(updated?.name, `Updated ${name}`);
     assert.ok(updated?.imageFile);
-    assert.ok(existsSync(findImageFilePath("Buildings", updated!.imageFile)));
+    assertPublicImageExists(updated!.imageFile);
 
     const deleteForm = appendFields(new FormData(), { buildingId: String(created.id) });
     await expectRedirect(() => deleteBuildingAction(deleteForm));
@@ -517,7 +511,7 @@ test("admin item actions create, update, and delete items with uploaded images",
     const created = (await listAdminItems(50, key)).find((entry) => entry.name === name);
     assert.ok(created);
     originalImageFile = created.imageFile;
-    assert.ok(existsSync(findImageFilePath("Items", created.imageFile)));
+    assertPublicImageExists(created.imageFile);
 
     const updateForm = appendFields(new FormData(), {
       itemId: String(created.id),
@@ -535,7 +529,7 @@ test("admin item actions create, update, and delete items with uploaded images",
     assert.equal(updated?.name, `Updated ${name}`);
     assert.deepEqual(updated?.shops, ["creep-drop"]);
     assert.ok(updated?.imageFile);
-    assert.ok(existsSync(findImageFilePath("Items", updated!.imageFile)));
+    assertPublicImageExists(updated!.imageFile);
 
     const deleteForm = appendFields(new FormData(), { itemId: String(created.id) });
     await expectRedirect(() => deleteItemAction(deleteForm));

@@ -580,6 +580,8 @@ export async function updateRaceAction(formData: FormData) {
   if (parsed.data.imageUrl !== oldImageUrl) await deleteImageByUrl(oldImageUrl);
   revalidateTag("races");
   revalidatePath("/admin");
+  revalidatePath("/admin/races");
+  revalidatePath(`/admin/races/${race.slug}/edit`);
   revalidatePath("/races");
   revalidatePath(`/races/${race.slug}`);
   redirect(`/admin/races/${race.slug}/edit?status=updated`);

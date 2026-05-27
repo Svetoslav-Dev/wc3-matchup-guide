@@ -1194,7 +1194,7 @@ export const buildSlugExists = async (slug: string, excludeId?: number): Promise
 export const getAdminBuildBySlug = async (slug: string): Promise<AdminBuildRecord | null> => {
   const db = getDb();
   const build = await db.query.builds.findFirst({
-    where: eq(builds.slug, slug),
+    where: and(eq(builds.slug, slug), isNull(builds.deletedAt)),
     with: {
       race: true,
       matchup: true,
@@ -1259,7 +1259,7 @@ export const listAdminBuilds = async (limit = 12, search?: string, race?: string
 export const getAdminMatchupBySlug = async (slug: string): Promise<AdminMatchupRecord | null> => {
   const db = getDb();
   const matchup = await db.query.matchups.findFirst({
-    where: eq(matchups.slug, slug),
+    where: and(eq(matchups.slug, slug), isNull(matchups.deletedAt)),
     with: {
       raceA: true,
       raceB: true,
@@ -1310,7 +1310,7 @@ export const listAdminMatchups = async (limit = 12, search?: string): Promise<Ad
 export const getAdminHeroBySlug = async (slug: string): Promise<AdminHeroRecord | null> => {
   const db = getDb();
   const hero = await db.query.heroes.findFirst({
-    where: eq(heroes.slug, slug),
+    where: and(eq(heroes.slug, slug), isNull(heroes.deletedAt)),
     with: {
       race: true,
     },
@@ -1362,7 +1362,7 @@ export const listAdminHeroes = async (limit = 12, search?: string, race?: string
 export const getAdminUnitBySlug = async (slug: string): Promise<AdminUnitRecord | null> => {
   const db = getDb();
   const unit = await db.query.units.findFirst({
-    where: eq(units.slug, slug),
+    where: and(eq(units.slug, slug), isNull(units.deletedAt)),
     with: {
       race: true,
     },
@@ -1410,7 +1410,7 @@ export const listAdminUnits = async (limit = 12, search?: string): Promise<Admin
 export const getAdminMapBySlug = async (slug: string): Promise<AdminMapRecord | null> => {
   const db = getDb();
   const map = await db.query.maps.findFirst({
-    where: eq(maps.slug, slug),
+    where: and(eq(maps.slug, slug), isNull(maps.deletedAt)),
   });
 
   if (!map) {
@@ -1448,7 +1448,7 @@ export const listAdminMaps = async (limit = 12, search?: string): Promise<AdminM
 export const getAdminRaceBySlug = async (slug: string): Promise<AdminRaceRecord | null> => {
   const db = getDb();
   const race = await db.query.races.findFirst({
-    where: eq(races.slug, slug),
+    where: and(eq(races.slug, slug), isNull(races.deletedAt)),
   });
 
   if (!race) {
@@ -1553,7 +1553,7 @@ export const listAdminBuildings = async (limit = 12, search?: string, race?: str
 
 export const getAdminBuildingById = async (id: number): Promise<AdminBuildingRecord | null> => {
   const db = getDb();
-  const [b] = await db.select().from(buildingsTable).where(eq(buildingsTable.id, id));
+  const [b] = await db.select().from(buildingsTable).where(and(eq(buildingsTable.id, id), isNull(buildingsTable.deletedAt)));
   if (!b) return null;
   return { id: b.id, name: b.name, race: b.race, description: b.description, imageFile: b.imageFile };
 };
@@ -1597,7 +1597,7 @@ export const listAdminItems = async (limit = 12, search?: string): Promise<Admin
 
 export const getAdminItemById = async (id: number): Promise<AdminItemRecord | null> => {
   const db = getDb();
-  const [i] = await db.select().from(gameItems).where(eq(gameItems.id, id));
+  const [i] = await db.select().from(gameItems).where(and(eq(gameItems.id, id), isNull(gameItems.deletedAt)));
   if (!i) return null;
   return {
     id: i.id,

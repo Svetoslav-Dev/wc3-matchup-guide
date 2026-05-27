@@ -94,7 +94,7 @@ test("admin build CRUD works end-to-end through the DB layer", async () => {
 
   await deleteBuild(created!.id);
 
-  assert.equal((await getAdminBuildBySlug(`integration-build-${key}`))?.id, created!.id);
+  assert.equal(await getAdminBuildBySlug(`integration-build-${key}`), null);
   assert.ok((await listAdminBuilds(50, key)).every((build) => build.id !== created!.id));
 });
 

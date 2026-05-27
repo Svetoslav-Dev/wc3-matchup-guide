@@ -124,14 +124,6 @@ export const removeAuthCookie = async () => {
 
 export const authRuntimeReady = () => hasDatabaseUrl() && Boolean(process.env.JWT_SECRET);
 
-export const setTestSessionUser = (user: AuthUser | null) => {
-  if (process.env.NODE_ENV !== "test") {
-    throw new Error("Test session overrides are only available in NODE_ENV=test.");
-  }
-
-  globalThis.__wc3TestSessionUser = user;
-};
-
 export const getSessionUser = async () => {
   if (process.env.NODE_ENV === "test" && globalThis.__wc3TestSessionUser !== undefined) {
     return globalThis.__wc3TestSessionUser;
