@@ -98,7 +98,7 @@ For example:
 **Infrastructure**
 - Drizzle schema with `imageUrl` on races, heroes, units, and maps; `imageFile` on buildings and items
 - Automatic database migration on every Vercel deploy (`db:migrate` runs before `build`)
-- Seed script with demo users, Warcraft reference content, and 10,000 generated build records
+- Seed script with demo users, Warcraft reference content, and 10,000 generated build records (skipped when `CI=true` to keep CI fast)
 - Vercel Blob integration for image uploads — enabled automatically when `BLOB_READ_WRITE_TOKEN` is present; falls back to local filesystem when not set
 
 ### Mobile app (Expo)
@@ -178,6 +178,7 @@ erDiagram
     int id
     int race_id
     varchar slug
+    varchar name
     varchar unit_type
     varchar image_url
   }
@@ -207,6 +208,9 @@ erDiagram
     int id
     int build_id
     int step_number
+    int supply
+    varchar timing
+    text instruction
   }
   favorites {
     int id
@@ -221,8 +225,9 @@ erDiagram
   }
   game_items {
     int id
-    varchar category
     varchar name
+    varchar category
+    text shops
     varchar image_file
   }
 ```
@@ -322,6 +327,34 @@ npm run mobile:dev
 npm run mobile:web
 ```
 
+## Tests
+
+### Unit tests (`npm run test`)
+
+Run with Node's built-in test runner — no database required.
+
+| File | What it covers |
+|---|---|
+| `content-integrity.test.ts` | Unique slugs across all content collections; builds reference valid races and matchups; hero/map items reference known records; build steps are ordered and positive |
+| `admin-forms.test.ts` | `parseBuildStepsInput`, `formDataToAdminBuildInput`, and `parseCommonMistakesInput` parsing and normalisation |
+| `item-lookup.test.ts` | `getItemInfo` source labels, claws variants, and unknown-item fallback |
+| `shared-helpers.test.ts` | `filterBuilds`, `paginate`, `queryBuilds`, and `slugify` helpers |
+| `shared-content.test.ts` | Shared lookup helpers and item shop/category filters |
+| `map-data.test.ts` | Map shop labels, mercenary camp presence, neutral unit references, race advantage data, and `queryMaps` pagination |
+| `validation.test.ts` | Zod schemas — register, login, favorite mutation, admin build, and admin race |
+
+### Integration tests (`npm run test:integration`)
+
+Run against a real PostgreSQL database. Require `DATABASE_URL` and `JWT_SECRET`.
+
+| File | What it covers |
+|---|---|
+| `admin-actions.test.ts` | Full create → update → delete cycle through every admin Server Action (builds, matchups, heroes, units, maps, races, buildings, items); verifies image upload and cleanup |
+| `admin-crud.test.ts` | Direct DB layer CRUD for all entity types via `packages/db` query helpers |
+| `db-content.test.ts` | `listMaps`, `findMapBySlug`, `listBuilds`, `findBuildBySlug` return correct enriched data |
+| `user-builds.test.ts` | User build submission flow — list, fetch, and soft-delete owned builds |
+| `api-routes.test.ts` | `/api/health` route reports database and auth readiness; favorite API create/list/delete |
+
 ## Validation commands
 
 ```bash
@@ -329,12 +362,15 @@ npm run typecheck
 npm run lint
 npm run build
 npm run test
+npm run test:integration
 npm run mobile:typecheck
 npm run mobile:export
 npm run deploy:check
 npm run deploy:smoke
 ```
 
+`npm run test` runs unit tests (no database required).
+`npm run test:integration` runs integration tests against a real database — requires `DATABASE_URL` and `JWT_SECRET` to be set.
 `npm run deploy:check` verifies required web and Expo env vars and attempts a real database connection when `DATABASE_URL` is set.
 `npm run deploy:smoke` runs a deployed end-to-end smoke test using `SMOKE_BASE_URL` and the demo admin credentials.
 
@@ -353,7 +389,7 @@ Current production verification status:
 
 Continuous validation:
 
-- GitHub Actions runs `test`, `lint`, `build`, `typecheck`, `mobile:typecheck`, and `mobile:export` on pushes and pull requests through [.github/workflows/ci.yml](.github/workflows/ci.yml)
+- GitHub Actions runs `test`, `lint`, `build`, `typecheck`, `mobile:typecheck`, `mobile:export`, and `test:integration` (against a postgres service container) on pushes and pull requests through [.github/workflows/ci.yml](.github/workflows/ci.yml)
 
 Operational docs:
 
@@ -514,4 +550,4 @@ The seed script creates:
 - game items
 - base build orders and steps
 - favorites
-- 10,000 generated build rows for pagination and performance testing
+- 10,000 generated build rows for pagination and performance testing (skipped when `CI=true`)
