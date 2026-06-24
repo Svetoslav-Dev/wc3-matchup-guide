@@ -716,7 +716,9 @@ export async function createItemAction(prevState: FormState, formData: FormData)
     return { error: "Could not save — the Page URL may already be taken.", fields, key: nextKey };
   }
   if (!item) return { error: "Item creation failed.", fields, key: nextKey };
+  revalidateTag("items");
   revalidatePath("/admin");
+  revalidatePath("/items");
   redirect(`/admin/items/${item.id}/edit?status=created`);
 }
 
@@ -745,7 +747,9 @@ export async function updateItemAction(formData: FormData) {
   }
   if (!item) redirect(`/admin/items/${itemId}/edit?error=${encodeURIComponent("Item not found.")}`);
   if (parsed.data.imageFile !== oldImageFile) await deleteImageByFile("Items", oldImageFile);
+  revalidateTag("items");
   revalidatePath("/admin");
+  revalidatePath("/items");
   redirect(`/admin/items/${item.id}/edit?status=updated`);
 }
 
@@ -755,6 +759,8 @@ export async function deleteItemAction(formData: FormData) {
   if (!Number.isFinite(itemId) || itemId < 1) throw new Error("Invalid item id.");
   const removed = await deleteItem(itemId);
   await deleteImageByFile("Items", removed?.imageFile);
+  revalidateTag("items");
   revalidatePath("/admin");
+  revalidatePath("/items");
   redirect("/admin?status=item-deleted");
 }
